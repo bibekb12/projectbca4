@@ -37,6 +37,10 @@
                     <i class="fa fa-shopping-cart" aria-hidden="true"></i>
                     <span class="link-name">Purchase</span>
                 </a></li>
+                 <li><a href="inventory.php">
+                    <i class="uil uil-box"></i>
+                    <span class="link-name">Inventory</span>
+                </a></li>
                 <li><a href="report.php">
                     <i class="uil uil-chart"></i>
                     <span class="link-name">Report</span>
