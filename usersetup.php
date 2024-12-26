@@ -49,7 +49,7 @@ $result = $conn->query("SELECT id, username, status, created_at,updated_at FROM 
         <tr>
             <th>Id</th>
             <th>Username</th>
-            <th>Status</th>
+            <th>User Status</th>
             <th>Created At</th>
             <th>Updated At <th>
             <th>Action</th>
@@ -73,7 +73,8 @@ $result = $conn->query("SELECT id, username, status, created_at,updated_at FROM 
             echo "<tr><td colspan='5'>No users found</td></tr>";
         }
         ?>
-    </table>
+    </table><br>
+    <a href="setup.php"> Back </a>
 
 </body>
 </html>

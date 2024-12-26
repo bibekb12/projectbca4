@@ -2,7 +2,6 @@ database:
 inventory
 
 User table:
-
 CREATE TABLE users
 (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -16,13 +15,11 @@ CREATE TABLE users
 items table:
 CREATE TABLE items (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    itemcode varchar(12) unique,
     name VARCHAR(255) NOT NULL,
     description TEXT,
-    quantity INT NOT NULL,
-    price DECIMAL(10, 2) NOT NULL,
-    supplier_id INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    status char(1) default 'Y',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 supplier table:
@@ -32,6 +29,7 @@ CREATE TABLE suppliers (
     name VARCHAR(255) NOT NULL,
     contact INT(10),
     panno VARCHAR(20),
+    status char(1) default 'Y',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
