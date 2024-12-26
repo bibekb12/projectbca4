@@ -1,72 +1,47 @@
 <?php
+$servername = "localhost";
+$dbusername = "root";
+$dbpassword = "";
+$database = "inventory";
 
-        $username = $_POST['username'];
-        $password = $_POST['password'];
-        $active = $_POST['active'];
+$conn = new mysqli($servername, $dbusername, $dbpassword, $database);
 
-        // Database connection
-        $servername="localhost";
-        $dbusername="root";
-        $dbpassword="";
-        $database="inventory";
+if ($conn->connect_error) {
+    die("Connection failed: " . $conn->connect_error);
+}
 
-        $conn=new mysqli($servername,$dbusername,$dbpassword,$database);
+$id = "";
+$user = ["username" => "", "status" => "Y"]; 
+if (isset($_GET['id'])) {
+    $id = intval($_GET['id']);
+    $result = $conn->query("SELECT id, username, status FROM users WHERE id = $id");
+    $user = $result->fetch_assoc();
+}
 
-        // Check connection
-        if ($conn->connect_error) 
-        {
-            die("Connection failed: " . $conn->connect_error);
+if ($_SERVER["REQUEST_METHOD"] === "POST") {
+    $id = intval($_POST['id']);
+    $username = $_POST['username'];
+    $password = $_POST['password'];
+    $status = $_POST['active'];
+
+    if ($id) {
+        if (!empty($password)) {
+            $sql = "UPDATE users SET username='$username', password='$password', status='$status', updated_at=NOW() WHERE id=$id";
+        } else {
+            $sql = "UPDATE users SET username='$username', status='$status', updated_at=NOW() WHERE id=$id";
         }
+    } else {
+        $sql = "INSERT INTO users (username, password, status, updated_at) VALUES ('$username', '$password', '$status', NOW())";
+    }
 
-        $id='';
-        $user=["username"=>"","status"=>"Y"];
+    if ($conn->query($sql) === TRUE) {
+        echo $id ? "User updated successfully" : "New user added successfully";
+        header("Location: usersetup.php");
+        exit();
+    } else {
+        echo "Error: " . $conn->error;
+    }
+}
 
-        if (isset($_GET['id']))
-        {
-            $id=intval($_GET['id']);
-            $result=$conn->query("select id,username,status from users where id=$id");
-            $user=$result->fetch_assoc();
-        }
-        if ($_SERVER["REQUEST_METHOD"] === "POST") 
-        {
-            $id=intval($_POST['id']);
-            $username = $_POST['username'];
-            $password = $_POST['password'];
-            $active = $_POST['active'];
-            if ($id)
-            {
-                if(!empty($password))
-                {
-                   $sql=("UPDATE users SET username='$username', password='$password', active='$active',updated_at=NOW() where id=$id");
-                    if ($conn->query($sql) === TRUE) 
-                    {
-                        echo "New user updated successfully";
-                        header("Location: usersetup.php"); 
-                        exit();
-                    } 
-                }
-                else
-                {
-                    $sql=("UPDATE users SET username='$username', active='$active', updated_at=NOW() where id=$id");
-                    if ($conn->query($sql) === TRUE) 
-                    {
-                        echo "New user updated successfully";
-                        header("Location: usersetup.php"); 
-                        exit();
-                    } 
-                }
-            }
-            else
-            {
-            $sql = "INSERT INTO users (username, password, status) VALUES ('$username', '$password', '$active')";
-            if ($conn->query($sql) === TRUE) 
-                {
-                    echo "New user added successfully";
-                    header("Location: usersetup.php"); 
-                    exit();
-                }
-            }
-        }
-        $conn->close();
-        
+$conn->close();
 ?>
