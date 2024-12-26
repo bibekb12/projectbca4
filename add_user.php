@@ -1,14 +1,5 @@
 <?php
-$servername = "localhost";
-$dbusername = "root";
-$dbpassword = "";
-$database = "inventory";
-
-$conn = new mysqli($servername, $dbusername, $dbpassword, $database);
-
-if ($conn->connect_error) {
-    die("Connection failed: " . $conn->connect_error);
-}
+include_once 'db.php';
 
 $id = "";
 $user = ["username" => "", "status" => "Y"]; 
@@ -31,7 +22,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             $sql = "UPDATE users SET username='$username', status='$status', updated_at=NOW() WHERE id=$id";
         }
     } else {
-        $sql = "INSERT INTO users (username, password, status, updated_at) VALUES ('$username', '$password', '$status', NOW())";
+        $sql = "INSERT INTO users (username, password, status) VALUES ('$username', '$password', '$status')";
     }
 
     if ($conn->query($sql) === TRUE) {

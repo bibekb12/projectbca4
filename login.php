@@ -9,12 +9,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $result = mysqli_query($conn, $query);
     $user = mysqli_fetch_assoc($result);
 // commented for the testing
-    if ($user && password_verify($password, $user['password'])) {
-        $_SESSION['user_id'] = $user['id'];
-        header('Location: dashboard.php');
-        exit();
+if ($password == $user['password']) {
+    $_SESSION['user_id'] = $user['id'];
+    header('Location: dashboard.php');
+    exit();
     } else {
-        echo "Invalid credentials.";
-    }
+        echo "Invalid credentials. <a href='index.php'>Go back to login page</a>";
 }
+}
+
 ?>
