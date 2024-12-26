@@ -45,6 +45,8 @@
                     <i class="uil uil-chart"></i>
                     <span class="link-name">Report</span>
                 </a></li>
+                <li> <a href="setup.php">
+                    <i class="fa fa
             </ul>
             
             <ul class="logout-mode">
