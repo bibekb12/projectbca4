@@ -1,2 +1,38 @@
+database:
+inventory
+
 User table:
-id for unique id, username, password, status, created_ad
+
+CREATE TABLE users
+(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(15) UNIQUE,
+    password VARCHAR(15),
+    status CHAR(1) DEFAULT 'Y',
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at datetime
+);
+
+items table:
+CREATE TABLE items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    quantity INT NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    supplier_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
+supplier table:
+
+CREATE TABLE suppliers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    contact INT(10),
+    panno VARCHAR(20),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+

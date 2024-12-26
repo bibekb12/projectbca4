@@ -46,7 +46,8 @@
                     <span class="link-name">Report</span>
                 </a></li>
                 <li> <a href="setup.php">
-                    <i class="fa fa
+                    <i class="uil uil-setting"></i>
+                    <span class="link-name"> Setup </span> 
             </ul>
             
             <ul class="logout-mode">
@@ -73,8 +74,6 @@
                 <i class="uil uil-search"></i>
                 <input type="text" placeholder="Search here...">
             </div>
-            
-            <!--<img src="images/profile.jpg" alt="">-->
         </div>
         <div class="dash-content">
             <div class="overview">
