@@ -23,7 +23,7 @@
                     <i class="uil uil-setting" aria-hidden="true"></i>
                     <span class="link-name">Supplier setup </span>  
                     </a></li> 
-                    <li><a href="">
+                    <li><a href="itemsetup.php">
                     <i class="uil uil-setting" aria-hidden="true"></i>
                     <span class="link-name">Items setup </span> 
                     </a></li>
