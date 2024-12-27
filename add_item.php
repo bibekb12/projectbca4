@@ -7,12 +7,12 @@ if($_SERVER['REQUEST_METHOD']=="POST")
     $itemcode=$_POST['itemcode'];
     $itemname=$_POST['itemname'];
     $itemdesciption=$_POST['description'];
-    $staus=$_POST['status'];
+    $status=$_POST['status'];
     $price=floatval($_POST['price']);
 
     if(!empty($id))
     {
-        $query="UPDATE items SET itemcode='$itemcode',name='$itemname',description='$itemdesciption',status='$staus',price='$price' where id=$id";
+        $query="UPDATE items SET itemcode='$itemcode',name='$itemname',description='$itemdesciption',status='$status',price='$price' where id=$id";
     }
     else
     {
