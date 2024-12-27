@@ -76,7 +76,7 @@ if($result && $result->num_rows>0)
     }
 
 ?>
-<table>
+</table>
 <br><a href="setup.php"> Back </a>
 </body>
 </html>
