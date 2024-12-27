@@ -1,19 +1,11 @@
 <?php
 include_once 'db.php';
 
-$id = "";
-$user = ["username" => "", "status" => "Y"]; 
-if (isset($_GET['id'])) {
-    $id = intval($_GET['id']);
-    $result = $conn->query("SELECT id, username, status FROM users WHERE id = $id");
-    $user = $result->fetch_assoc();
-}
-
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $id = intval($_POST['id']);
     $username = $_POST['username'];
     $password = $_POST['password'];
-    $status = $_POST['active'];
+    $status = $_POST['status'];
 
     if ($id) {
         if (!empty($password)) {
