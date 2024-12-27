@@ -33,7 +33,9 @@ $result = $conn->query("SELECT id, username, status, created_at,updated_at FROM 
 
     <form method="POST" action="add_user.php">
         <input type="hidden" name="id" value="<?php echo $id; ?>">
+        <label> Username:</label>
         <input type="text" name="username" value="<?php echo $username; ?>" placeholder="username" required>
+        <label > Password: </label>
         <input type="password" name="password" placeholder="password">
         <label>
             <input type="radio" name="status" value="Y" <?php echo ($status === 'Y') ? 'checked' : ''; ?>> Active
