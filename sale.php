@@ -48,8 +48,7 @@
                 <td>{$saleRow['item_price']}</td>
                 <td>{$total}</td>
                 <td>{$saleRow['username']}</td>
-
-              </tr>";
+             </tr>";
     }
     ?>
     </table>
