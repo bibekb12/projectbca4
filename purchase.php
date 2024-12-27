@@ -20,7 +20,8 @@
         }
         ?>
     </select>
-
+    <label for ="costprice">Purchase Price</label>
+    <input type="number" name="costprice" required>
     <label for="quantity">Quantity:</label>
     <input type="number" name="quantity" required>
     <label for="price">Total:</label>
@@ -38,7 +39,9 @@
         <td>Product</td>
         <td>Supplier</td>
         <td>Quantity</td>
+        <td>Cost Price</td>
         <td>Total Amount</td>
+        <td>Selling Price</td>
         <td>User Name</td>
         <td>Action</td>
     </tr>
@@ -54,7 +57,9 @@
                 <td>{$row['name']}</td>
                 <td>{$row['suppliername']}</td>
                 <td>{$row['quantity']}</td>
+                <td>{$row['costprice']}</td>
                 <td>{$row['totalamount']}</td>
+                <td>{$row['sellprice']}
                 <td>{$row['username']}</td>
                 <td>
                     <form method='POST' action='process_purchase.php' style='display:inline;'>

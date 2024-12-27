@@ -6,10 +6,11 @@ include('db.php');
 $product_id = $_POST['product_id'];
 $quantity = intval($_POST['quantity']);
 $supplier = intval($_POST['supplier']);
-$sellingprice=floatval($_POST['sellingprice'])
+$sellprice=floatval($_POST['sellprice']);
+$costprice=floatval($_POST['costprice']);
 $userid = $_SESSION['user_id'];
 
-$update_stock = $conn->query("UPDATE items SET stock_quantity = stock_quantity + $quantity,sell_price=$sellingprice WHERE id = $product_id");
+$update_stock = $conn->query("UPDATE items SET stock_quantity = stock_quantity + $quantity,sell_price=$sellprice,price=$costprice WHERE id = $product_id");
 
 if ($update_stock) 
     {
