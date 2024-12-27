@@ -3,9 +3,9 @@
     <select name="product_id" required>
         <?php
         include('db.php');
-        $result = $conn->query("SELECT id, name FROM items where status='Y'");
+        $result = $conn->query("SELECT id, name,price FROM items where status='Y'");
         while ($row = $result->fetch_assoc()) {
-            echo "<option value='{$row['id']}'>{$row['name']}</option>";
+            echo "<option value='{$row['id']}'>{$row['name']} $ {$row['price']}</option>";
         }
         ?>
     </select>
@@ -23,6 +23,10 @@
 
     <label for="quantity">Quantity:</label>
     <input type="number" name="quantity" required>
+    <label for="price">Total:</label>
+    <input type="number" name="total" readonly>
+    <label for ="sellprice">Selling Price: </label>
+    <input type="number" name="sellprice" required>
 
     <button type="submit">Add Purchase</button>
 </form>
@@ -40,7 +44,7 @@
     </tr>
     <?php
     include('db.php');
-    $result = $conn->query("SELECT * FROM vw_transaction where type='Purchase'");
+    $result = $conn->query("SELECT * FROM vw_transaction where type='Purchase' order by date desc");
     if ($result && $result->num_rows > 0) 
     {
         while ($row = $result->fetch_assoc()) 
@@ -52,7 +56,12 @@
                 <td>{$row['quantity']}</td>
                 <td>{$row['totalamount']}</td>
                 <td>{$row['username']}</td>
-                <td><a href='purchase.php?id={$row['id']}'>Delete</a></td>
+                <td>
+                    <form method='POST' action='process_purchase.php' style='display:inline;'>
+                        <input type='hidden' name='delete_id' value='{$row['id']}'>
+                        <button type='submit' name='delete' onclick='return confirm(\"Are you sure you want to delete this record?\");'>Delete</button>
+                    </form>
+                </td>
             </tr>";
         }
     }
@@ -65,3 +74,4 @@
     <br><a href="dashboard.php">Back</a>
 
 
+<script src="script.js" ></script>

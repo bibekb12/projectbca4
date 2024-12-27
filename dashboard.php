@@ -32,10 +32,6 @@
                     <i class="fa fa-shopping-cart" aria-hidden="true"></i>
                     <span class="link-name">Purchase</span>
                 </a></li>
-                 <li><a href="inventory.php">
-                    <i class="uil uil-box"></i>
-                    <span class="link-name">Inventory</span>
-                </a></li>
                 <li><a href="report.php">
                     <i class="uil uil-chart"></i>
                     <span class="link-name">Report</span>
@@ -80,17 +76,44 @@
                     <div class="box box1">
                         <i class="fa fa-shopping-cart" aria-hidden="true"></i>
                         <span class="text">Purchased</span>
-                        <span class="number">50,120</span>
+                        <span class="number"> <?php 
+            include('db.php'); 
+            $result = $conn->query("SELECT SUM(totalamount) AS total FROM vw_transaction where type='Purchase'");
+            if ($result && $row = $result->fetch_assoc()) {
+                echo $row['total'];
+            } else {
+                echo "0";
+            }
+            $conn->close();
+            ?></span>
                     </div>
                     <div class="box box2">
                         <i class="fa fa-money" aria-hidden="true"></i>
                         <span class="text">Sales</span>
-                        <span class="number">20,120</span>
+                        <span class="number"> <?php 
+            include('db.php'); 
+            $result = $conn->query("SELECT SUM(totalamount) AS total FROM vw_transaction where type='Sale'");
+            if ($result && $row = $result->fetch_assoc()) {
+                echo $row['total'];
+            } else {
+                echo "0";
+            }
+            $conn->close();
+            ?></span>
                     </div>
                     <div class="box box3">
                         <i class="fa fa-file-text-o" aria-hidden="true"></i>
                         <span class="text">Stock</span>
-                        <span class="number">1,120</span>
+                        <span class="number"> <?php 
+            include('db.php'); 
+            $result = $conn->query("select sum(stock_quantity) as total from items");
+            if ($result && $row = $result->fetch_assoc()) {
+                echo $row['total'];
+            } else {
+                echo "0";
+            }
+            $conn->close();
+            ?></span>
                     </div>
                 </div>
             </div>

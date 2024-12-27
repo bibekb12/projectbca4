@@ -20,6 +20,7 @@ CREATE TABLE items (
     description TEXT,
     status char(1) default 'Y',
     price DECIMAL(10, 2) NOT NULL,
+    sell_price DECIMAL(10, 2) NOT NULL,
     stock_quantity INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -56,3 +57,16 @@ CREATE TABLE customers (
     contact VARCHAR(255)
 );
 
+CREATE TABLE sales (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    item_id INT NOT NULL,
+    itemcode VARCHAR(50) NOT NULL, 
+    quantity INT NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    sale_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_id INT NOT NULL,
+    supplier_id INT NOT NULL,
+    FOREIGN KEY (item_id) REFERENCES items(id),
+    FOREIGN KEY (user_id) REFERENCES users(id),
+    FOREIGN KEY (supplier_id) REFERENCES suppliers(id)
+)
