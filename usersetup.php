@@ -36,10 +36,10 @@ $result = $conn->query("SELECT id, username, status, created_at,updated_at FROM 
         <input type="text" name="username" value="<?php echo $username; ?>" placeholder="username" required>
         <input type="password" name="password" placeholder="password">
         <label>
-            <input type="radio" name="active" value="Y" <?php echo ($status === 'Y') ? 'checked' : ''; ?>> Active
+            <input type="radio" name="status" value="Y" <?php echo ($status === 'Y') ? 'checked' : ''; ?>> Active
         </label>
         <label>
-            <input type="radio" name="active" value="N" <?php echo ($status === 'N') ? 'checked' : ''; ?>> Inactive
+            <input type="radio" name="status" value="N" <?php echo ($status === 'N') ? 'checked' : ''; ?>> Inactive
         </label>
         <button type="submit">Save</button>
     </form>
