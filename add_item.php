@@ -15,7 +15,7 @@ if($_SERVER['REQUEST_METHOD']=="POST")
     }
     else
     {
-        $query="INSERT INTO items(itemcode,name,description,status) VALUES ('$itemcode','$itemname','$itemdesciption','$status')";
+        $query="INSERT INTO items (itemcode,name,description,status) VALUES ('$itemcode','$itemname','$itemdesciption','$status')";
     }
     if ($conn->query($query)===TRUE)
     {
