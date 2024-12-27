@@ -8,14 +8,15 @@ if($_SERVER['REQUEST_METHOD']=="POST")
     $itemname=$_POST['itemname'];
     $itemdesciption=$_POST['description'];
     $staus=$_POST['status'];
+    $price=floatval($_POST['price']);
 
     if(!empty($id))
     {
-        $query="UPDATE items SET itemcode='$itemcode',name='$itemname',description='$itemdesciption',status='$staus' where id=$id";
+        $query="UPDATE items SET itemcode='$itemcode',name='$itemname',description='$itemdesciption',status='$staus',price='$price' where id=$id";
     }
     else
     {
-        $query="INSERT INTO items (itemcode,name,description,status) VALUES ('$itemcode','$itemname','$itemdesciption','$status')";
+        $query="INSERT INTO items (itemcode,name,description,status,price) VALUES ('$itemcode','$itemname','$itemdesciption','$status','$price')";
     }
     if ($conn->query($query)===TRUE)
     {

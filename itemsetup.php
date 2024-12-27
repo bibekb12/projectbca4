@@ -5,6 +5,7 @@ $itemcode="";
 $itemname="";
 $description="";
 $status="Y";
+$price='0';
 
 if (isset($_GET['id']))
 {
@@ -42,10 +43,12 @@ if (isset($_GET['id']))
     <input type="text" name="itemname" value="<?php echo $itemname; ?>">
     <label> Description: </label>
     <input type="text" name="description" value="<?php echo $description; ?>">
-    <label>
-            <input type="radio" name="status" value="Y"<?php echo ($status==='Y')? 'checked':'';?>>Active</label>
+    <lable> Item price: </label>
+    <input type="text" name="price" value="<?php echo $price; ?>">
         <label>
-            <input type="radio" name="status" value="N"<?php echo ($status==='N')? 'checked':'';?>>Inactive</label>
+            <input type="radio" name="status" value="Y"<?php echo ($status==='Y') ? 'checked' : ''; ?>>Active</label>
+        <label>
+            <input type="radio" name="status" value="N"<?php echo ($status==='N') ? 'checked' : ''; ?>>Inactive</label>
         <button type="submit">Save</button>
 </form>
     <h2>List of all items</h2>
@@ -56,10 +59,12 @@ if (isset($_GET['id']))
             <td>Item Name</td>
             <td>Item Status</td>
             <td>Item Description</td>
+            <td>Item price</td>
+            <td>Item Stock</td>
             <td>Action</td>
 </tr>
 <?php
-$result=$conn->query("select id,itemcode,name,status,description from items");
+$result=$conn->query("select id,itemcode,name,status,description,price,stock_quantity from items");
 if($result && $result->num_rows>0)
 {
     while($row=$result->fetch_assoc())
@@ -71,6 +76,8 @@ if($result && $result->num_rows>0)
         <td>{$row['name']}</td>
         <td>{$status}</td>
         <td>{$row['description']}</td>
+        <td>{$row['price']}</td>
+        <td>{$row['stock_quantity']}</td>
         <td><a href='itemsetup.php?id={$row['id']}'>Edit</a></td>
         </tr>";
     }

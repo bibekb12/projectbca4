@@ -19,6 +19,8 @@ CREATE TABLE items (
     name VARCHAR(255) NOT NULL,
     description TEXT,
     status char(1) default 'Y',
+    price DECIMAL(10, 2) NOT NULL,
+    stock_quantity INT DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -33,4 +35,22 @@ CREATE TABLE suppliers (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+transactions tabel:
+CREATE TABLE transactions (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    product_id INT,
+    user_id int,
+    type ENUM('Purchase', 'Sale'),
+    quantity INT NOT NULL,
+    transaction_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (product_id) REFERENCES items(id) on delete cascade,
+    foreign key (user_id) references users(id) on delete cascade
+);
+
+customer table:
+CREATE TABLE customers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    contact VARCHAR(255)
+);
 
