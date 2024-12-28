@@ -13,7 +13,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST')
 
     session_start();
     $user_id = $_SESSION['user_id'];
-    $supplier_id = isset($_POST['supplier_id']) ? $_POST['supplier_id'] : null;
+    $supplier_id = isset($_POST['supplier_id']) ? $_POST['supplier_id'] : 0;
 
     if (is_null($supplier_id)) {
         die("Error: supplier_id must be provided.");

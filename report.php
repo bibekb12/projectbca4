@@ -1,4 +1,4 @@
-<h1>Pruchase Report</h1>
+<h1>Purchase Report</h1>
 <table border="1">
     <tr>
         <th>Product</th>

@@ -34,8 +34,11 @@ if(isset($_GET['id'])){
     <h1> Supplier setup</h1>
     <form method="POST" action="add_supplier.php">
         <input type="hidden" name="id" value="<?php echo $id; ?>">
+        <label>Supplier Name: </label>
         <input type="text" name="suppliername" value="<?php echo $suppliername; ?>" placeholder="suppliername" required>
+        <label>Contact No: </label>
         <input type="text" name="contactno" value="<?php echo $suppliercontact; ?>" placeholder="contact" >
+        <label>Pan No: </label>
         <input type="text" name="pannumber" value="<?php echo $pannumber; ?>" placeholder="pan number">
         <label>
             <input type="radio" name="status" value="Y"<?php echo ($status==='Y')? 'checked':'';?>>Active</label>

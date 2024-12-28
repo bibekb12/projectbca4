@@ -38,7 +38,7 @@
             </tr>
 
     <?php
-    $salesResult = $conn->query("SELECT t.id, i.name AS item_name, t.quantity, i.price AS item_price, t.supplier_id, t.transaction_date, t.type,(select username from users u where t.user_id=u.id) as username FROM transactions t JOIN items i ON t.product_id = i.id order by t.transaction_date desc");
+    $salesResult = $conn->query("SELECT t.id, i.name AS item_name, t.quantity, i.price AS item_price, t.supplier_id, t.transaction_date, t.type,(select username from users u where t.user_id=u.id) as username FROM transactions t  JOIN items i ON t.product_id = i.id where t.type='Sale' order by t.transaction_date desc");
     while ($saleRow = $salesResult->fetch_assoc()) {
         $total = $saleRow['quantity'] * $saleRow['item_price'];
         echo "<tr>
