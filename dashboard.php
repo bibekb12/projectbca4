@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="styledash.css">
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Admin Dashboard Panel</title>
@@ -46,13 +46,6 @@
                     <i class="uil uil-signout"></i>
                     <span class="link-name">Logout</span>
                 </a></li>
-                <li class="mode">
-                    <a href="#">
-                        <i class="uil uil-moon"></i>
-                    <span class="link-name">Dark Mode</span>
-                </a>
-                <div class="mode-toggle">
-                <span class="switch"></span>
                 </div>
             </li>
             </ul>
@@ -61,10 +54,6 @@
     <section class="dashboard">
         <div class="top">
             <i class="uil uil-bars sidebar-toggle"></i>
-            <div class="search-box">
-                <i class="uil uil-search"></i>
-                <input type="text" placeholder="Search here...">
-            </div>
         </div>
         <div class="dash-content">
             <div class="overview">
@@ -121,5 +110,31 @@
         </div>
     </section>
     <script src="script.js"></script>
+    <script>
+        const body = document.querySelector("body"),
+        sidebar = body.querySelector("nav"),
+        sidebarToggle = body.querySelector(".sidebar-toggle"),
+        modeToggle = body.querySelector(".mode-toggle");
+
+        let getMode = localStorage.getItem("mode");
+        if(getMode && getMode === "dark") {
+            body.classList.toggle("dark");
+        }
+
+        let getStatus = localStorage.getItem("status");
+        if(getStatus && getStatus === "close") {
+            sidebar.classList.toggle("close");
+            // Update tooltip text based on sidebar state
+            sidebarToggle.setAttribute('data-tooltip', 'Expand');
+        }
+
+        sidebarToggle.addEventListener("click", () => {
+            sidebar.classList.toggle("close");
+            // Update tooltip text based on sidebar state
+            const isClose = sidebar.classList.contains("close");
+            sidebarToggle.setAttribute('data-tooltip', isClose ? 'Expand' : 'Minimize');
+            localStorage.setItem("status", isClose ? "close" : "open");
+        });
+    </script>
 </body>
 </html>

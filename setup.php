@@ -1,40 +1,91 @@
-<html>
-    <head>
-    <title>Admin Setup Panel</title>
-    <link rel="stylesheet" href="styledash.css">
+<?php
+session_start();
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header('Location: index.php');
+    exit();
+}
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Setup</title>
+    <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
-    </head>
-    <body>
-        <nav>
-        <div class="logo-name">
-            <div class="logo-image">
-               <img src="images/logo.png" alt="">
-            </div>
-            <span class="logo_name">Inventory Management</span>
+</head>
+<body>
+    <?php include 'includes/sidebar.php'; ?>
+
+    <section class="dashboard">
+        <div class="top">
+            <i class="uil uil-bars sidebar-toggle" data-tooltip="Minimize"></i>
         </div>
-            <div class="menu-item">
-                <ul class="nav-links">
-                    
-                    <li><a href="usersetup.php">
-                    <i class="uil uil-setting" aria-hidden="true"></i>
-                    <span class="link-name">User setup </span> 
-                    </a></li>  
-                    <li><a href="suppliersetup.php">
-                    <i class="uil uil-setting" aria-hidden="true"></i>
-                    <span class="link-name">Supplier setup </span>  
-                    </a></li> 
-                    <li><a href="itemsetup.php">
-                    <i class="uil uil-setting" aria-hidden="true"></i>
-                    <span class="link-name">Items setup </span> 
-                    </a></li>
-                    <br>
-                    <li><a href="dashboard.php">
-                    <i class="uil uil-estate"></i>
-                    <span class="link-name">Dashboard</span>
-                    </a></li>
-                </ul>  
+        <div class="dash-content">
+            <div class="overview">
+                <div class="title">
+                    <i class="uil uil-setting"></i>
+                    <span class="text">System Setup</span>
+                </div>
+
+                <div class="setup-box">
+                    <div class="setup-grid">
+                        <a href="usersetup.php" class="setup-card">
+                            <i class="uil uil-users-alt"></i>
+                            <span class="text">User Setup</span>
+                        </a>
+                        <a href="itemsetup.php" class="setup-card">
+                            <i class="uil uil-box"></i>
+                            <span class="text">Item Setup</span>
+                        </a>
+                        <a href="suppliersetup.php" class="setup-card">
+                            <i class="uil uil-truck"></i>
+                            <span class="text">Supplier Setup</span>
+                        </a>
+                        <!-- Add more setup options as needed -->
+                    </div>
+                </div>
             </div>
-            
-        </nav>
-    </body>
+        </div>
+    </section>
+
+    <script>
+        // Dark mode toggle
+        const body = document.querySelector("body"),
+        modeToggle = body.querySelector(".mode-toggle"),
+        sidebar = body.querySelector("nav"),
+        sidebarToggle = body.querySelector(".sidebar-toggle");
+
+        let getMode = localStorage.getItem("mode");
+        if(getMode && getMode === "dark") {
+            body.classList.toggle("dark");
+        }
+
+        let getStatus = localStorage.getItem("status");
+        if(getStatus && getStatus === "close") {
+            sidebar.classList.toggle("close");
+        }
+
+        sidebarToggle.addEventListener("click", () => {
+            sidebar.classList.toggle("close");
+            if(sidebar.classList.contains("close")){
+                localStorage.setItem("status", "close");
+            }else{
+                localStorage.setItem("status", "open");
+            }
+        });
+
+        modeToggle.addEventListener("click", () => {
+            body.classList.toggle("dark");
+            if(body.classList.contains("dark")) {
+                localStorage.setItem("mode", "dark");
+            } else {
+                localStorage.setItem("mode", "light");
+            }
+        });
+    </script>
+</body>
 </html>

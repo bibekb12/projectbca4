@@ -1,3 +1,12 @@
+<?php
+session_start();
+
+// If user is already logged in, redirect to dashboard
+if (isset($_SESSION['user_id'])) {
+    header('Location: dashboard.php');
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -32,5 +41,11 @@
         </form>
       </div>
     </div>
+    <?php
+    if (isset($_SESSION['error'])) {
+        echo '<div class="error">' . htmlspecialchars($_SESSION['error']) . '</div>';
+        unset($_SESSION['error']);
+    }
+    ?>
   </body>
 </html>

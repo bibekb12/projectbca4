@@ -1,9 +1,18 @@
 <?php
+session_start();
 include 'db.php';
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header('Location: index.php');
+    exit();
+}
+
 $id = "";
 $username = "";
 $status = "Y";
 
+// Query for editing a specific user
 if (isset($_GET['id'])) {
     $id = intval($_GET['id']);
     $result = $conn->query("SELECT id, username, status FROM users WHERE id = $id");
@@ -12,12 +21,11 @@ if (isset($_GET['id'])) {
         $user = $result->fetch_assoc();
         $username = $user['username'];
         $status = $user['status'];
-    } else {
-        echo "User not found.";
     }
 }
 
-$result = $conn->query("SELECT id, username, status, created_at,updated_at FROM users");
+// Query for all users - Add this line
+$all_users = $conn->query("SELECT id, username, status, created_at, updated_at FROM users");
 ?>
 
 <!DOCTYPE html>
@@ -26,62 +34,152 @@ $result = $conn->query("SELECT id, username, status, created_at,updated_at FROM 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Setup</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
 </head>
 <body>
+    <?php include 'includes/sidebar.php'; ?>
 
-    <h1>User Setup</h1>
+    <section class="dashboard">
+        <div class="dash-content">
+            <div class="overview">
+                <div class="title">
+                    <i class="uil uil-users-alt"></i>
+                    <span class="text">User Management</span>
+                </div>
 
-    <form method="POST" action="add_user.php">
-        <input type="hidden" name="id" value="<?php echo $id; ?>">
-        <label> Username:</label>
-        <input type="text" name="username" value="<?php echo $username; ?>" placeholder="username" required>
-        <label > Password: </label>
-        <input type="password" name="password" placeholder="password">
-        <label>
-            <input type="radio" name="status" value="Y" <?php echo ($status === 'Y') ? 'checked' : ''; ?>> Active
-        </label>
-        <label>
-            <input type="radio" name="status" value="N" <?php echo ($status === 'N') ? 'checked' : ''; ?>> Inactive
-        </label>
-        <button type="submit">Save</button>
-    </form>
+                <div class="setup-box">
+                    <button class="btn add-user-btn" onclick="toggleForm()">
+                        <i class="uil uil-plus"></i> Add New User
+                    </button>
 
-    <h2>All Users List</h2>
-    <table border="1">
-        <tr>
-            <th>Id</th>
-            <th>Username</th>
-            <th>User Status</th>
-            <th>Created At</th>
-            <th>Updated At <th>
-            <th>Action</th>
-        </tr>
+                    <div id="userForm" class="setup-form" style="display: none;">
+                        <form method="POST" action="add_user.php" class="setup-form">
+                            <input type="hidden" name="id" value="<?php echo $id; ?>">
+                            <div class="textbox">
+                                <label>Username:</label>
+                                <input type="text" name="username" value="<?php echo $username; ?>" placeholder="Username" required>
+                            </div>
+                            <div class="textbox">
+                                <label>Password:</label>
+                                <input type="password" name="password" placeholder="Password">
+                            </div>
+                            <div class="radio-group">
+                                <label class="radio-label">
+                                    <input type="radio" name="status" value="Y" <?php echo ($status === 'Y') ? 'checked' : ''; ?>> Active
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="status" value="N" <?php echo ($status === 'N') ? 'checked' : ''; ?>> Inactive
+                                </label>
+                            </div>
+                            <div class="form-buttons">
+                                <button type="submit" class="btn">Save</button>
+                                <button type="button" class="btn btn-cancel" onclick="toggleForm()">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
 
-        <?php
-        if ($result && $result->num_rows > 0) {
-            while ($row = $result->fetch_assoc()) {
-                $status = ($row['status'] === 'Y') ? 'Active' : 'Inactive';
-                echo "<tr>
-                        <td>{$row['id']}</td>
-                        <td>{$row['username']}</td>
-                        <td>{$status}</td>
-                        <td>{$row['created_at']}</td>
-                        <td>{$row['updated_at']}</td>
-                        <td></td>
-                        <td><a href='usersetup.php?id={$row['id']}'>Edit</a></td>
-                </tr>";
-            }
-        } else {
-            echo "<tr><td colspan='5'>No users found</td></tr>";
+                    <div class="activity">
+                        <div class="title">
+                            <i class="uil uil-clock-three"></i>
+                            <span class="text">All Users List</span>
+                        </div>
+                        <div class="table-container">
+                            <table border="1">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Username</th>
+                                        <th>Status</th>
+                                        <th>Created At</th>
+                                        <th>Updated At</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php
+                                    if ($all_users && $all_users->num_rows > 0) {
+                                        while ($row = $all_users->fetch_assoc()) {
+                                            $status = ($row['status'] === 'Y') ? 'Active' : 'Inactive';
+                                            echo "<tr>
+                                                    <td>{$row['id']}</td>
+                                                    <td>{$row['username']}</td>
+                                                    <td><span class='status-badge status-" . strtolower($status) . "'>{$status}</span></td>
+                                                    <td>{$row['created_at']}</td>
+                                                    <td>{$row['updated_at']}</td>
+                                                    <td>
+                                                        <a href='javascript:void(0)' onclick='editUser({$row['id']})' class='edit-link'>
+                                                            <i class='uil uil-edit'></i> Edit
+                                                        </a>
+                                                    </td>
+                                                </tr>";
+                                        }
+                                    } else {
+                                        echo "<tr><td colspan='6' style='text-align: center;'>No users found</td></tr>";
+                                    }
+                                    ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="navigation">
+                        <a href="setup.php" class="btn">Back</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function toggleForm() {
+            const form = document.getElementById('userForm');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
         }
-        ?>
-    </table><br>
-    <a href="setup.php"> Back </a>
 
+        function editUser(userId) {
+            // Show the form
+            const form = document.getElementById('userForm');
+            form.style.display = 'block';
+            
+            // Fetch user data using AJAX
+            fetch(`get_user.php?id=${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    document.querySelector('input[name="id"]').value = data.id;
+                    document.querySelector('input[name="username"]').value = data.username;
+                    document.querySelector(`input[name="status"][value="${data.status}"]`).checked = true;
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        // Add dark mode toggle
+        const body = document.querySelector("body"),
+        modeToggle = body.querySelector(".mode-toggle"),
+        sidebar = body.querySelector("nav");
+
+        let getMode = localStorage.getItem("mode");
+        if(getMode && getMode === "dark") {
+            body.classList.toggle("dark");
+        }
+
+        let getStatus = localStorage.getItem("status");
+        if(getStatus && getStatus === "close") {
+            sidebar.classList.toggle("close");
+        }
+
+        modeToggle.addEventListener("click", () => {
+            body.classList.toggle("dark");
+            if(body.classList.contains("dark")) {
+                localStorage.setItem("mode", "dark");
+            } else {
+                localStorage.setItem("mode", "light");
+            }
+        });
+    </script>
 </body>
 </html>
 
 <?php
-// Close the database connection
 $conn->close();
 ?>
