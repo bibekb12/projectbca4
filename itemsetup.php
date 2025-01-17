@@ -25,7 +25,7 @@ if (isset($_GET['id'])) {
         $itemname = $item['name'];
         $status = $item['status'];
         $description = $item['description'];
-        $price = $item['price'];
+        $sellprice = $item['price'];
     }
 }
 ?>
@@ -43,6 +43,13 @@ if (isset($_GET['id'])) {
     <?php include 'includes/sidebar.php'; ?>
 
     <section class="dashboard">
+        <div class="top">
+            <i class="uil uil-bars sidebar-toggle"></i>
+            <div class="user-greeting">
+                <i class="uil uil-user-circle"></i>
+                <span>Welcome, <span class="username"><?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'Guest'; ?></span></span>
+            </div>
+        </div>
         <div class="dash-content">
             <div class="overview">
                 <div class="title">
@@ -68,7 +75,7 @@ if (isset($_GET['id'])) {
                                     <input type="text" name="name" value="<?php echo $itemname; ?>" required>
                                 </div>
                                 <div class="form-group">
-                                    <label>Price:</label>
+                                    <label>Sell Price:</label>
                                     <input type="number" name="price" value="<?php echo $price; ?>" step="0.01" required>
                                 </div>
                                 <div class="form-group">
@@ -106,7 +113,7 @@ if (isset($_GET['id'])) {
                                         <th>ID</th>
                                         <th>Item Code</th>
                                         <th>Name</th>
-                                        <th>Price</th>
+                                        <th>Sell Price</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>

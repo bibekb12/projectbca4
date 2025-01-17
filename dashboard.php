@@ -1,3 +1,14 @@
+<?php
+session_start();
+// Check if user is logged in
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['username'])) {
+    // Clear any existing session data
+    session_unset();
+    session_destroy();
+    header('Location: index.php');
+    exit();
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,7 +19,6 @@
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <title>Admin Dashboard Panel</title>
-    
 </head>
 <body>
     <nav>
@@ -22,7 +32,7 @@
             <ul class="nav-links">
                 <li><a href="#">
                     <i class="uil uil-estate"></i>
-                    <span class="link-name">Dahsboard</span>
+                    <span class="link-name">Dashboard</span>
                 </a></li>
                 <li><a href="sale.php">
                     <i class="fa fa-money" aria-hidden="true"></i>
@@ -54,6 +64,19 @@
     <section class="dashboard">
         <div class="top">
             <i class="uil uil-bars sidebar-toggle"></i>
+            <div class="user-greeting">
+                <i class="uil uil-user-circle"></i>
+                <span>Welcome, <span class="username">
+                    <?php 
+                    if(isset($_SESSION['username'])) {
+                        echo htmlspecialchars($_SESSION['username']);
+                    } else {
+                        header('Location: index.php');
+                        exit();
+                    }
+                    ?>
+                </span></span>
+            </div>
         </div>
         <div class="dash-content">
             <div class="overview">
@@ -106,8 +129,8 @@
                     </div>
                 </div>
             </div>
-            </div>
         </div>
+    </div>
     </section>
     <script src="script.js"></script>
     <script>

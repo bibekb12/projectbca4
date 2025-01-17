@@ -54,19 +54,35 @@ customer table:
 CREATE TABLE customers (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
-    contact VARCHAR(255)
+    contact VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE sales (
     id INT AUTO_INCREMENT PRIMARY KEY,
+    bill_no VARCHAR(20) UNIQUE,
     item_id INT NOT NULL,
-    itemcode VARCHAR(50) NOT NULL, 
     quantity INT NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
+    total_amount DECIMAL(10, 2),
+    customer_id INT,
     sale_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     user_id INT NOT NULL,
     supplier_id INT NOT NULL,
+    status CHAR(1) DEFAULT 'Y',
     FOREIGN KEY (item_id) REFERENCES items(id),
     FOREIGN KEY (user_id) REFERENCES users(id),
-    FOREIGN KEY (supplier_id) REFERENCES suppliers(id)
-)
+    FOREIGN KEY (supplier_id) REFERENCES suppliers(id),
+    FOREIGN KEY (customer_id) REFERENCES customers(id)
+);
+
+CREATE TABLE sales_items (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    sale_id INT,
+    item_id INT,
+    quantity INT,
+    price DECIMAL(10, 2),
+    total DECIMAL(10, 2),
+    FOREIGN KEY (sale_id) REFERENCES sales(id),
+    FOREIGN KEY (item_id) REFERENCES items(id)
+);

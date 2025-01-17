@@ -2,7 +2,7 @@
 session_start();
 
 // If user is already logged in, redirect to dashboard
-if (isset($_SESSION['user_id'])) {
+if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
     header('Location: dashboard.php');
     exit();
 }
@@ -13,7 +13,8 @@ if (isset($_SESSION['user_id'])) {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login Page</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css" />
   </head>
   <body>
     <div class="login-container">
@@ -32,7 +33,7 @@ if (isset($_SESSION['user_id'])) {
           <div class="textbox">
             <input
               type="password"
-              placeholder="Password"
+              placeholder="Password" 
               name="password"
               required
             />

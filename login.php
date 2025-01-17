@@ -2,7 +2,7 @@
 session_start();
 
 // If user is already logged in, redirect to dashboard
-if (isset($_SESSION['user_id'])) {
+if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
     header('Location: dashboard.php');
     exit();
 }
@@ -33,19 +33,18 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $user = mysqli_fetch_assoc($result);
         
         if (password_verify($password, $user['password'])) {
+            // Set both session variables
             $_SESSION['user_id'] = intval($user['id']);
+            $_SESSION['username'] = $user['username'];
             header('Location: dashboard.php');
             exit();
-        } else {
-            $_SESSION['error'] = "Invalid username or password";
-            header('Location: index.php');
-            exit();
         }
-    } else {
-        $_SESSION['error'] = "Invalid username or password";
-        header('Location: index.php');
-        exit();
     }
+    
+    // If login fails
+    $_SESSION['error'] = "Invalid username or password";
+    header('Location: index.php');
+    exit();
 }
 
 // If someone tries to access this file directly without POST

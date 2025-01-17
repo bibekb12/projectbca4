@@ -41,6 +41,13 @@ if (isset($_GET['id'])) {
     <?php include 'includes/sidebar.php'; ?>
 
     <section class="dashboard">
+    <div class="top">
+            <i class="uil uil-bars sidebar-toggle"></i>
+            <div class="user-greeting">
+                <i class="uil uil-user-circle"></i>
+                <span>Welcome, <span class="username"><?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'Guest'; ?></span></span>
+            </div>
+        </div>
         <div class="dash-content">
             <div class="overview">
                 <div class="title">
