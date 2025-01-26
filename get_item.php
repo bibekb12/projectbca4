@@ -9,27 +9,20 @@ if (!isset($_SESSION['user_id'])) {
     exit();
 }
 
-if (isset($_GET['id'])) {
-    $id = intval($_GET['id']);
-    $stmt = $conn->prepare("SELECT id, itemcode, name, description, status, price FROM items WHERE id = ?");
-    $stmt->bind_param("i", $id);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    
-    if ($result && $result->num_rows > 0) {
-        $item = $result->fetch_assoc();
-        header('Content-Type: application/json');
-        echo json_encode($item);
-    } else {
-        header('Content-Type: application/json');
-        echo json_encode(['error' => 'Item not found']);
+// Fetch items from the database
+$query = "SELECT id, itemcode, name, price, stock_quantity FROM items WHERE status = 'active' AND stock_quantity > 0";
+$result = $conn->query($query);
+
+$items = [];
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $items[] = $row;
     }
-    
-    $stmt->close();
-} else {
-    header('Content-Type: application/json');
-    echo json_encode(['error' => 'No ID provided']);
 }
 
+// Return items as JSON
+header('Content-Type: application/json');
+echo json_encode(['success' => true, 'items' => $items]);
+
 $conn->close();
-?> 
+?>

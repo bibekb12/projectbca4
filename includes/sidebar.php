@@ -7,7 +7,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <div class="logo-image">
             <img src="images/logo.png" alt="">
         </div>
-        <span class="logo_name">Inventory Management</span>
+        <span class="logo_name">SIMPLE IMS</span>
     </div>
 
     <div class="menu-items">
@@ -19,21 +19,27 @@ $current_page = basename($_SERVER['PHP_SELF']);
                 </a>
             </li>
             <li>
-                <a href="usersetup.php" class="<?php echo ($current_page == 'usersetup.php') ? 'active' : ''; ?>">
-                    <i class="uil uil-users-alt"></i>
-                    <span class="link-name">User Setup</span>
+                <a href="sale.php" class="<?php echo ($current_page == 'sale.php') ? 'active' : ''; ?>">
+                    <i class="fa fa-money" aria-hidden="true"></i>
+                    <span class="link-name">Sale</span>
                 </a>
             </li>
             <li>
-                <a href="itemsetup.php" class="<?php echo ($current_page == 'itemsetup.php') ? 'active' : ''; ?>">
-                    <i class="uil uil-box"></i>
-                    <span class="link-name">Item Setup</span>
+                <a href="purchase.php" class="<?php echo ($current_page == 'purchase.php') ? 'active' : ''; ?>">
+                    <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                    <span class="link-name">Purchase</span>
                 </a>
             </li>
             <li>
-                <a href="suppliersetup.php" class="<?php echo ($current_page == 'suppliersetup.php') ? 'active' : ''; ?>">
-                    <i class="uil uil-truck"></i>
-                    <span class="link-name">Supplier Setup</span>
+                <a href="report.php" class="<?php echo ($current_page == 'report.php') ? 'active' : ''; ?>">
+                    <i class="uil uil-chart"></i>
+                    <span class="link-name">Report</span>
+                </a>
+            </li>
+            <li>
+                <a href="setup.php" class="<?php echo ($current_page == 'setup.php') ? 'active' : ''; ?>">
+                    <i class="uil uil-setting"></i>
+                    <span class="link-name">Setup</span>
                 </a>
             </li>
         </ul>

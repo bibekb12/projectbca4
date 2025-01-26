@@ -19,7 +19,7 @@ if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
   <body>
     <div class="login-container">
       <div class="login-box">
-        <h1>Inventory Management System</h1>
+        <h1>SIMPLE INVENTORY MANAGEMENT SYSTEM</h1>
         <h2>Login</h2>
         <form action="login.php" method="post">
           <div class="textbox">

@@ -21,7 +21,8 @@ if($_SERVER['REQUEST_METHOD']=="POST")
     if ($conn->query($query)===TRUE)
     {
         echo $id ? "Record Updated Successfully" : "Record Inserted Successfully";
-        header ("location:itemsetup.php");
+header ("location:sale.php");
+
         exit();
     }
     else

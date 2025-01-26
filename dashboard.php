@@ -26,11 +26,11 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['username'])) {
             <div class="logo-image">
                <img src="images/logo.png" alt="">
             </div>
-            <span class="logo_name">Inventory Management</span>
+            <span class="logo_name">SIMPLE IMS</span>
         </div>
         <div class="menu-items">
             <ul class="nav-links">
-                <li><a href="#">
+                <li><a href="dashboard.php">
                     <i class="uil uil-estate"></i>
                     <span class="link-name">Dashboard</span>
                 </a></li>
