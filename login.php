@@ -2,7 +2,7 @@
 session_start();
 
 // If user is already logged in, redirect to dashboard
-if (isset($_SESSION['user_id']) && isset($_SESSION['username'])) {
+if (isset($_SESSION['user_id']) && isset($_SESSION['username'])&& isset($_SESSION['role'])) {
     header('Location: dashboard.php');
     exit();
 }
@@ -36,6 +36,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
             // Set both session variables
             $_SESSION['user_id'] = intval($user['id']);
             $_SESSION['username'] = $user['username'];
+            $_SESSION['role']=$user['role'];
             header('Location: dashboard.php');
             exit();
         }

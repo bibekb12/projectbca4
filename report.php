@@ -9,45 +9,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
-    <nav>
-        <div class="logo-name">
-            <div class="logo-image">
-               <img src="images/logo.png" alt="">
-            </div>
-            <span class="logo_name">Inventory Management</span>
-        </div>
-        <div class="menu-items">
-            <ul class="nav-links">
-                <li><a href="#">
-                    <i class="uil uil-estate"></i>
-                    <span class="link-name">Dahsboard</span>
-                </a></li>
-                <li><a href="sale.php">
-                    <i class="fa fa-money" aria-hidden="true"></i>
-                    <span class="link-name">Sale</span>
-                </a></li>
-                <li><a href="purchase.php">
-                    <i class="fa fa-shopping-cart" aria-hidden="true"></i>
-                    <span class="link-name">Purchase</span>
-                </a></li>
-                <li><a href="report.php">
-                    <i class="uil uil-chart"></i>
-                    <span class="link-name">Report</span>
-                </a></li>
-                <li> <a href="setup.php">
-                    <i class="uil uil-setting"></i>
-                    <span class="link-name"> Setup </span> 
-            </ul>
-            
-            <ul class="logout-mode">
-                <li><a href="logout.php">
-                    <i class="uil uil-signout"></i>
-                    <span class="link-name">Logout</span>
-                </a></li>
-            </ul>
-        </div>
-    </nav>
-
+    <?php include('includes/sidebar.php'); ?>
+    
     <section class="dashboard">
     <div class="top">
             <i class="uil uil-bars sidebar-toggle"></i>
@@ -120,8 +83,24 @@
                     </thead>
                     <tbody>
                         <?php
-                        $result = $conn->query("SELECT *, (stock_quantity * price) as stock_value FROM items");
-                        $sn = 1; // Initialize serial number
+                        $result = $conn->query("
+                            SELECT 
+                                id,
+                                itemname as name,
+                                description,
+                                sell_price as price,
+                                stock_quantity,
+                                (stock_quantity * sell_price) as stock_value,
+                                status
+                            FROM items
+                            ORDER BY itemname
+                        ");
+
+                        if (!$result) {
+                            die("Database query failed: " . $conn->error);
+                        }
+
+                        $sn = 1;
                         while ($row = $result->fetch_assoc()) {
                             $status_class = $row['stock_quantity'] < 10 ? 'text-danger' : 'text-success';
                             $status_text = $row['stock_quantity'] < 10 ? 'Low Stock' : 'In Stock';
@@ -135,7 +114,7 @@
                                     <td>\$" . number_format($row['stock_value'], 2) . "</td>
                                     <td class='{$status_class}'>{$status_text}</td>
                                 </tr>";
-                            $sn++; // Increment serial number
+                            $sn++;
                         }
                         ?>
                     </tbody>

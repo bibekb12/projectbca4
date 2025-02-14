@@ -10,7 +10,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 // Fetch items from the database
-$query = "SELECT id, itemcode, name, price, stock_quantity FROM items WHERE status = 'active' AND stock_quantity > 0";
+$query = "SELECT id, itemcode, itemname, sell_price, stock_quantity FROM items WHERE status = 'active' AND stock_quantity > 0";
 $result = $conn->query($query);
 
 $items = [];

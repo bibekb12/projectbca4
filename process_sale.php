@@ -3,128 +3,99 @@ session_start();
 include 'db.php';
 
 header('Content-Type: application/json');
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+
+if (!isset($_SESSION['user_id'])) {
+    echo json_encode(['success' => false, 'message' => 'Not logged in']);
+    exit();
+}
 
 try {
+    // Get POST data
     $data = json_decode(file_get_contents('php://input'), true);
+    var_dump($data);
+    die;
     
-    if (!$data) {
-        throw new Exception('Invalid data received: ' . json_last_error_msg());
-    }
-
-    // Validate required data
-    if (empty($data['customer_name']) || empty($data['items']) || !is_array($data['items'])) {
-        throw new Exception('Missing required data');
+    if (!$data || !isset($data['items']) || empty($data['items'])) {
+        throw new Exception('Invalid data received');
     }
 
     // Start transaction
     $conn->begin_transaction();
 
-    // Save customer if contact is provided
-    $customer_id = null;
-    if (!empty($data['customer_contact']) && $data['customer_name'] !== 'Cash') {
-        // Call add_customer.php via internal request
-        $customer_data = array(
-            'name' => $data['customer_name'],
-            'contact' => $data['customer_contact']
-        );
-        
-        $ch = curl_init('http://' . $_SERVER['HTTP_HOST'] . dirname($_SERVER['PHP_SELF']) . '/add_customer.php');
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, true);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($customer_data));
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
-        
-        $response = curl_exec($ch);
-        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        curl_close($ch);
-        
-        if ($httpCode === 200) {
-            $result = json_decode($response, true);
-            if ($result && isset($result['customer_id'])) {
-                $customer_id = $result['customer_id'];
-            }
-        }
+    // Calculate totals
+    $total_amount = 0;
+    foreach ($data['items'] as $item) {
+        $total_amount += $item['total'];
     }
 
-    // Insert into sales table
+    // Insert sale record
     $sale_query = "INSERT INTO sales (
-        customer_id, customer_name, customer_contact, 
-        total_amount, sub_total, discount_percent, discount_amount,
-        vat_percent, vat_amount, net_total, payment_method,
-        sale_date, user_id
-    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)";
+        customer_id, 
+        customer_name, 
+        customer_contact,
+        total_amount,
+        payment_method,
+        sale_date,
+        user_id
+    ) VALUES (?, ?, ?, ?, ?, NOW(), ?)";
+
     $stmt = $conn->prepare($sale_query);
     if (!$stmt) {
         throw new Exception('Failed to prepare sale query: ' . $conn->error);
     }
 
-    $stmt->bind_param("issdddddddsi", 
+    $customer_id = $data['customer_id'] ?: null;
+    $customer_name = $data['customer_name'] ?: 'Walk-in Customer';
+    $customer_contact = $data['customer_contact'] ?: '';
+    $payment_method = $data['payment_method'] ?: 'cash';
+    $user_id = $_SESSION['user_id'];
+
+    $stmt->bind_param('issdsi', 
         $customer_id,
-        $data['customer_name'],
-        $data['customer_contact'],
-        $data['sub_total'],
-        $data['sub_total'],
-        $data['discount_percent'],
-        $data['discount_amount'],
-        $data['vat_percent'],
-        $data['vat_amount'],
-        $data['net_total'],
-        $data['payment_method'],
-        $_SESSION['user_id']
+        $customer_name,
+        $customer_contact,
+        $total_amount,
+        $payment_method,
+        $user_id
     );
 
     if (!$stmt->execute()) {
         throw new Exception('Failed to insert sale: ' . $stmt->error);
     }
+
     $sale_id = $conn->insert_id;
 
     // Insert sale items
-    $item_query = "INSERT INTO sale_items (sale_id, item_id, quantity, price, total) VALUES (?, ?, ?, ?, ?)";
-    $item_stmt = $conn->prepare($item_query);
-    if (!$item_stmt) {
-        throw new Exception('Failed to prepare item query: ' . $conn->error);
-    }
-
-    // Update inventory
-    $update_stock = "UPDATE items SET stock_quantity = stock_quantity - ? WHERE id = ?";
-    $stock_stmt = $conn->prepare($update_stock);
-    if (!$stock_stmt) {
-        throw new Exception('Failed to prepare stock update query: ' . $conn->error);
-    }
+    $items_query = "INSERT INTO sale_items (sale_id, item_id, quantity, price, total) VALUES (?, ?, ?, ?, ?)";
+    $stmt = $conn->prepare($items_query);
 
     foreach ($data['items'] as $item) {
-        // Validate item data
-        if (empty($item['id']) || empty($item['quantity']) || empty($item['price'])) {
-            throw new Exception('Invalid item data');
+        // Update stock quantity
+        $update_stock = "UPDATE items SET stock_quantity = stock_quantity - ? WHERE id = ?";
+        $stock_stmt = $conn->prepare($update_stock);
+        $stock_stmt->bind_param('ii', $item['quantity'], $item['id']);
+        if (!$stock_stmt->execute()) {
+            throw new Exception('Failed to update stock quantity');
         }
 
         // Insert sale item
-        $item_stmt->bind_param("iiddd",
-            $sale_id,
-            $item['id'],
-            $item['quantity'],
-            $item['price'],
+        $stmt->bind_param('iiidd', 
+            $sale_id, 
+            $item['id'], 
+            $item['quantity'], 
+            $item['price'], 
             $item['total']
         );
-        
-        if (!$item_stmt->execute()) {
-            throw new Exception('Failed to insert sale item: ' . $item_stmt->error);
-        }
-
-        // Update stock
-        $stock_stmt->bind_param("di", $item['quantity'], $item['id']);
-        if (!$stock_stmt->execute()) {
-            throw new Exception('Failed to update stock: ' . $stock_stmt->error);
+        if (!$stmt->execute()) {
+            throw new Exception('Failed to insert sale item');
         }
     }
 
-    // Generate bill HTML for printing
-    $bill_html = generateBillHTML($sale_id, $data);
-    
     // Commit transaction
     $conn->commit();
+
+    // Generate bill HTML
+    $bill_html = generateBillHTML($sale_id, $data);
 
     echo json_encode([
         'success' => true,
@@ -133,20 +104,21 @@ try {
     ]);
 
 } catch (Exception $e) {
-    // Rollback on error
-    if (isset($conn) && $conn->ping()) {
+    if (isset($conn)) {
         $conn->rollback();
     }
-    
-    // Log the error
-    error_log('Sale Error: ' . $e->getMessage());
-    
     echo json_encode([
         'success' => false,
-        'message' => 'Error processing sale: ' . $e->getMessage()
+        'message' => $e->getMessage()
     ]);
 }
 
+// Close connection
+if (isset($conn)) {
+    $conn->close();
+}
+
+// Helper function to generate bill HTML
 function generateBillHTML($sale_id, $data) {
     $html = '
     <div class="bill-print">
@@ -157,7 +129,7 @@ function generateBillHTML($sale_id, $data) {
             <p>Date: ' . date('Y-m-d H:i:s') . '</p>
         </div>
         <div class="customer-info">
-            <p><strong>Customer Name:</strong> ' . htmlspecialchars($data['customer_name']) . '</p>
+            <p><strong>Customer:</strong> ' . htmlspecialchars($data['customer_name']) . '</p>
             <p><strong>Contact:</strong> ' . htmlspecialchars($data['customer_contact']) . '</p>
         </div>
         <table class="bill-items">
@@ -175,8 +147,8 @@ function generateBillHTML($sale_id, $data) {
         $html .= '<tr>
             <td>' . htmlspecialchars($item['name']) . '</td>
             <td>' . htmlspecialchars($item['quantity']) . '</td>
-            <td>' . number_format((float)$item['price'], 2) . '</td>
-            <td>' . number_format((float)$item['total'], 2) . '</td>
+            <td>' . number_format($item['price'], 2) . '</td>
+            <td>' . number_format($item['total'], 2) . '</td>
         </tr>';
     }
     
@@ -211,10 +183,5 @@ function generateBillHTML($sale_id, $data) {
     </div>';
     
     return $html;
-}
-
-// Close database connection
-if (isset($conn)) {
-    $conn->close();
 }
 ?>

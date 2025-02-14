@@ -1,3 +1,16 @@
+<?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+session_start();
+include('db.php'); // Ensure this file exists and is correct
+
+// Check if user is logged in
+if (!isset($_SESSION['user_id'])) {
+    header('Location: index.php');
+    exit();
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,51 +22,14 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
 <body>
-    <nav>
-        <div class="logo-name">
-            <div class="logo-image">
-               <img src="images/logo.png" alt="">
-            </div>
-            <span class="logo_name">Inventory Management</span>
-        </div>
-        <div class="menu-items">
-            <ul class="nav-links">
-                <li><a href="#">
-                    <i class="uil uil-estate"></i>
-                    <span class="link-name">Dahsboard</span>
-                </a></li>
-                <li><a href="sale.php">
-                    <i class="fa fa-money" aria-hidden="true"></i>
-                    <span class="link-name">Sale</span>
-                </a></li>
-                <li><a href="purchase.php">
-                    <i class="fa fa-shopping-cart" aria-hidden="true"></i>
-                    <span class="link-name">Purchase</span>
-                </a></li>
-                <li><a href="report.php">
-                    <i class="uil uil-chart"></i>
-                    <span class="link-name">Report</span>
-                </a></li>
-                <li> <a href="setup.php">
-                    <i class="uil uil-setting"></i>
-                    <span class="link-name"> Setup </span> 
-            </ul>
-            
-            <ul class="logout-mode">
-                <li><a href="logout.php">
-                    <i class="uil uil-signout"></i>
-                    <span class="link-name">Logout</span>
-                </a></li>
-            </ul>
-        </div>
-    </nav>
+    <?php include('includes/sidebar.php'); ?>
 
     <section class="dashboard">
-    <div class="top">
+        <div class="top">
             <i class="uil uil-bars sidebar-toggle"></i>
             <div class="user-greeting">
                 <i class="uil uil-user-circle"></i>
-                <span>Welcome, <span class="username"><?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'Guest'; ?></span></span>
+                <span>Welcome, <span class="username"><?php echo htmlspecialchars($_SESSION['username']); ?></span></span>
             </div>
         </div>
         <div class="dash-content">
@@ -64,13 +40,11 @@
                     <span class="text">Today's Purchases</span>
                     <span class="number">
                         <?php
-                            include('db.php');
                             $today = date('Y-m-d');
                             $result = $conn->query("SELECT SUM(totalamount) as total FROM vw_transaction 
                                 WHERE type='Purchase' AND DATE(Date) = '$today'");
                             $row = $result->fetch_assoc();
-                            $total = $row['total'];
-                            if($total == null) $total = 0;
+                            $total = isset($row['total']) ? $row['total'] : 0; // Use ternary operator
                             echo '$' . number_format($total, 2);
                         ?>
                     </span>
@@ -82,8 +56,7 @@
                         <?php
                             $result = $conn->query("SELECT COUNT(*) as total FROM suppliers WHERE status='Y'");
                             $row = $result->fetch_assoc();
-                            $total = $row['total'];
-                            if($total == null) $total = 0;
+                            $total = isset($row['total']) ? $row['total'] : 0; // Use ternary operator
                             echo number_format($total);
                         ?>
                     </span>
@@ -93,10 +66,12 @@
                     <span class="text">Total Stock Value</span>
                     <span class="number">
                         <?php
-                            $result = $conn->query("SELECT SUM(stock_quantity * price) as total FROM items");
+                            $result = $conn->query("SELECT SUM(stock_quantity * sell_price) as total FROM items");
+                            if (!$result) {
+                                die("Database query failed: " . $conn->error);
+                            }
                             $row = $result->fetch_assoc();
-                            $total = $row['total'];
-                            if($total == null) $total = 0;
+                            $total = isset($row['total']) ? $row['total'] : 0;
                             echo '$' . number_format($total, 2);
                         ?>
                     </span>
@@ -114,9 +89,17 @@
                         <label for="product">Product:</label>
                         <select name="product_id" required>
                             <?php
-                            $result = $conn->query("SELECT id, name, price FROM items WHERE status='Y'");
-                            while ($row = $result->fetch_assoc()) {
-                                echo "<option value='{$row['id']}'>{$row['name']} - ${$row['price']}</option>";
+                            $result = $conn->query("SELECT id, itemname as name, sell_price FROM items WHERE status='Y'");
+                            if (!$result) {
+                                die("Database query failed: " . $conn->error);
+                            }
+                            
+                            if ($result->num_rows > 0) {
+                                while ($row = $result->fetch_assoc()) {
+                                    echo "<option value='{$row['id']}'>{$row['name']} - ${$row['sell_price']}</option>";
+                                }
+                            } else {
+                                echo "<option value=''>No active items available</option>";
                             }
                             ?>
                         </select>
@@ -174,8 +157,28 @@
                     </thead>
                     <tbody>
                         <?php
-                        $result = $conn->query("SELECT * FROM vw_transaction WHERE type='Purchase' ORDER BY Date DESC");
-                        if($result) {
+                        $result = $conn->query("
+                            SELECT 
+                                p.id,
+                                p.purchase_date as Date,
+                                i.itemname as name,
+                                s.name as suppliername,
+                                pi.quantity,
+                                pi.price as costprice,
+                                (pi.quantity * pi.price) as totalamount,
+                                i.sell_price as sellprice
+                            FROM purchases p
+                            JOIN purchase_items pi ON p.id = pi.purchase_id
+                            JOIN items i ON pi.item_id = i.id
+                            JOIN suppliers s ON p.supplier_id = s.id
+                            ORDER BY p.purchase_date DESC
+                        ");
+
+                        if (!$result) {
+                            die("Database query failed: " . $conn->error);
+                        }
+
+                        if ($result->num_rows > 0) {
                             $sn = 1;
                             while ($row = $result->fetch_assoc()) {
                                 echo "<tr>

@@ -56,8 +56,11 @@ try {
         throw new Exception("Error creating customers table: " . $conn->error);
     }
 
-    // Create items table
-    $items_table = "CREATE TABLE IF NOT EXISTS items (
+    // Drop items table if exists to ensure clean creation
+    $conn->query("DROP TABLE IF EXISTS items");
+    
+    // Create items table with all required columns
+    $items_table = "CREATE TABLE items (
         id INT AUTO_INCREMENT PRIMARY KEY,
         name VARCHAR(100) NOT NULL,
         description TEXT,
@@ -65,7 +68,10 @@ try {
         sell_price DECIMAL(10,2) NOT NULL,
         stock_quantity INT NOT NULL DEFAULT 0,
         reorder_level INT DEFAULT 10,
+        status ENUM('active', 'inactive') DEFAULT 'active',
         supplier_id INT,
+
+
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
         FOREIGN KEY (supplier_id) REFERENCES suppliers(id) ON DELETE SET NULL
@@ -160,9 +166,135 @@ try {
         }
     }
 
-    // Commit transaction
+    // Create purchases table
+    $purchases_table = "CREATE TABLE IF NOT EXISTS purchases (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        supplier_id INT NULL,
+        supplier_name VARCHAR(100) NOT NULL,
+        supplier_contact VARCHAR(20),
+        total_amount DECIMAL(10,2) NOT NULL,
+        sub_total DECIMAL(10,2) NOT NULL,
+        discount_percent DECIMAL(5,2) DEFAULT 0,
+        discount_amount DECIMAL(10,2) DEFAULT 0,
+        vat_percent DECIMAL(5,2) DEFAULT 13,
+        vat_amount DECIMAL(10,2) DEFAULT 0,
+        net_total DECIMAL(10,2) NOT NULL,
+        payment_method ENUM('cash', 'credit', 'bank') DEFAULT 'cash',
+        purchase_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        user_id INT,
+        FOREIGN KEY (supplier_id) REFERENCES suppliers(id) ON DELETE SET NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+    )";
+    
+    if (!$conn->query($purchases_table)) {
+        throw new Exception("Error creating purchases table: " . $conn->error);
+    }
+
+    // Create purchase_items table
+    $purchase_items_table = "CREATE TABLE IF NOT EXISTS purchase_items (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        purchase_id INT NOT NULL,
+        item_id INT NOT NULL,
+        quantity INT NOT NULL,
+        price DECIMAL(10,2) NOT NULL,
+        total DECIMAL(10,2) NOT NULL,
+        FOREIGN KEY (purchase_id) REFERENCES purchases(id) ON DELETE CASCADE,
+        FOREIGN KEY (item_id) REFERENCES items(id)
+    )";
+    
+    if (!$conn->query($purchase_items_table)) {
+        throw new Exception("Error creating purchase_items table: " . $conn->error);
+    }
+
+        // Create sales table
+        $sales_table = "CREATE TABLE IF NOT EXISTS sales (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            customer_id INT,
+            customer_name VARCHAR(100),
+            customer_contact VARCHAR(20),
+            total_amount DECIMAL(10,2) NOT NULL,
+            sale_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            user_id INT,
+            FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL,
+            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+        )";
+    
+        if (!$conn->query($sales_table)) {
+            throw new Exception("Error creating sales table: " . $conn->error);
+        }
+    
+        // Create sale_items table
+        $sale_items_table = "CREATE TABLE IF NOT EXISTS sale_items (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            sale_id INT NOT NULL,
+            item_id INT NOT NULL,
+            quantity INT NOT NULL,
+            price DECIMAL(10,2) NOT NULL,
+            total DECIMAL(10,2) NOT NULL,
+            FOREIGN KEY (sale_id) REFERENCES sales(id) ON DELETE CASCADE,
+            FOREIGN KEY (item_id) REFERENCES items(id)
+        )";
+    
+        if (!$conn->query($sale_items_table)) {
+            throw new Exception("Error creating sale_items table: " . $conn->error);
+        }
+    
+        // Commit transaction
+        $conn->commit();
+        echo json_encode(['success' => true, 'message' => 'Sales tables created successfully']);
+    
+    // Commit transaction before creating view
     $conn->commit();
-    echo json_encode(['success' => true, 'message' => 'Database setup completed successfully']);
+    
+    // Verify items table creation
+    if (!tableExists($conn, 'items')) {
+        throw new Exception("Failed to create items table");
+    }
+
+
+    // Create vw_transaction view in a new transaction
+    $conn->begin_transaction();
+    try {
+        $vw_transaction = "CREATE OR REPLACE VIEW vw_transaction AS
+
+            SELECT 
+                s.id,
+                s.sale_date AS Date,
+                'Sale' AS type,
+                i.name,
+                si.quantity,
+                s.total_amount AS totalamount,
+                u.username
+            FROM sales s
+            JOIN sale_items si ON s.id = si.sale_id
+            JOIN items i ON si.item_id = i.id
+            JOIN users u ON s.user_id = u.id
+            UNION ALL
+            SELECT 
+                p.id,
+                p.purchase_date AS Date,
+                'Purchase' AS type,
+                i.name,
+                pi.quantity,
+                p.total_amount AS totalamount,
+                u.username
+            FROM purchases p
+            JOIN purchase_items pi ON p.id = pi.purchase_id
+            JOIN items i ON pi.item_id = i.id
+            JOIN users u ON p.user_id = u.id";
+        
+        if (!$conn->query($vw_transaction)) {
+            throw new Exception("Error creating vw_transaction view: " . $conn->error);
+        }
+        
+        $conn->commit();
+        echo json_encode(['success' => true, 'message' => 'Database setup completed successfully']);
+    } catch (Exception $e) {
+        $conn->rollback();
+        throw $e;
+    }
+
+
 
 } catch (Exception $e) {
     // Rollback on error
@@ -212,4 +344,4 @@ $conn->close();
     <h2>Database Setup Status</h2>
     <div id="status"></div>
 </body>
-</html> 
+</html>

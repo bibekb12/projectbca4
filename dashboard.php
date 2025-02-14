@@ -1,11 +1,18 @@
 <?php
 session_start();
-// Check if user is logged in
-if (!isset($_SESSION['user_id']) || !isset($_SESSION['username'])) {
-    // Clear any existing session data
+// Check if user is logged in and has a valid role
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['username']) || !isset($_SESSION['role'])) {
     session_unset();
     session_destroy();
     header('Location: index.php');
+    exit();
+}
+
+// Check if role is valid
+if ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'user') {
+    session_unset();
+    session_destroy();
+    header('Location: index.php?error=invalid_role');
     exit();
 }
 ?>
@@ -21,46 +28,8 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['username'])) {
     <title>Admin Dashboard Panel</title>
 </head>
 <body>
-    <nav>
-        <div class="logo-name">
-            <div class="logo-image">
-               <img src="images/logo.png" alt="">
-            </div>
-            <span class="logo_name">SIMPLE IMS</span>
-        </div>
-        <div class="menu-items">
-            <ul class="nav-links">
-                <li><a href="dashboard.php">
-                    <i class="uil uil-estate"></i>
-                    <span class="link-name">Dashboard</span>
-                </a></li>
-                <li><a href="sale.php">
-                    <i class="fa fa-money" aria-hidden="true"></i>
-                    <span class="link-name">Sale</span>
-                </a></li>
-                <li><a href="purchase.php">
-                    <i class="fa fa-shopping-cart" aria-hidden="true"></i>
-                    <span class="link-name">Purchase</span>
-                </a></li>
-                <li><a href="report.php">
-                    <i class="uil uil-chart"></i>
-                    <span class="link-name">Report</span>
-                </a></li>
-                <li> <a href="setup.php">
-                    <i class="uil uil-setting"></i>
-                    <span class="link-name"> Setup </span> 
-            </ul>
-            
-            <ul class="logout-mode">
-                <li><a href="logout.php">
-                    <i class="uil uil-signout"></i>
-                    <span class="link-name">Logout</span>
-                </a></li>
-                </div>
-            </li>
-            </ul>
-        </div>
-    </nav>
+<?php include('includes/sidebar.php'); ?>
+
     <section class="dashboard">
         <div class="top">
             <i class="uil uil-bars sidebar-toggle"></i>

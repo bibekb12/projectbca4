@@ -9,29 +9,46 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-    // Sanitize inputs
     $id = intval($_POST['id']);
-    $username = mysqli_real_escape_string($conn, trim($_POST['username']));
-    $passwordform = trim($_POST['password']);
-    $status = mysqli_real_escape_string($conn, trim($_POST['status']));
+    $username = $_POST['username'];
+    $status = $_POST['status'];
+    $role = $_POST['role']; // Get the role from POST data
     
-    // Prepare statement based on whether it's an update or insert
-    if ($id) {
-        if (!empty($passwordform)) {
-            // Update with new password
-            $password = password_hash($passwordform, PASSWORD_DEFAULT);
-            $stmt = $conn->prepare("UPDATE users SET username=?, password=?, status=?, updated_at=NOW() WHERE id=?");
-            $stmt->bind_param("sssi", $username, $password, $status, $id);
+    // For new users or when password is changed
+    if (!empty($_POST['password'])) {
+        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+    }
+
+    if (!empty($id)) {
+        // Update existing user
+        if (!empty($_POST['password'])) {
+            // If password is provided, update password too
+            $query = "UPDATE users SET 
+                     username = ?, 
+                     password = ?, 
+                     status = ?,
+                     role = ?,
+                     updated_at = CURRENT_TIMESTAMP 
+                     WHERE id = ?";
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("ssssi", $username, $password, $status, $role, $id);
         } else {
-            // Update without changing password
-            $stmt = $conn->prepare("UPDATE users SET username=?, status=?, updated_at=NOW() WHERE id=?");
-            $stmt->bind_param("ssi", $username, $status, $id);
+            // If no password provided, update other fields only
+            $query = "UPDATE users SET 
+                     username = ?, 
+                     status = ?,
+                     role = ?,
+                     updated_at = CURRENT_TIMESTAMP 
+                     WHERE id = ?";
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("sssi", $username, $status, $role, $id);
         }
     } else {
-        // New user insert
-        $password = password_hash($passwordform, PASSWORD_DEFAULT);
-        $stmt = $conn->prepare("INSERT INTO users (username, password, status) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $username, $password, $status);
+        // Insert new user
+        $query = "INSERT INTO users (username, password, status, role, created_at) 
+                 VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP)";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("ssss", $username, $password, $status, $role);
     }
 
     if ($stmt->execute()) {
@@ -48,4 +65,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 }
 
 $conn->close();
+header('Location: usersetup.php');
+exit();
 ?>

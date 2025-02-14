@@ -2,30 +2,33 @@
 session_start();
 include 'db.php';
 
-// Check if user is logged in
-if (!isset($_SESSION['user_id'])) {
-    header('Location: index.php');
+// Check if user is logged in and has admin role
+if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    $_SESSION['error'] = "Access denied. Admin privileges required.";
+    header('Location: dashboard.php');
     exit();
 }
 
 $id = "";
 $username = "";
 $status = "Y";
+$role= "";
 
 // Query for editing a specific user
 if (isset($_GET['id'])) {
     $id = intval($_GET['id']);
-    $result = $conn->query("SELECT id, username, status FROM users WHERE id = $id");
+    $result = $conn->query("SELECT id, username, status,role FROM users WHERE id = $id");
 
     if ($result && $result->num_rows > 0) {
         $user = $result->fetch_assoc();
         $username = $user['username'];
         $status = $user['status'];
+        $role = $user['role'];
     }
 }
 
 // Query for all users - Add this line
-$all_users = $conn->query("SELECT id, username, status, created_at, updated_at FROM users");
+$all_users = $conn->query("SELECT id, username, status, created_at, updated_at, role FROM users");
 ?>
 
 <!DOCTYPE html>
@@ -71,12 +74,20 @@ $all_users = $conn->query("SELECT id, username, status, created_at, updated_at F
                                 <label>Password:</label>
                                 <input type="password" name="password" placeholder="Password">
                             </div>
-                            <div class="radio-group">
+                            <div class="radio-group">User Status:
                                 <label class="radio-label">
                                     <input type="radio" name="status" value="Y" <?php echo ($status === 'Y') ? 'checked' : ''; ?>> Active
                                 </label>
                                 <label class="radio-label">
                                     <input type="radio" name="status" value="N" <?php echo ($status === 'N') ? 'checked' : ''; ?>> Inactive
+                                </label>
+                            </div>
+                            <div class="radio-group">User Role:
+                                <label class="radio-label">
+                                    <input type="radio" name="role" value="admin" <?php echo ($role === 'admin') ? 'checked' : ''; ?>> Admin
+                                </label>
+                                <label class="radio-label">
+                                    <input type="radio" name="role" value="user" <?php echo ($role === 'user') ? 'checked' : ''; ?>> User
                                 </label>
                             </div>
                             <div class="form-buttons">
@@ -100,6 +111,7 @@ $all_users = $conn->query("SELECT id, username, status, created_at, updated_at F
                                         <th>Status</th>
                                         <th>Created At</th>
                                         <th>Updated At</th>
+                                        <th>User Role </th>
                                         <th>Action</th>
                                     </tr>
                                 </thead>
@@ -108,12 +120,14 @@ $all_users = $conn->query("SELECT id, username, status, created_at, updated_at F
                                     if ($all_users && $all_users->num_rows > 0) {
                                         while ($row = $all_users->fetch_assoc()) {
                                             $status = ($row['status'] === 'Y') ? 'Active' : 'Inactive';
+                                            $role = ($row['role']==='admin')?'admin':'user';
                                             echo "<tr>
                                                     <td>{$row['id']}</td>
                                                     <td>{$row['username']}</td>
                                                     <td><span class='status-badge status-" . strtolower($status) . "'>{$status}</span></td>
                                                     <td>{$row['created_at']}</td>
                                                     <td>{$row['updated_at']}</td>
+                                                    <td>{$row['role']}</td>
                                                     <td>
                                                         <a href='javascript:void(0)' onclick='editUser({$row['id']})' class='edit-link'>
                                                             <i class='uil uil-edit'></i> Edit
@@ -142,6 +156,12 @@ $all_users = $conn->query("SELECT id, username, status, created_at, updated_at F
         function toggleForm() {
             const form = document.getElementById('userForm');
             form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            
+            // Reset form when hiding
+            if (form.style.display === 'none') {
+                document.querySelector('form').reset();
+                document.querySelector('input[name="id"]').value = '';
+            }
         }
 
         function editUser(userId) {
@@ -153,11 +173,25 @@ $all_users = $conn->query("SELECT id, username, status, created_at, updated_at F
             fetch(`get_user.php?id=${userId}`)
                 .then(response => response.json())
                 .then(data => {
+                    // Set form values
                     document.querySelector('input[name="id"]').value = data.id;
                     document.querySelector('input[name="username"]').value = data.username;
-                    document.querySelector(`input[name="status"][value="${data.status}"]`).checked = true;
+                    
+                    // Set status radio button
+                    const statusRadio = document.querySelector(`input[name="status"][value="${data.status}"]`);
+                    if (statusRadio) statusRadio.checked = true;
+                    
+                    // Set role radio button
+                    const roleRadio = document.querySelector(`input[name="role"][value="${data.role}"]`);
+                    if (roleRadio) roleRadio.checked = true;
+                    
+                    // Clear password field for security
+                    document.querySelector('input[name="password"]').value = '';
                 })
-                .catch(error => console.error('Error:', error));
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Error fetching user data');
+                });
         }
 
         // Add dark mode toggle
@@ -165,24 +199,10 @@ $all_users = $conn->query("SELECT id, username, status, created_at, updated_at F
         modeToggle = body.querySelector(".mode-toggle"),
         sidebar = body.querySelector("nav");
 
-        let getMode = localStorage.getItem("mode");
-        if(getMode && getMode === "dark") {
-            body.classList.toggle("dark");
-        }
-
         let getStatus = localStorage.getItem("status");
         if(getStatus && getStatus === "close") {
             sidebar.classList.toggle("close");
         }
-
-        modeToggle.addEventListener("click", () => {
-            body.classList.toggle("dark");
-            if(body.classList.contains("dark")) {
-                localStorage.setItem("mode", "dark");
-            } else {
-                localStorage.setItem("mode", "light");
-            }
-        });
     </script>
 </body>
 </html>
