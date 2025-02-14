@@ -10,117 +10,177 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 try {
-    // Get POST data
-    $data = json_decode(file_get_contents('php://input'), true);
-    var_dump($data);
-    die;
+    // Get POST data and log it for debugging
+    $raw_data = file_get_contents('php://input');
+    error_log("Received sale data: " . $raw_data);
     
-    if (!$data || !isset($data['items']) || empty($data['items'])) {
-        throw new Exception('Invalid data received');
+    $data = json_decode($raw_data, true);
+    
+    // Validate received data
+    if (!$data) {
+        throw new Exception('Failed to parse JSON data: ' . json_last_error_msg());
+    }
+    
+    if (empty($data['items'])) {
+        throw new Exception('No items in sale');
     }
 
     // Start transaction
     $conn->begin_transaction();
 
-    // Calculate totals
-    $total_amount = 0;
-    foreach ($data['items'] as $item) {
-        $total_amount += $item['total'];
-    }
+    try {
+        // Calculate totals
+        $sub_total = floatval($data['sub_total']);
+        $discount_percent = floatval($data['discount_percent']);
+        $discount_amount = ($sub_total * $discount_percent) / 100;
+        $vat_percent = 13; // Fixed VAT rate
+        $vat_amount = floatval($data['vat_amount']);
+        $net_total = floatval($data['net_total']);
 
-    // Insert sale record
-    $sale_query = "INSERT INTO sales (
-        customer_id, 
-        customer_name, 
-        customer_contact,
-        total_amount,
-        payment_method,
-        sale_date,
-        user_id
-    ) VALUES (?, ?, ?, ?, ?, NOW(), ?)";
+        // Prepare customer data
+        $customer_id = isset($data['customer_id']) && !empty($data['customer_id']) ? intval($data['customer_id']) : NULL;
+        $customer_name = isset($data['customer_name']) && !empty($data['customer_name']) ? $data['customer_name'] : 'Cash';
+        $customer_contact = isset($data['customer_contact']) ? $data['customer_contact'] : '';
+        $payment_method = isset($data['payment_method']) ? $data['payment_method'] : 'cash';
+        $user_id = intval($_SESSION['user_id']);
 
-    $stmt = $conn->prepare($sale_query);
-    if (!$stmt) {
-        throw new Exception('Failed to prepare sale query: ' . $conn->error);
-    }
+        // Insert sale record
+        $sale_query = "INSERT INTO sales (
+            customer_id, customer_name, customer_contact, 
+            sub_total, discount_percent, discount_amount,
+            vat_percent, vat_amount, net_total,
+            payment_method, sale_date, user_id
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?)";
 
-    $customer_id = $data['customer_id'] ?: null;
-    $customer_name = $data['customer_name'] ?: 'Walk-in Customer';
-    $customer_contact = $data['customer_contact'] ?: '';
-    $payment_method = $data['payment_method'] ?: 'cash';
-    $user_id = $_SESSION['user_id'];
-
-    $stmt->bind_param('issdsi', 
-        $customer_id,
-        $customer_name,
-        $customer_contact,
-        $total_amount,
-        $payment_method,
-        $user_id
-    );
-
-    if (!$stmt->execute()) {
-        throw new Exception('Failed to insert sale: ' . $stmt->error);
-    }
-
-    $sale_id = $conn->insert_id;
-
-    // Insert sale items
-    $items_query = "INSERT INTO sale_items (sale_id, item_id, quantity, price, total) VALUES (?, ?, ?, ?, ?)";
-    $stmt = $conn->prepare($items_query);
-
-    foreach ($data['items'] as $item) {
-        // Update stock quantity
-        $update_stock = "UPDATE items SET stock_quantity = stock_quantity - ? WHERE id = ?";
-        $stock_stmt = $conn->prepare($update_stock);
-        $stock_stmt->bind_param('ii', $item['quantity'], $item['id']);
-        if (!$stock_stmt->execute()) {
-            throw new Exception('Failed to update stock quantity');
+        $stmt = $conn->prepare($sale_query);
+        if (!$stmt) {
+            throw new Exception('Failed to prepare sale query: ' . $conn->error);
         }
 
-        // Insert sale item
-        $stmt->bind_param('iiidd', 
-            $sale_id, 
-            $item['id'], 
-            $item['quantity'], 
-            $item['price'], 
-            $item['total']
+        $stmt->bind_param('issddddddsi', 
+            $customer_id,
+            $customer_name,
+            $customer_contact,
+            $sub_total,
+            $discount_percent,
+            $discount_amount,
+            $vat_percent,
+            $vat_amount,
+            $net_total,
+            $payment_method,
+            $user_id
         );
+
         if (!$stmt->execute()) {
-            throw new Exception('Failed to insert sale item');
+            throw new Exception('Failed to insert sale: ' . $stmt->error);
         }
-    }
 
-    // Commit transaction
-    $conn->commit();
+        $sale_id = $conn->insert_id;
 
-    // Generate bill HTML
-    $bill_html = generateBillHTML($sale_id, $data);
+        // Insert sale items
+        foreach ($data['items'] as $item) {
+            // Validate item data
+            if (!isset($item['id'], $item['quantity'], $item['price'], $item['total'])) {
+                throw new Exception('Invalid item data');
+            }
 
-    echo json_encode([
-        'success' => true,
-        'sale_id' => $sale_id,
-        'bill_html' => $bill_html
-    ]);
+            // Check stock availability
+            $stock_check = $conn->prepare("SELECT stock_quantity FROM items WHERE id = ?");
+            $stock_check->bind_param('i', $item['id']);
+            $stock_check->execute();
+            $stock_result = $stock_check->get_result();
+            $stock_data = $stock_result->fetch_assoc();
 
-} catch (Exception $e) {
-    if (isset($conn)) {
-        $conn->rollback();
-    }
-    echo json_encode([
-        'success' => false,
-        'message' => $e->getMessage()
-    ]);
-}
+            if (!$stock_data || $stock_data['stock_quantity'] < $item['quantity']) {
+                throw new Exception('Insufficient stock for item ID: ' . $item['id']);
+            }
 
-// Close connection
-if (isset($conn)) {
-    $conn->close();
-}
+            // Update stock
+            $update_stock = $conn->prepare("UPDATE items SET stock_quantity = stock_quantity - ? WHERE id = ?");
+            $update_stock->bind_param('ii', $item['quantity'], $item['id']);
+            if (!$update_stock->execute()) {
+                throw new Exception('Failed to update stock: ' . $update_stock->error);
+            }
 
-// Helper function to generate bill HTML
-function generateBillHTML($sale_id, $data) {
-    $html = '
+            // Insert sale item
+            $insert_item = $conn->prepare("INSERT INTO sale_items (sale_id, item_id, quantity, price, total) VALUES (?, ?, ?, ?, ?)");
+            $insert_item->bind_param('iiidd', $sale_id, $item['id'], $item['quantity'], $item['price'], $item['total']);
+            if (!$insert_item->execute()) {
+                throw new Exception('Failed to insert sale item: ' . $insert_item->error);
+            }
+        }
+
+        // Commit transaction
+        $conn->commit();
+
+        // Generate bill HTML
+        $bill_html = '<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Sale Invoice</title>
+    <style>
+        @page {
+            size: A5;
+            margin: 10mm;
+        }
+        body {
+            width: 148mm;
+            margin: 0 auto;
+            padding: 0;
+            font-family: "Courier New", monospace;
+            font-size: 12px;
+        }
+        .bill-print {
+            padding: 10mm;
+        }
+        .bill-header {
+            text-align: center;
+            border-bottom: 1px dashed #000;
+            padding-bottom: 5mm;
+            margin-bottom: 5mm;
+        }
+        .bill-header h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .customer-info {
+            margin-bottom: 5mm;
+        }
+        .bill-items {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 5mm 0;
+        }
+        .bill-items th {
+            border-bottom: 1px solid #000;
+            text-align: left;
+            padding: 2mm;
+        }
+        .bill-items td {
+            padding: 2mm;
+            border-bottom: 1px dotted #ccc;
+        }
+        .bill-totals {
+            margin-top: 5mm;
+            border-top: 1px dashed #000;
+            padding-top: 5mm;
+            text-align: right;
+        }
+        .bill-footer {
+            text-align: center;
+            margin-top: 10mm;
+            font-size: 11px;
+        }
+        @media print {
+            body {
+                width: 148mm;
+                height: 210mm;
+            }
+        }
+    </style>
+</head>
+<body>
     <div class="bill-print">
         <div class="bill-header">
             <h2>SIMPLE IMS</h2>
@@ -129,8 +189,8 @@ function generateBillHTML($sale_id, $data) {
             <p>Date: ' . date('Y-m-d H:i:s') . '</p>
         </div>
         <div class="customer-info">
-            <p><strong>Customer:</strong> ' . htmlspecialchars($data['customer_name']) . '</p>
-            <p><strong>Contact:</strong> ' . htmlspecialchars($data['customer_contact']) . '</p>
+            <p><strong>Customer:</strong> ' . htmlspecialchars($customer_name) . '</p>
+            <p><strong>Contact:</strong> ' . htmlspecialchars($customer_contact) . '</p>
         </div>
         <table class="bill-items">
             <thead>
@@ -142,46 +202,63 @@ function generateBillHTML($sale_id, $data) {
                 </tr>
             </thead>
             <tbody>';
-    
-    foreach ($data['items'] as $item) {
-        $html .= '<tr>
-            <td>' . htmlspecialchars($item['name']) . '</td>
-            <td>' . htmlspecialchars($item['quantity']) . '</td>
-            <td>' . number_format($item['price'], 2) . '</td>
-            <td>' . number_format($item['total'], 2) . '</td>
-        </tr>';
-    }
-    
-    $html .= '</tbody></table>
+        
+        foreach ($data['items'] as $item) {
+            $bill_html .= '<tr>
+                <td>' . htmlspecialchars($item['name']) . '</td>
+                <td>' . htmlspecialchars($item['quantity']) . '</td>
+                <td>$' . number_format($item['price'], 2) . '</td>
+                <td>$' . number_format($item['total'], 2) . '</td>
+            </tr>';
+        }
+        
+        $bill_html .= '</tbody></table>
         <div class="bill-totals">
-            <table>
-                <tr>
-                    <td>Sub Total:</td>
-                    <td>' . number_format($data['sub_total'], 2) . '</td>
-                </tr>
-                <tr>
-                    <td>Discount (' . number_format($data['discount_percent'], 2) . '%):</td>
-                    <td>' . number_format($data['discount_amount'], 2) . '</td>
-                </tr>
-                <tr>
-                    <td>VAT (' . number_format($data['vat_percent'], 2) . '%):</td>
-                    <td>' . number_format($data['vat_amount'], 2) . '</td>
-                </tr>
-                <tr>
-                    <td><strong>Net Total:</strong></td>
-                    <td><strong>' . number_format($data['net_total'], 2) . '</strong></td>
-                </tr>
-                <tr>
-                    <td>Payment Method:</td>
-                    <td>' . ucfirst($data['payment_method']) . '</td>
-                </tr>
-            </table>
+            <p>Sub Total: $' . number_format($sub_total, 2) . '</p>
+            <p>Discount (' . number_format($discount_percent, 2) . '%): $' . number_format($discount_amount, 2) . '</p>
+            <p>VAT (' . number_format($vat_percent, 2) . '%): $' . number_format($vat_amount, 2) . '</p>
+            <p><strong>Net Total: $' . number_format($net_total, 2) . '</strong></p>
+            <p>Payment Method: ' . ucfirst($payment_method) . '</p>
         </div>
         <div class="bill-footer">
-            <p>Thank you for your business!</p>
+            <p>Thank you for Purchase</p>
+            <p>Billed by: ' . htmlspecialchars($_SESSION['username']) . '</p>
         </div>
-    </div>';
+    </div>
+    <script>
+        window.onload = function() {
+            window.print();
+        }
+    </script>
+</body>
+</html>';
+
+        echo json_encode([
+            'success' => true,
+            'sale_id' => $sale_id,
+            'bill_html' => $bill_html
+        ]);
+
+    } catch (Exception $e) {
+        $conn->rollback();
+        error_log("Sale processing error: " . $e->getMessage());
+        error_log("Stack trace: " . $e->getTraceAsString());
+        
+        echo json_encode([
+            'success' => false,
+            'message' => $e->getMessage()
+        ]);
+    }
+
+} catch (Exception $e) {
+    error_log("Sale processing error: " . $e->getMessage());
+    error_log("Stack trace: " . $e->getTraceAsString());
     
-    return $html;
+    echo json_encode([
+        'success' => false,
+        'message' => $e->getMessage()
+    ]);
 }
+
+$conn->close();
 ?>

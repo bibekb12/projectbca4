@@ -17,141 +17,386 @@ include('db.php');
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            transition: margin-left 0.3s ease;
+        }
+
+        .main-content.full-width {
+            margin-left: 88px;
+        }
+
+        .sale-section {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+
+        .form-row {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .form-group label {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input, 
+        .form-group select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .bill-table {
+            width: 100%;
+            margin-top: 20px;
+            border-collapse: collapse;
+        }
+
+        .bill-table th {
+            background: #1e3c72;
+            color: white;
+            padding: 10px;
+            text-align: left;
+        }
+
+        .bill-table td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .totals-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        .btn-primary {
+            background: #1e3c72;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .btn-primary:hover {
+            background: #2a5298;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                margin-left: 0;
+                padding: 10px;
+            }
+        }
+
+        /* Form styling to match paper bill layout */
+        .bill-form {
+            width: 148mm; /* A5 width */
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            font-family: 'Courier New', monospace; /* Traditional bill font */
+        }
+
+        .bill-header {
+            text-align: center;
+            border-bottom: 1px dashed #000;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+        }
+
+        .bill-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .bill-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        .bill-items-table th {
+            border-bottom: 1px solid #000;
+            text-align: left;
+            padding: 5px;
+        }
+
+        .bill-items-table td {
+            padding: 5px;
+            border-bottom: 1px dotted #ccc;
+        }
+
+        .bill-totals {
+            margin-top: 15px;
+            border-top: 1px dashed #000;
+            padding-top: 10px;
+        }
+
+        .bill-totals div {
+            display: flex;
+            justify-content: space-between;
+            margin: 5px 0;
+        }
+
+        .bill-footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+        }
+
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            .bill-print, .bill-print * {
+                visibility: visible;
+            }
+            .bill-print {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 148mm; /* A5 width */
+                height: 210mm; /* A5 height */
+            }
+        }
+
+        /* Add to your existing styles */
+        .print-frame {
+            display: none;
+            position: absolute;
+            width: 0;
+            height: 0;
+            border: none;
+        }
+
+        /* Update bill-form styles */
+        .bill-form {
+            width: 148mm;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Add styles for the Add and Complete buttons */
+        #addItem, #completeSale {
+            background: #1e3c72;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        #addItem:hover, #completeSale:hover {
+            background: #2a5298;
+        }
+
+        #addItem:disabled, #completeSale:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+    </style>
 </head>
 <body>
     <?php include('includes/sidebar.php'); ?>
 
-    <section class="dashboard">
-        <div class="top">
-            <i class="uil uil-bars sidebar-toggle"></i>
-            <div class="user-greeting">
-                <i class="uil uil-user-circle"></i>
-                <span>Welcome, <span class="username"><?php echo htmlspecialchars($_SESSION['username']); ?></span></span>
+    <div class="main-content">
+        <!-- Summary Boxes -->
+        <div class="sale-section">
+            <h2>Today's Summary</h2>
+            <div class="form-row">
+                <div class="boxes">
+                    <div class="box box1">
+                        <i class="fa fa-money"></i>
+                        <span class="text">Today's Sales</span>
+                        <span class="number">
+                            <?php
+                                $today = date('Y-m-d');
+                                $result = $conn->query("SELECT SUM(net_total) as total FROM sales WHERE DATE(sale_date) = '$today'");
+                                $row = $result->fetch_assoc();
+                                $total = isset($row['total']) ? $row['total'] : 0;
+                                echo '$' . number_format($total, 2);
+                            ?>
+                        </span>
+                    </div>
+                    <div class="box box2">
+                        <i class="fa fa-shopping-cart"></i>
+                        <span class="text">Today's Transactions</span>
+                        <span class="number">
+                            <?php
+                                $result = $conn->query("SELECT COUNT(*) as count FROM sales WHERE DATE(sale_date) = '$today'");
+                                $row = $result->fetch_assoc();
+                                echo $row['count'];
+                            ?>
+                        </span>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <div class="dash-content">
-            <div class="overview">
-                <div class="title">
-                    <i class="fa fa-money"></i>
-                    <span class="text">Sales Entry</span>
+        <!-- Sales Entry Form -->
+        <div class="sale-section">
+            <h2>New Sale</h2>
+            <form id="saleForm" class="bill-form">
+                <div class="bill-header">
+                    <h2>SIMPLE IMS</h2>
+                    <p>Sale Invoice</p>
+                    <p>Date: <?php echo date('Y-m-d H:i:s'); ?></p>
                 </div>
 
-                <!-- Customer Details Form -->
-                <form id="saleForm" method="POST" action="process_sale.php">
-                    <div class="form-container">
-                        <div class="activity-title">
-                            <i class="fa fa-user"></i>
-                            <span>Customer Details</span>
+                <div class="bill-info">
+                    <div class="customer-details">
+                        <div class="form-group">
+                            <label>Customer:</label>
+                            <input type="text" id="customer_name" value="Cash" placeholder="Cash">
                         </div>
                         <div class="form-group">
-                            <label for="customer_contact">Contact:</label>
-                            <input type="tel" 
-                                   id="customer_contact" 
-                                   name="customer_contact" 
-                                   pattern="[0-9]{10}" 
-                                   maxlength="10" 
-                                   title="Please enter a valid 10-digit contact number">
-                            <button type="button" id="searchCustomer" class="btn-secondary">
-                                <i class="fa fa-search"></i>
-                            </button>
-                        </div>
-                        <div class="form-group">
-                            <label for="customer_name">Customer Name:</label>
-                            <input type="text" id="customer_name" name="customer_name" value="Cash" required>
-                            <input type="hidden" id="customer_id" name="customer_id">
+                            <label>Contact:</label>
+                            <input type="text" id="customer_contact" placeholder="Contact">
                         </div>
                     </div>
-
-                    <!-- Sales Details -->
-                    <div class="form-container">
-                        <div class="activity-title">
-                            <i class="fa fa-shopping-cart"></i>
-                            <span>Sales Details</span>
-                        </div>
-                        <div class="form-group">
-                            <label for="item_id">Item:</label>
-                            <select name="item_id" id="item_id" required>
-                                <option value="">Select Item</option>
-                                <?php
-                                $result = $conn->query("
-                                    SELECT 
-                                        id,
-                                        itemname,
-                                        sell_price,
-                                        stock_quantity
-                                    FROM items 
-                                    WHERE status = 'Y' 
-                                    AND stock_quantity > 0
-                                    ORDER BY itemname
-                                ");
-
-                                if (!$result) {
-                                    die("Database query failed: " . $conn->error);
-                                }
-
-                                while ($row = $result->fetch_assoc()) {
-                                    echo "<option value='{$row['id']}' 
-                                                data-price='{$row['sell_price']}'
-                                                data-stock='{$row['stock_quantity']}'>
-                                            {$row['itemname']} - Stock: {$row['stock_quantity']} - Price: \${$row['sell_price']}
-                                          </option>";
-                                }
-                                ?>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="quantity">Quantity:</label>
-                            <input type="number" id="quantity" name="quantity" min="1" required>
-                            <span id="stock-warning" class="text-danger" style="display:none;">
-                                Exceeds available stock!
-                            </span>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="price">Price:</label>
-                            <input type="number" id="price" name="price" step="0.01" readonly>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="total">Total:</label>
-                            <input type="number" id="total" name="total" readonly>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="discount_percent">Discount (%):</label>
-                            <input type="number" id="discount_percent" name="discount_percent" min="0" max="100" value="0">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="payment_method">Payment Method:</label>
-                            <select id="payment_method" name="payment_method" required>
-                                <option value="cash">Cash</option>
-                                <option value="card">Credit</option>
-                                <option value="qrpay">QR Payment</option>
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <button type="submit" class="btn-primary">
-                                <i class="fa fa-save"></i> Complete Sale
-                            </button>
-                        </div>
+                    <div class="bill-number">
+                        <p>Bill No: <span id="billNumber">-</span></p>
                     </div>
-                </form>
-            </div>
+                </div>
+
+                <div class="item-entry">
+                    <div class="form-group">
+                        <select id="item_select">
+                            <option value="">Select Item</option>
+                            <?php
+                            $items = $conn->query("SELECT id, itemname, sell_price, stock_quantity FROM items WHERE status = 'Y'");
+                            while ($item = $items->fetch_assoc()) {
+                                echo "<option value='{$item['id']}' 
+                                      data-price='{$item['sell_price']}'
+                                      data-stock='{$item['stock_quantity']}'>
+                                      {$item['itemname']}
+                                      </option>";
+                            }
+                            ?>
+                        </select>
+                        <input type="number" id="quantity" min="1" placeholder="Qty">
+                        <input type="number" id="price" readonly>
+                        <button type="button" id="addItem">Add</button>
+                    </div>
+                </div>
+
+                <table class="bill-items-table">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Qty</th>
+                            <th>Price</th>
+                            <th>Total</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody id="billItems"></tbody>
+                </table>
+
+                <div class="bill-totals">
+                    <div>
+                        <span>Sub Total:</span>
+                        <span>$<span id="subtotal">0.00</span></span>
+                    </div>
+                    <div>
+                        <span>Discount:</span>
+                        <input type="number" id="discount_percent" min="0" max="100" value="0" style="width: 50px">%
+                        <span>$<span id="discount">0.00</span></span>
+                    </div>
+                    <div>
+                        <span>VAT (13%):</span>
+                        <span>$<span id="vat">0.00</span></span>
+                    </div>
+                    <div>
+                        <strong>Net Total:</strong>
+                        <strong>$<span id="netTotal">0.00</span></strong>
+                    </div>
+                    <div>
+                        <span>Payment Method:</span>
+                        <select id="payment_method">
+                            <option value="cash">Cash</option>
+                            <option value="card">Card</option>
+                            <option value="upi">UPI</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="bill-footer">
+                    <button type="button" id="completeSale">Complete Sale</button>
+                </div>
+            </form>
         </div>
-    </section>
 
-    <script src="script.js"></script>
-    
+        <!-- Recent Transactions -->
+        <div class="sale-section">
+            <h2>Recent Transactions</h2>
+            <table class="bill-table">
+                <thead>
+                    <tr>
+                        <th>Bill No</th>
+                        <th>Customer</th>
+                        <th>Amount</th>
+                        <th>Time</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <?php
+                    $recent_sales = $conn->query("SELECT * FROM sales 
+                        WHERE DATE(sale_date) = '$today' 
+                        ORDER BY sale_date DESC 
+                        LIMIT 10");
+                    
+                    while ($sale = $recent_sales->fetch_assoc()) {
+                        echo "<tr>
+                            <td>" . str_pad($sale['id'], 6, '0', STR_PAD_LEFT) . "</td>
+                            <td>" . htmlspecialchars($sale['customer_name']) . "</td>
+                            <td>$" . number_format($sale['net_total'], 2) . "</td>
+                            <td>" . date('h:i A', strtotime($sale['sale_date'])) . "</td>
+                            <td>
+                                <button onclick='reprintBill(" . $sale['id'] . ")' class='btn-primary'>
+                                    <i class='fa fa-print'></i> Reprint
+                                </button>
+                            </td>
+                        </tr>";
+                    }
+                    ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
     <script>
     $(document).ready(function() {
-        let billItems = []; // Array to store bill items
+        let billItems = [];
 
         // Handle item selection
-        $('#item_id').on('change', function() {
+        $('#item_select').on('change', function() {
             const selectedOption = $(this).find('option:selected');
             const price = selectedOption.data('price');
             const stock = selectedOption.data('stock');
@@ -159,182 +404,121 @@ include('db.php');
             $('#price').val(price);
             $('#quantity').attr('max', stock).val('');
             $('#total').val('');
-            $('#stock-warning').hide();
         });
 
-        // Handle quantity changes
+        // Calculate total when quantity changes
         $('#quantity').on('input', function() {
-            calculateTotal();
+            const quantity = parseInt($(this).val()) || 0;
+            const price = parseFloat($('#price').val()) || 0;
+            const total = quantity * price;
+            $('#total').val(total.toFixed(2));
         });
 
-        // Handle discount changes
-        $('#discount_percent').on('input', function() {
-            calculateTotal();
-        });
-
-        // Search customer by contact
-        $('#searchCustomer').on('click', function() {
-            const contact = $('#customer_contact').val();
-            if (contact) {
-                $.get('get_customer.php', { contact: contact })
-                    .done(function(response) {
-                        if (response.success) {
-                            $('#customer_name').val(response.customer.name);
-                            $('#customer_id').val(response.customer.id);
-                        } else {
-                            if (confirm('Customer not found. Would you like to add a new customer?')) {
-                                window.location.href = 'add_customer.php?contact=' + contact;
-                            }
-                        }
-                    })
-                    .fail(function() {
-                        alert('Error searching for customer');
-                    });
-            }
-        });
-
-        // Form submission
-        $('#saleForm').on('submit', function(e) {
-            e.preventDefault();
+        // Add item to bill
+        $('#addItem').on('click', function() {
+            const itemSelect = $('#item_select');
+            const selectedOption = itemSelect.find('option:selected');
             
-            const formData = {
-                customer_id: $('#customer_id').val(),
-                customer_name: $('#customer_name').val(),
-                customer_contact: $('#customer_contact').val(),
-                item_id: $('#item_id').val(),
-                quantity: $('#quantity').val(),
-                price: $('#price').val(),
-                total: $('#total').val(),
-                discount_percent: $('#discount_percent').val(),
-                payment_method: $('#payment_method').val()
+            if (!itemSelect.val()) {
+                alert('Please select an item');
+                return;
+            }
+            
+            const quantity = parseInt($('#quantity').val());
+            if (!quantity || quantity <= 0) {
+                alert('Please enter a valid quantity');
+                return;
+            }
+
+            const item = {
+                id: parseInt(itemSelect.val()),
+                name: selectedOption.text(),
+                quantity: quantity,
+                price: parseFloat($('#price').val()),
+                total: parseFloat($('#total').val() || (quantity * parseFloat($('#price').val())))
             };
+
+            billItems.push(item);
+            updateBillPreview();
+            
+            // Reset form fields
+            itemSelect.val('');
+            $('#quantity').val('');
+            $('#price').val('');
+            $('#total').val('');
+        });
+
+        // Complete sale
+        $('#completeSale').on('click', function() {
+            if (billItems.length === 0) {
+                alert('Please add items to the bill first');
+                return;
+            }
+
+            const saleData = {
+                customer_name: $('#customer_name').val() || 'Cash',
+                customer_contact: $('#customer_contact').val() || '',
+                items: billItems,
+                sub_total: parseFloat($('#subtotal').text()),
+                discount_percent: parseFloat($('#discount_percent').val()) || 0,
+                vat_amount: parseFloat($('#vat').text()),
+                net_total: parseFloat($('#netTotal').text()),
+                payment_method: $('#payment_method').val() || 'cash'
+            };
+
+            // Create print iframe
+            const printFrame = $('<iframe>', {
+                name: 'print_frame',
+                class: 'print-frame',
+                style: 'display: none;'
+            }).appendTo('body');
 
             $.ajax({
                 url: 'process_sale.php',
                 type: 'POST',
-                data: JSON.stringify(formData),
                 contentType: 'application/json',
+                data: JSON.stringify(saleData),
                 success: function(response) {
                     if (response.success) {
-                        // Open bill in new window
-                        const printWindow = window.open('', '_blank');
-                        printWindow.document.write(response.bill_html);
-                        printWindow.document.close();
-
-                        // Reset form
-                        $('#saleForm')[0].reset();
-                        $('#customer_name').val('Cash');
-                        $('#customer_id').val('');
+                        // Write bill to iframe and print
+                        printFrame.contents().find('body').html(response.bill_html);
+                        setTimeout(function() {
+                            printFrame[0].contentWindow.print();
+                            // Reset form after printing
+                            billItems = [];
+                            updateBillPreview();
+                            $('#saleForm')[0].reset();
+                            $('#customer_name').val('Cash');
+                            printFrame.remove();
+                        }, 500);
                     } else {
                         alert('Error: ' + response.message);
                     }
                 },
-                error: function() {
-                    alert('Error processing sale');
+                error: function(xhr, status, error) {
+                    console.error('Ajax error:', {xhr, status, error});
+                    alert('Error processing sale. Please try again.');
                 }
             });
         });
 
         function calculateTotal() {
-            const quantity = $('#quantity').val();
-            const price = $('#price').val();
-            const discountPercent = $('#discount_percent').val() || 0;
-            const stock = $('#item_id').find('option:selected').data('stock');
-
-            if (parseInt(quantity) > parseInt(stock)) {
-                $('#stock-warning').show();
-                $('#quantity').val(stock);
-                return calculateTotal();
-            }
-            
-            $('#stock-warning').hide();
+            const quantity = parseInt($('#quantity').val()) || 0;
+            const price = parseFloat($('#price').val()) || 0;
             
             if (quantity && price) {
-                const subtotal = quantity * price;
-                const discount = (subtotal * discountPercent) / 100;
-                const total = subtotal - discount;
+                const total = quantity * price;
                 $('#total').val(total.toFixed(2));
             } else {
                 $('#total').val('');
             }
         }
 
-        // Add item to bill
-        $('#addItem').on('click', function() {
-            const itemSelect = $('#item_id');
-            const selectedOption = itemSelect.find('option:selected');
-            
-            if (itemSelect.val() && $('#quantity').val()) {
-                const item = {
-                    id: itemSelect.val(),
-                    name: selectedOption.text().split(' - ')[0],
-                    quantity: parseInt($('#quantity').val()),
-                    price: parseFloat($('#price').val()),
-                    total: parseFloat($('#total').val())
-                };
-
-                billItems.push(item);
-                updateBillPreview();
-                
-                // Reset form fields
-                itemSelect.val('');
-                $('#quantity').val('');
-                $('#price').val('');
-                $('#total').val('');
-            }
-        });
-
-        // Generate final bill
-        $('#generateBill').on('click', function() {
-            if (billItems.length === 0) {
-                alert('Please add items to the bill first');
-                return;
-            }
-
-            const billData = {
-                customer_id: $('#customer_id').val(),
-                customer_name: $('#customer_name').val(),
-                customer_contact: $('#customer_contact').val(),
-                items: billItems,
-                payment_method: $('#payment_method').val() || 'cash'
-            };
-
-            // Send bill data to server
-            $.ajax({
-                url: 'process_sale.php',
-                type: 'POST',
-                data: JSON.stringify(billData),
-                contentType: 'application/json',
-                success: function(response) {
-                    if (response.success) {
-                        // Open bill in new window
-                        const printWindow = window.open('', '_blank');
-                        printWindow.document.write(response.bill_html);
-                        printWindow.document.close();
-
-                        // Reset form and bill items
-                        billItems = [];
-                        updateBillPreview();
-                        $('#saleForm')[0].reset();
-                        $('#customer_name').val('Cash');
-                        $('#customer_id').val('');
-                    } else {
-                        alert('Error: ' + response.message);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('Error:', error);
-                    alert('Error processing sale. Please try again.');
-                }
-            });
-        });
-
-        // Update bill preview
         function updateBillPreview() {
             const tbody = $('#billItems');
             tbody.empty();
             
-            let grandTotal = 0;
+            let subtotal = 0;
             
             billItems.forEach((item, index) => {
                 tbody.append(`
@@ -344,38 +528,72 @@ include('db.php');
                         <td>$${item.price.toFixed(2)}</td>
                         <td>$${item.total.toFixed(2)}</td>
                         <td>
-                            <button type="button" class="btn-delete" onclick="removeItem(${index})">
+                            <button type="button" class="btn btn-danger btn-sm" onclick="removeItem(${index})">
                                 <i class="fa fa-trash"></i>
                             </button>
                         </td>
                     </tr>
                 `);
-                grandTotal += item.total;
+                subtotal += item.total;
             });
 
-            $('#grandTotal').text(grandTotal.toFixed(2));
+            // Calculate totals
+            const discountPercent = parseFloat($('#discount_percent').val()) || 0;
+            const discount = (subtotal * discountPercent) / 100;
+            const vat = ((subtotal - discount) * 0.13); // 13% VAT
+            const netTotal = subtotal - discount + vat;
+
+            // Update totals display
+            $('#subtotal').val(subtotal.toFixed(2));
+            $('#vat').val(vat.toFixed(2));
+            $('#netTotal').val(netTotal.toFixed(2));
         }
 
-        // Remove item from bill
         window.removeItem = function(index) {
             billItems.splice(index, 1);
             updateBillPreview();
         };
 
-        // Search customer
-        $('#customer_contact').on('blur', function() {
-            const contact = $(this).val();
-            if (contact) {
-                $.get('get_customer.php', { contact: contact })
-                    .done(function(response) {
-                        if (response.success) {
-                            $('#customer_name').val(response.customer.name);
-                            $('#customer_id').val(response.customer.id);
-                        }
-                    });
-            }
+        // Add handler for sidebar toggle
+        $('.sidebar-toggle').on('click', function() {
+            $('.main-content').toggleClass('full-width');
         });
     });
     </script>
+
+    <!-- Add this JavaScript for reprint functionality -->
+    <script>
+    function reprintBill(saleId) {
+        // Create print iframe
+        const printFrame = $('<iframe>', {
+            name: 'reprint_frame',
+            class: 'print-frame',
+            style: 'display: none;'
+        }).appendTo('body');
+
+        $.ajax({
+            url: 'reprint_bill.php',
+            type: 'GET',
+            data: { id: saleId },
+            success: function(response) {
+                if (response.success) {
+                    printFrame.contents().find('body').html(response.bill_html);
+                    setTimeout(function() {
+                        printFrame[0].contentWindow.print();
+                        printFrame.remove();
+                    }, 500);
+                } else {
+                    alert('Error: ' + response.message);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error:', error);
+                alert('Error reprinting bill. Please try again.');
+            }
+        });
+    }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

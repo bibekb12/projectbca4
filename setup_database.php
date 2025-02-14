@@ -206,43 +206,51 @@ try {
         throw new Exception("Error creating purchase_items table: " . $conn->error);
     }
 
-        // Create sales table
-        $sales_table = "CREATE TABLE IF NOT EXISTS sales (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            customer_id INT,
-            customer_name VARCHAR(100),
-            customer_contact VARCHAR(20),
-            total_amount DECIMAL(10,2) NOT NULL,
-            sale_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            user_id INT,
-            FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL,
-            FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
-        )";
-    
-        if (!$conn->query($sales_table)) {
-            throw new Exception("Error creating sales table: " . $conn->error);
+    // Add sales table modifications
+    $alter_sales = "ALTER TABLE sales 
+        MODIFY COLUMN customer_id INT NULL,
+        MODIFY COLUMN customer_name VARCHAR(100) DEFAULT 'Cash',
+        MODIFY COLUMN customer_contact VARCHAR(20) DEFAULT '',
+        ADD COLUMN IF NOT EXISTS sub_total DECIMAL(10,2) DEFAULT 0 AFTER customer_contact,
+        ADD COLUMN IF NOT EXISTS discount_percent DECIMAL(5,2) DEFAULT 0 AFTER sub_total,
+        ADD COLUMN IF NOT EXISTS discount_amount DECIMAL(10,2) DEFAULT 0 AFTER discount_percent,
+        ADD COLUMN IF NOT EXISTS vat_percent DECIMAL(5,2) DEFAULT 13 AFTER discount_amount,
+        ADD COLUMN IF NOT EXISTS vat_amount DECIMAL(10,2) DEFAULT 0 AFTER vat_percent,
+        ADD COLUMN IF NOT EXISTS net_total DECIMAL(10,2) AFTER vat_amount,
+        MODIFY COLUMN payment_method VARCHAR(20) DEFAULT 'cash',
+        MODIFY COLUMN sale_date DATETIME DEFAULT CURRENT_TIMESTAMP";
+
+    if (!$conn->query($alter_sales)) {
+        throw new Exception("Error modifying sales table: " . $conn->error);
+    }
+
+    // Add sale_items table modifications
+    $alter_sale_items = "ALTER TABLE sale_items
+        MODIFY COLUMN sale_id INT NOT NULL,
+        MODIFY COLUMN item_id INT NOT NULL,
+        MODIFY COLUMN quantity INT NOT NULL DEFAULT 1,
+        MODIFY COLUMN price DECIMAL(10,2) NOT NULL DEFAULT 0,
+        MODIFY COLUMN total DECIMAL(10,2) NOT NULL DEFAULT 0,
+        ADD FOREIGN KEY IF NOT EXISTS (sale_id) REFERENCES sales(id),
+        ADD FOREIGN KEY IF NOT EXISTS (item_id) REFERENCES items(id)";
+
+    if (!$conn->query($alter_sale_items)) {
+        throw new Exception("Error modifying sale_items table: " . $conn->error);
+    }
+
+    // Add indexes for better performance
+    $add_indexes = "
+        CREATE INDEX IF NOT EXISTS idx_sales_date ON sales(sale_date);
+        CREATE INDEX IF NOT EXISTS idx_sales_customer ON sales(customer_id);
+        CREATE INDEX IF NOT EXISTS idx_sale_items_sale ON sale_items(sale_id);
+        CREATE INDEX IF NOT EXISTS idx_sale_items_item ON sale_items(item_id)";
+
+    foreach (explode(';', $add_indexes) as $index_query) {
+        if (trim($index_query) && !$conn->query($index_query)) {
+            throw new Exception("Error adding index: " . $conn->error);
         }
-    
-        // Create sale_items table
-        $sale_items_table = "CREATE TABLE IF NOT EXISTS sale_items (
-            id INT AUTO_INCREMENT PRIMARY KEY,
-            sale_id INT NOT NULL,
-            item_id INT NOT NULL,
-            quantity INT NOT NULL,
-            price DECIMAL(10,2) NOT NULL,
-            total DECIMAL(10,2) NOT NULL,
-            FOREIGN KEY (sale_id) REFERENCES sales(id) ON DELETE CASCADE,
-            FOREIGN KEY (item_id) REFERENCES items(id)
-        )";
-    
-        if (!$conn->query($sale_items_table)) {
-            throw new Exception("Error creating sale_items table: " . $conn->error);
-        }
-    
-        // Commit transaction
-        $conn->commit();
-        echo json_encode(['success' => true, 'message' => 'Sales tables created successfully']);
-    
+    }
+
     // Commit transaction before creating view
     $conn->commit();
     
