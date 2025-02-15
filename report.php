@@ -31,7 +31,7 @@
                             $result = $conn->query("SELECT SUM(totalamount) as total FROM vw_transaction WHERE type='Sale'");
                             $row = $result->fetch_assoc();
                             $total = isset($row['total']) ? $row['total'] : 0;
-                            echo '$' . number_format($total, 2);
+                            echo 'Rs. ' . number_format($total, 2);
                         ?>
                     </span>
                 </div>
@@ -43,7 +43,7 @@
                             $result = $conn->query("SELECT SUM(totalamount) as total FROM vw_transaction WHERE type='Purchase'");
                             $row = $result->fetch_assoc();
                             $total = isset($row['total']) ? $row['total'] : 0;
-                            echo '$' . number_format($total, 2);
+                            echo 'Rs. ' . number_format($total, 2);
                         ?>
                     </span>
                 </div>
@@ -57,7 +57,7 @@
                                 (SELECT SUM(totalamount) FROM vw_transaction WHERE type='Purchase') as profit");
                             $row = $result->fetch_assoc();
                             $profit = isset($row['profit']) ? $row['profit'] : 0;
-                            echo '$' . number_format($profit, 2);
+                            echo 'Rs. ' . number_format($profit, 2);
                         ?>
                     </span>
                 </div>
@@ -109,9 +109,9 @@
                                     <td>{$sn}</td>
                                     <td>{$row['name']}</td>
                                     <td>{$row['description']}</td>
-                                    <td>\${$row['price']}</td>
+                                    <td>Rs. {$row['price']}</td>
                                     <td class='{$status_class}'>{$row['stock_quantity']}</td>
-                                    <td>\$" . number_format($row['stock_value'], 2) . "</td>
+                                    <td>Rs. " . number_format($row['stock_value'], 2) . "</td>
                                     <td class='{$status_class}'>{$status_text}</td>
                                 </tr>";
                             $sn++;
@@ -162,7 +162,7 @@
                                         <td class='{$type_class}'>{$row['type']}</td>
                                         <td>{$row['product_name']}</td>
                                         <td>{$row['quantity']}</td>
-                                        <td>\$" . number_format($row['totalamount'], 2) . "</td>
+                                        <td>Rs. " . number_format($row['totalamount'], 2) . "</td>
                                         <td>{$row['username']}</td>
                                     </tr>";
                                 $sn++; // Increment serial number

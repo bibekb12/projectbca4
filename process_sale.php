@@ -92,7 +92,7 @@ try {
             $stock_data = $stock_result->fetch_assoc();
 
             if (!$stock_data || $stock_data['stock_quantity'] < $item['quantity']) {
-                throw new Exception('Insufficient stock for item ID: ' . $item['id']);
+                throw new Exception('Insufficient stock for item Name:' .$item['name']);
             }
 
             // Update stock
@@ -207,17 +207,17 @@ try {
             $bill_html .= '<tr>
                 <td>' . htmlspecialchars($item['name']) . '</td>
                 <td>' . htmlspecialchars($item['quantity']) . '</td>
-                <td>$' . number_format($item['price'], 2) . '</td>
-                <td>$' . number_format($item['total'], 2) . '</td>
+                <td>Rs. ' . number_format($item['price'], 2) . '</td>
+                <td>Rs. ' . number_format($item['total'], 2) . '</td>
             </tr>';
         }
         
         $bill_html .= '</tbody></table>
         <div class="bill-totals">
-            <p>Sub Total: $' . number_format($sub_total, 2) . '</p>
-            <p>Discount (' . number_format($discount_percent, 2) . '%): $' . number_format($discount_amount, 2) . '</p>
-            <p>VAT (' . number_format($vat_percent, 2) . '%): $' . number_format($vat_amount, 2) . '</p>
-            <p><strong>Net Total: $' . number_format($net_total, 2) . '</strong></p>
+            <p>Sub Total: Rs. ' . number_format($sub_total, 2) . '</p>
+            <p>Discount (' . number_format($discount_percent, 2) . '%): Rs. ' . number_format($discount_amount, 2) . '</p>
+            <p>VAT (' . number_format($vat_percent, 2) . '%): Rs. ' . number_format($vat_amount, 2) . '</p>
+            <p><strong>Net Total: Rs. ' . number_format($net_total, 2) . '</strong></p>
             <p>Payment Method: ' . ucfirst($payment_method) . '</p>
         </div>
         <div class="bill-footer">

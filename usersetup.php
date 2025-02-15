@@ -12,7 +12,7 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['role']) || $_SESSION['role
 $id = "";
 $username = "";
 $status = "Y";
-$role= "";
+$role= "user";
 
 // Query for editing a specific user
 if (isset($_GET['id'])) {

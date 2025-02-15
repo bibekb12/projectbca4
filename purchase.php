@@ -45,7 +45,7 @@ if (!isset($_SESSION['user_id'])) {
                                 WHERE type='Purchase' AND DATE(Date) = '$today'");
                             $row = $result->fetch_assoc();
                             $total = isset($row['total']) ? $row['total'] : 0; // Use ternary operator
-                            echo '$' . number_format($total, 2);
+                            echo 'Rs. ' . number_format($total, 2);
                         ?>
                     </span>
                 </div>
@@ -72,7 +72,7 @@ if (!isset($_SESSION['user_id'])) {
                             }
                             $row = $result->fetch_assoc();
                             $total = isset($row['total']) ? $row['total'] : 0;
-                            echo '$' . number_format($total, 2);
+                            echo 'Rs. ' . number_format($total, 2);
                         ?>
                     </span>
                 </div>
@@ -96,7 +96,7 @@ if (!isset($_SESSION['user_id'])) {
                             
                             if ($result->num_rows > 0) {
                                 while ($row = $result->fetch_assoc()) {
-                                    echo "<option value='{$row['id']}'>{$row['name']} - ${$row['sell_price']}</option>";
+                                    echo "<option value='{$row['id']}'>{$row['name']} - Rs. {$row['sell_price']}</option>";
                                 }
                             } else {
                                 echo "<option value=''>No active items available</option>";
@@ -187,9 +187,9 @@ if (!isset($_SESSION['user_id'])) {
                                         <td>{$row['name']}</td>
                                         <td>{$row['suppliername']}</td>
                                         <td>{$row['quantity']}</td>
-                                        <td>\${$row['costprice']}</td>
-                                        <td>\${$row['totalamount']}</td>
-                                        <td>\${$row['sellprice']}</td>
+                                        <td>Rs. {$row['costprice']}</td>
+                                        <td>Rs. {$row['totalamount']}</td>
+                                        <td>Rs. {$row['sellprice']}</td>
                                         <td>
                                             <form method='POST' action='process_purchase.php' style='display:inline;'>
                                                 <input type='hidden' name='delete_id' value='{$row['id']}'>

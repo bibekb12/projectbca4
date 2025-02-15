@@ -134,17 +134,17 @@ try {
             $bill_html .= '<tr>
                 <td>' . htmlspecialchars($item['name']) . '</td>
                 <td>' . htmlspecialchars($item['quantity']) . '</td>
-                <td>$' . number_format($item['price'], 2) . '</td>
-                <td>$' . number_format($item['total'], 2) . '</td>
+                <td>Rs. ' . number_format($item['price'], 2) . '</td>
+                <td>Rs. ' . number_format($item['total'], 2) . '</td>
             </tr>';
         }
         
         $bill_html .= '</tbody></table>
             <div class="bill-totals">
-                <p>Sub Total: $' . number_format($sale['sub_total'], 2) . '</p>
-                <p>Discount (' . number_format($sale['discount_percent'], 2) . '%): $' . number_format($sale['discount_amount'], 2) . '</p>
-                <p>VAT (' . number_format($sale['vat_percent'], 2) . '%): $' . number_format($sale['vat_amount'], 2) . '</p>
-                <p><strong>Net Total: $' . number_format($sale['net_total'], 2) . '</strong></p>
+                <p>Sub Total: Rs. ' . number_format($sale['sub_total'], 2) . '</p>
+                <p>Discount (' . number_format($sale['discount_percent'], 2) . '%): Rs. ' . number_format($sale['discount_amount'], 2) . '</p>
+                <p>VAT (' . number_format($sale['vat_percent'], 2) . '%): Rs. ' . number_format($sale['vat_amount'], 2) . '</p>
+                <p><strong>Net Total: Rs. ' . number_format($sale['net_total'], 2) . '</strong></p>
                 <p>Payment Method: ' . ucfirst($sale['payment_method']) . '</p>
             </div>
             <div class="bill-footer">

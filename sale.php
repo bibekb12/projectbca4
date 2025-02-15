@@ -239,7 +239,7 @@ include('db.php');
                                 $result = $conn->query("SELECT SUM(net_total) as total FROM sales WHERE DATE(sale_date) = '$today'");
                                 $row = $result->fetch_assoc();
                                 $total = isset($row['total']) ? $row['total'] : 0;
-                                echo '$' . number_format($total, 2);
+                                echo 'Rs.' . number_format($total, 2);
                             ?>
                         </span>
                     </div>
@@ -263,7 +263,7 @@ include('db.php');
             <h2>New Sale</h2>
             <form id="saleForm" class="bill-form">
                 <div class="bill-header">
-                    <h2>SIMPLE IMS</h2>
+                    <h2>S M I S</h2>
                     <p>Sale Invoice</p>
                     <p>Date: <?php echo date('Y-m-d H:i:s'); ?></p>
                 </div>
@@ -321,20 +321,20 @@ include('db.php');
                 <div class="bill-totals">
                     <div>
                         <span>Sub Total:</span>
-                        <span>$<span id="subtotal">0.00</span></span>
+                        <span>Rs.<span id="subtotal">0.00</span></span>
                     </div>
                     <div>
                         <span>Discount:</span>
                         <input type="number" id="discount_percent" min="0" max="100" value="0" style="width: 50px">%
-                        <span>$<span id="discount">0.00</span></span>
+                        <span>Rs.<span id="discount">0.00</span></span>
                     </div>
                     <div>
                         <span>VAT (13%):</span>
-                        <span>$<span id="vat">0.00</span></span>
+                        <span>Rs.<span id="vat">0.00</span></span>
                     </div>
                     <div>
                         <strong>Net Total:</strong>
-                        <strong>$<span id="netTotal">0.00</span></strong>
+                        <strong>Rs.<span id="netTotal">0.00</span></strong>
                     </div>
                     <div>
                         <span>Payment Method:</span>
