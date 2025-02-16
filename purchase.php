@@ -29,7 +29,8 @@ if (!isset($_SESSION['user_id'])) {
             <i class="uil uil-bars sidebar-toggle"></i>
             <div class="user-greeting">
                 <i class="uil uil-user-circle"></i>
-                <span>Welcome, <span class="username"><?php echo htmlspecialchars($_SESSION['username']); ?></span></span>
+                <span>Welcome, <span class="username"><?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'Guest'; ?></span></span>
+                <a href="logout.php" class="logout-btn">Logout</a>
             </div>
         </div>
         <div class="dash-content">

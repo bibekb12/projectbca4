@@ -1,3 +1,6 @@
+<?php
+session_start();
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,6 +20,7 @@
             <div class="user-greeting">
                 <i class="uil uil-user-circle"></i>
                 <span>Welcome, <span class="username"><?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'Guest'; ?></span></span>
+                <a href="logout.php" class="logout-btn">Logout</a>
             </div>
         </div>
         <div class="dash-content">
@@ -174,6 +178,18 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Add link to User Collection Report -->
+            <div class="report-link">
+                <a href="user_collection_report.php">User Collection Report</a>
+            </div>
+
+            <!-- User Collection Tab -->
+            <div class="tabs">
+                <a href="user_collection_report.php" class="tab">User Collection</a>
+                <!-- Add other tabs here -->
+            </div>
+
         </div>
     </section>
 

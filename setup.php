@@ -27,6 +27,7 @@ if (!isset($_SESSION['user_id'])) {
             <div class="user-greeting">
                 <i class="uil uil-user-circle"></i>
                 <span>Welcome, <span class="username"><?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'Guest'; ?></span></span>
+                <a href="logout.php" class="logout-btn">Logout</a>
             </div>
         </div>
 

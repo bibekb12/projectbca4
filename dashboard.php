@@ -45,6 +45,7 @@ if ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'user') {
                     }
                     ?>
                 </span></span>
+                <a href="logout.php" class="logout-btn">Logout</a>
             </div>
         </div>
         <div class="dash-content">

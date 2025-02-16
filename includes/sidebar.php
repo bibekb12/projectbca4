@@ -51,13 +51,13 @@ $is_admin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
             <?php endif; ?>
         </ul>
 
-        <ul class="logout-mode">
+        <!-- <ul class="logout-mode">
             <li>
                 <a href="logout.php">
                     <i class="uil uil-signout"></i>
                     <span class="link-name">Logout</span>
                 </a>
             </li>
-        </ul>
+        </ul> -->
     </div>
 </nav> 

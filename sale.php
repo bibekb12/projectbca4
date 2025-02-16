@@ -223,44 +223,16 @@ include('db.php');
 </head>
 <body>
     <?php include('includes/sidebar.php'); ?>
-
-    <div class="main-content">
-        <!-- Summary Boxes -->
-        <div class="sale-section">
-            <h2>Today's Summary</h2>
-            <div class="form-row">
-                <div class="boxes">
-                    <div class="box box1">
-                        <i class="fa fa-money"></i>
-                        <span class="text">Today's Sales</span>
-                        <span class="number">
-                            <?php
-                                $today = date('Y-m-d');
-                                $result = $conn->query("SELECT SUM(net_total) as total FROM sales WHERE DATE(sale_date) = '$today'");
-                                $row = $result->fetch_assoc();
-                                $total = isset($row['total']) ? $row['total'] : 0;
-                                echo 'Rs.' . number_format($total, 2);
-                            ?>
-                        </span>
-                    </div>
-                    <div class="box box2">
-                        <i class="fa fa-shopping-cart"></i>
-                        <span class="text">Today's Transactions</span>
-                        <span class="number">
-                            <?php
-                                $result = $conn->query("SELECT COUNT(*) as count FROM sales WHERE DATE(sale_date) = '$today'");
-                                $row = $result->fetch_assoc();
-                                echo $row['count'];
-                            ?>
-                        </span>
-                    </div>
-                </div>
-            </div>
+    <div class="top">
+        <i class="uil uil-bars sidebar-toggle"></i>
+        <div class="user-greeting">
+            <i class="uil uil-user-circle"></i>
+            <span>Welcome, <span class="username"><?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'Guest'; ?></span></span>
+            <a href="logout.php" class="logout-btn">Logout</a>
         </div>
-
+    </div>
         <!-- Sales Entry Form -->
         <div class="sale-section">
-            <h2>New Sale</h2>
             <form id="saleForm" class="bill-form">
                 <div class="bill-header">
                     <h2>S M I S</h2>
@@ -502,18 +474,6 @@ include('db.php');
             });
         });
 
-        function calculateTotal() {
-            const quantity = parseInt($('#quantity').val()) || 0;
-            const price = parseFloat($('#price').val()) || 0;
-            
-            if (quantity && price) {
-                const total = quantity * price;
-                $('#total').val(total.toFixed(2));
-            } else {
-                $('#total').val('');
-            }
-        }
-
         function updateBillPreview() {
             const tbody = $('#billItems');
             tbody.empty();
@@ -525,8 +485,8 @@ include('db.php');
                     <tr>
                         <td>${item.name}</td>
                         <td>${item.quantity}</td>
-                        <td>$${item.price.toFixed(2)}</td>
-                        <td>$${item.total.toFixed(2)}</td>
+                        <td>Rs.${item.price.toFixed(2)}</td>
+                        <td>Rs.${item.total.toFixed(2)}</td>
                         <td>
                             <button type="button" class="btn btn-danger btn-sm" onclick="removeItem(${index})">
                                 <i class="fa fa-trash"></i>
@@ -544,9 +504,10 @@ include('db.php');
             const netTotal = subtotal - discount + vat;
 
             // Update totals display
-            $('#subtotal').val(subtotal.toFixed(2));
-            $('#vat').val(vat.toFixed(2));
-            $('#netTotal').val(netTotal.toFixed(2));
+            $('#subtotal').text(subtotal.toFixed(2));
+            $('#discount').text(discount.toFixed(2));
+            $('#vat').text(vat.toFixed(2));
+            $('#netTotal').text(netTotal.toFixed(2));
         }
 
         window.removeItem = function(index) {
