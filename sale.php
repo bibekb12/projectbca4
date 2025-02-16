@@ -6,6 +6,9 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['username'])) {
     exit();
 }
 include('db.php');
+
+// Define the $today variable
+$today = date('Y-m-d');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -237,7 +240,7 @@ include('db.php');
                 <div class="bill-header">
                     <h2>S M I S</h2>
                     <p>Sale Invoice</p>
-                    <p>Date: <?php echo date('Y-m-d H:i:s'); ?></p>
+                    <p>Date: <?php echo date('Y-m-d'); ?> <span id="currentTime"></span></p>
                 </div>
 
                 <div class="bill-info">
@@ -313,7 +316,7 @@ include('db.php');
                         <select id="payment_method">
                             <option value="cash">Cash</option>
                             <option value="card">Card</option>
-                            <option value="upi">UPI</option>
+                            <option value="qrpay">QR Payment</option>
                         </select>
                     </div>
                 </div>
@@ -348,7 +351,7 @@ include('db.php');
                         echo "<tr>
                             <td>" . str_pad($sale['id'], 6, '0', STR_PAD_LEFT) . "</td>
                             <td>" . htmlspecialchars($sale['customer_name']) . "</td>
-                            <td>$" . number_format($sale['net_total'], 2) . "</td>
+                            <td>Rs. " . number_format($sale['net_total'], 2) . "</td>
                             <td>" . date('h:i A', strtotime($sale['sale_date'])) . "</td>
                             <td>
                                 <button onclick='reprintBill(" . $sale['id'] . ")' class='btn-primary'>
@@ -519,6 +522,20 @@ include('db.php');
         $('.sidebar-toggle').on('click', function() {
             $('.main-content').toggleClass('full-width');
         });
+
+        // Function to update the current time
+        function updateTime() {
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            const currentTime = `${hours}:${minutes}:${seconds}`;
+            $('#currentTime').text(currentTime);
+        }
+
+        // Update the time every second
+        setInterval(updateTime, 1000);
+        updateTime(); // Initial call to display time immediately
     });
     </script>
 

@@ -179,17 +179,13 @@ session_start();
                 </table>
             </div>
 
-            <!-- Add link to User Collection Report -->
-            <div class="report-link">
-                <a href="user_collection_report.php">User Collection Report</a>
-            </div>
-
-            <!-- User Collection Tab -->
+            <!-- Add link to User Collection Report if admin -->
+            <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
             <div class="tabs">
                 <a href="user_collection_report.php" class="tab">User Collection</a>
                 <!-- Add other tabs here -->
             </div>
-
+            <?php endif; ?>
         </div>
     </section>
 

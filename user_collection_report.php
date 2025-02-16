@@ -4,30 +4,34 @@ include('db.php');
 
 // Set default date to today's date
 $default_date = date('Y-m-d');
-$selected_date = isset($_POST['date']) ? $_POST['date'] : $default_date;
+$from_date = isset($_POST['from_date']) ? $_POST['from_date'] : $default_date;
+$to_date = isset($_POST['to_date']) ? $_POST['to_date'] : $default_date;
 $selected_user = isset($_POST['user']) ? $_POST['user'] : '';
 
 // Fetch users for the user filter dropdown
-$user_result = $conn->query("SELECT DISTINCT username FROM users");
+$user_result = $conn->query("SELECT DISTINCT user_name FROM vw_transaction");
 if (!$user_result) {
     die("Query failed: " . $conn->error);
 }
 $users = [];
 while ($row = $user_result->fetch_assoc()) {
-    $users[] = $row['username'];
+    $users[] = $row['user_name'];
 }
 
 // Fetch total collection based on filters
-$query = "SELECT SUM(totalamount) as total FROM vw_transaction WHERE type='Sale' AND DATE(Date) = '$selected_date'";
+$query = "SELECT user_name, SUM(totalamount) as total FROM vw_transaction WHERE type='Sale' AND DATE(Date) BETWEEN '$from_date' AND '$to_date'";
 if ($selected_user) {
-    $query .= " AND username = '$selected_user'";
+    $query .= " AND user_name = '$selected_user'";
 }
+$query .= " GROUP BY user_name";
 $result = $conn->query($query);
 if (!$result) {
     die("Query failed: " . $conn->error);
 }
-$row = $result->fetch_assoc();
-$total_collection = isset($row['total']) ? $row['total'] : 0;
+$collections = [];
+while ($row = $result->fetch_assoc()) {
+    $collections[] = $row;
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -36,6 +40,29 @@ $total_collection = isset($row['total']) ? $row['total'] : 0;
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Collection Report</title>
     <link rel="stylesheet" href="style.css">
+    <style>
+        .filter-form {
+            margin-bottom: 20px;
+        }
+        .filter-form label {
+            margin-right: 10px;
+        }
+        .filter-form input, .filter-form select {
+            margin-right: 20px;
+        }
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .report-table th, .report-table td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .report-table th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
     <?php include('includes/sidebar.php'); ?>
@@ -49,16 +76,14 @@ $total_collection = isset($row['total']) ? $row['total'] : 0;
                 <a href="logout.php" class="logout-btn">Logout</a>
             </div>
         </div>
-        <div class="tabs">
-            <!-- Remove the user collection tab -->
-            <!-- <a href="user_collection_report.php" class="tab active">User Collection</a> -->
-            <!-- Add other tabs here -->
-        </div>
         <div class="dash-content">
             <div class="filter-form">
                 <form method="POST" action="">
-                    <label for="date">Date:</label>
-                    <input type="date" id="date" name="date" value="<?php echo htmlspecialchars($selected_date); ?>">
+                    <label for="from_date">From Date:</label>
+                    <input type="date" id="from_date" name="from_date" value="<?php echo htmlspecialchars($from_date); ?>">
+                    
+                    <label for="to_date">To Date:</label>
+                    <input type="date" id="to_date" name="to_date" value="<?php echo htmlspecialchars($to_date); ?>">
                     
                     <label for="user">User:</label>
                     <select id="user" name="user">
@@ -75,7 +100,22 @@ $total_collection = isset($row['total']) ? $row['total'] : 0;
             </div>
             <div class="report-result">
                 <h3>Total Collection from Sales</h3>
-                <p>Rs. <?php echo number_format($total_collection, 2); ?></p>
+                <table class="report-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Total Collection (Rs.)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($collections as $collection): ?>
+                            <tr>
+                                <td><?php echo htmlspecialchars($collection['user_name']); ?></td>
+                                <td><?php echo number_format($collection['total'], 2); ?></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
             </div>
         </div>
     </section>
