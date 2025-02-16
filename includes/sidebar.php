@@ -35,13 +35,13 @@ $is_admin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
                     <span class="link-name">Purchase</span>
                 </a>
             </li>
+            <?php if ($is_admin): ?>
             <li>
                 <a href="report.php" class="<?php echo ($current_page == 'report.php') ? 'active' : ''; ?>">
                     <i class="uil uil-chart"></i>
                     <span class="link-name">Report</span>
                 </a>
             </li>
-            <?php if ($is_admin): ?>
             <li>
                 <a href="setup.php" class="<?php echo ($current_page == 'setup.php') ? 'active' : ''; ?>">
                     <i class="uil uil-setting"></i>

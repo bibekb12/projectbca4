@@ -10,20 +10,26 @@ try {
     // Start transaction
     $conn->begin_transaction();
 
-    // First, create users table if not exists
+    // Create users table if not exists
     $users_table = "CREATE TABLE IF NOT EXISTS users (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        username VARCHAR(50) UNIQUE NOT NULL,
+        username VARCHAR(15) UNIQUE,
         password VARCHAR(255) NOT NULL,
-        full_name VARCHAR(100),
-        email VARCHAR(100),
-        role ENUM('admin', 'user') DEFAULT 'user',
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        last_login TIMESTAMP NULL
+        status CHAR(1) DEFAULT 'Y',
+        created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+        updated_at DATETIME DEFAULT NULL,
+        role ENUM('admin', 'user') NOT NULL DEFAULT 'user'
     )";
     
     if (!$conn->query($users_table)) {
         throw new Exception("Error creating users table: " . $conn->error);
+    }
+
+    // Insert admin user
+    $admin_user = "INSERT INTO users (username, password, role) VALUES ('admin', '" . password_hash('admin_password', PASSWORD_BCRYPT) . "', 'admin')";
+    
+    if (!$conn->query($admin_user)) {
+        throw new Exception("Error inserting admin user: " . $conn->error);
     }
 
     // Create suppliers table
@@ -34,7 +40,9 @@ try {
         email VARCHAR(100),
         address TEXT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        panno INT,
+        status CHAR(1) DEFAULT 'Y'
     )";
     
     if (!$conn->query($suppliers_table)) {
@@ -56,24 +64,20 @@ try {
         throw new Exception("Error creating customers table: " . $conn->error);
     }
 
-    // Drop items table if exists to ensure clean creation
-    $conn->query("DROP TABLE IF EXISTS items");
-    
-    // Create items table with all required columns
-    $items_table = "CREATE TABLE items (
+    // Create items table
+    $items_table = "CREATE TABLE IF NOT EXISTS items (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(100) NOT NULL,
         description TEXT,
         cost_price DECIMAL(10,2) NOT NULL,
         sell_price DECIMAL(10,2) NOT NULL,
         stock_quantity INT NOT NULL DEFAULT 0,
         reorder_level INT DEFAULT 10,
-        status ENUM('active', 'inactive') DEFAULT 'active',
         supplier_id INT,
-
-
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+        itemcode VARCHAR(5),
+        itemname VARCHAR(50),
+        status CHAR(1) DEFAULT 'Y',
         FOREIGN KEY (supplier_id) REFERENCES suppliers(id) ON DELETE SET NULL
     )";
     
@@ -105,34 +109,6 @@ try {
         throw new Exception("Error creating sales table: " . $conn->error);
     }
 
-    // Add this code after creating the sales table
-    $check_columns = $conn->query("SHOW COLUMNS FROM sales");
-    $existing_columns = [];
-    while ($row = $check_columns->fetch_assoc()) {
-        $existing_columns[] = $row['Field'];
-    }
-
-    // Add missing columns if they don't exist
-    $required_columns = [
-        "customer_name" => "ALTER TABLE sales ADD COLUMN customer_name VARCHAR(100) NOT NULL AFTER customer_id",
-        "customer_contact" => "ALTER TABLE sales ADD COLUMN customer_contact VARCHAR(20) AFTER customer_name",
-        "sub_total" => "ALTER TABLE sales ADD COLUMN sub_total DECIMAL(10,2) NOT NULL AFTER total_amount",
-        "discount_percent" => "ALTER TABLE sales ADD COLUMN discount_percent DECIMAL(5,2) DEFAULT 0 AFTER sub_total",
-        "discount_amount" => "ALTER TABLE sales ADD COLUMN discount_amount DECIMAL(10,2) DEFAULT 0 AFTER discount_percent",
-        "vat_percent" => "ALTER TABLE sales ADD COLUMN vat_percent DECIMAL(5,2) DEFAULT 13 AFTER discount_amount",
-        "vat_amount" => "ALTER TABLE sales ADD COLUMN vat_amount DECIMAL(10,2) DEFAULT 0 AFTER vat_percent",
-        "net_total" => "ALTER TABLE sales ADD COLUMN net_total DECIMAL(10,2) NOT NULL AFTER vat_amount",
-        "payment_method" => "ALTER TABLE sales ADD COLUMN payment_method ENUM('cash', 'credit', 'bank') DEFAULT 'cash' AFTER net_total"
-    ];
-
-    foreach ($required_columns as $column => $query) {
-        if (!in_array($column, $existing_columns)) {
-            if (!$conn->query($query)) {
-                throw new Exception("Error adding column $column: " . $conn->error);
-            }
-        }
-    }
-
     // Create sale_items table
     $sale_items_table = "CREATE TABLE IF NOT EXISTS sale_items (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -149,41 +125,15 @@ try {
         throw new Exception("Error creating sale_items table: " . $conn->error);
     }
 
-    // Drop and recreate sales table if customer_name column is missing
-    $check_column = $conn->query("SHOW COLUMNS FROM sales LIKE 'customer_name'");
-    if ($check_column->num_rows === 0) {
-        $conn->query("DROP TABLE IF EXISTS sale_items");
-        $conn->query("DROP TABLE IF EXISTS sales");
-        
-        // Recreate sales table
-        if (!$conn->query($sales_table)) {
-            throw new Exception("Error recreating sales table: " . $conn->error);
-        }
-        
-        // Recreate sale_items table
-        if (!$conn->query($sale_items_table)) {
-            throw new Exception("Error recreating sale_items table: " . $conn->error);
-        }
-    }
-
     // Create purchases table
     $purchases_table = "CREATE TABLE IF NOT EXISTS purchases (
         id INT AUTO_INCREMENT PRIMARY KEY,
-        supplier_id INT NULL,
-        supplier_name VARCHAR(100) NOT NULL,
-        supplier_contact VARCHAR(20),
+        supplier_id INT NOT NULL,
         total_amount DECIMAL(10,2) NOT NULL,
-        sub_total DECIMAL(10,2) NOT NULL,
-        discount_percent DECIMAL(5,2) DEFAULT 0,
-        discount_amount DECIMAL(10,2) DEFAULT 0,
-        vat_percent DECIMAL(5,2) DEFAULT 13,
-        vat_amount DECIMAL(10,2) DEFAULT 0,
-        net_total DECIMAL(10,2) NOT NULL,
-        payment_method ENUM('cash', 'credit', 'bank') DEFAULT 'cash',
         purchase_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         user_id INT,
-        FOREIGN KEY (supplier_id) REFERENCES suppliers(id) ON DELETE SET NULL,
-        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+        FOREIGN KEY (supplier_id) REFERENCES suppliers(id),
+        FOREIGN KEY (user_id) REFERENCES users(id)
     )";
     
     if (!$conn->query($purchases_table)) {
@@ -206,49 +156,35 @@ try {
         throw new Exception("Error creating purchase_items table: " . $conn->error);
     }
 
-    // Add sales table modifications
-    $alter_sales = "ALTER TABLE sales 
-        MODIFY COLUMN customer_id INT NULL,
-        MODIFY COLUMN customer_name VARCHAR(100) DEFAULT 'Cash',
-        MODIFY COLUMN customer_contact VARCHAR(20) DEFAULT '',
-        ADD COLUMN IF NOT EXISTS sub_total DECIMAL(10,2) DEFAULT 0 AFTER customer_contact,
-        ADD COLUMN IF NOT EXISTS discount_percent DECIMAL(5,2) DEFAULT 0 AFTER sub_total,
-        ADD COLUMN IF NOT EXISTS discount_amount DECIMAL(10,2) DEFAULT 0 AFTER discount_percent,
-        ADD COLUMN IF NOT EXISTS vat_percent DECIMAL(5,2) DEFAULT 13 AFTER discount_amount,
-        ADD COLUMN IF NOT EXISTS vat_amount DECIMAL(10,2) DEFAULT 0 AFTER vat_percent,
-        ADD COLUMN IF NOT EXISTS net_total DECIMAL(10,2) AFTER vat_amount,
-        MODIFY COLUMN payment_method VARCHAR(20) DEFAULT 'cash',
-        MODIFY COLUMN sale_date DATETIME DEFAULT CURRENT_TIMESTAMP";
-
-    if (!$conn->query($alter_sales)) {
-        throw new Exception("Error modifying sales table: " . $conn->error);
+    // Create roles table
+    $roles_table = "CREATE TABLE IF NOT EXISTS roles (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        userid INT,
+        group_name ENUM('admin', 'user'),
+        permissions VARCHAR(50),
+        FOREIGN KEY (userid) REFERENCES users(id)
+    )";
+    
+    if (!$conn->query($roles_table)) {
+        throw new Exception("Error creating roles table: " . $conn->error);
     }
 
-    // Add sale_items table modifications
-    $alter_sale_items = "ALTER TABLE sale_items
-        MODIFY COLUMN sale_id INT NOT NULL,
-        MODIFY COLUMN item_id INT NOT NULL,
-        MODIFY COLUMN quantity INT NOT NULL DEFAULT 1,
-        MODIFY COLUMN price DECIMAL(10,2) NOT NULL DEFAULT 0,
-        MODIFY COLUMN total DECIMAL(10,2) NOT NULL DEFAULT 0,
-        ADD FOREIGN KEY IF NOT EXISTS (sale_id) REFERENCES sales(id),
-        ADD FOREIGN KEY IF NOT EXISTS (item_id) REFERENCES items(id)";
-
-    if (!$conn->query($alter_sale_items)) {
-        throw new Exception("Error modifying sale_items table: " . $conn->error);
-    }
-
-    // Add indexes for better performance
-    $add_indexes = "
-        CREATE INDEX IF NOT EXISTS idx_sales_date ON sales(sale_date);
-        CREATE INDEX IF NOT EXISTS idx_sales_customer ON sales(customer_id);
-        CREATE INDEX IF NOT EXISTS idx_sale_items_sale ON sale_items(sale_id);
-        CREATE INDEX IF NOT EXISTS idx_sale_items_item ON sale_items(item_id)";
-
-    foreach (explode(';', $add_indexes) as $index_query) {
-        if (trim($index_query) && !$conn->query($index_query)) {
-            throw new Exception("Error adding index: " . $conn->error);
-        }
+    // Create transactions table
+    $transactions_table = "CREATE TABLE IF NOT EXISTS transactions (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        product_id INT NOT NULL,
+        user_id INT NOT NULL,
+        supplier_id INT,
+        type ENUM('Sale', 'Purchase') NOT NULL,
+        quantity INT NOT NULL,
+        transaction_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (product_id) REFERENCES items(id),
+        FOREIGN KEY (user_id) REFERENCES users(id),
+        FOREIGN KEY (supplier_id) REFERENCES suppliers(id)
+    )";
+    
+    if (!$conn->query($transactions_table)) {
+        throw new Exception("Error creating transactions table: " . $conn->error);
     }
 
     // Commit transaction before creating view
@@ -259,17 +195,15 @@ try {
         throw new Exception("Failed to create items table");
     }
 
-
     // Create vw_transaction view in a new transaction
     $conn->begin_transaction();
     try {
         $vw_transaction = "CREATE OR REPLACE VIEW vw_transaction AS
-
             SELECT 
                 s.id,
                 s.sale_date AS Date,
                 'Sale' AS type,
-                i.name,
+                i.itemname AS name,
                 si.quantity,
                 s.total_amount AS totalamount,
                 u.username
@@ -282,7 +216,7 @@ try {
                 p.id,
                 p.purchase_date AS Date,
                 'Purchase' AS type,
-                i.name,
+                i.itemname AS name,
                 pi.quantity,
                 p.total_amount AS totalamount,
                 u.username
@@ -299,10 +233,12 @@ try {
         echo json_encode(['success' => true, 'message' => 'Database setup completed successfully']);
     } catch (Exception $e) {
         $conn->rollback();
-        throw $e;
+        if (strpos($e->getMessage(), 'CREATE VIEW command denied') !== false) {
+            echo json_encode(['success' => false, 'message' => 'CREATE VIEW command denied. Please check your database permissions.']);
+        } else {
+            throw $e;
+        }
     }
-
-
 
 } catch (Exception $e) {
     // Rollback on error
