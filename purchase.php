@@ -85,55 +85,65 @@ if (!isset($_SESSION['user_id'])) {
             </div>
 
             <!-- Purchase Form -->
-            <div class="form-container">
+            <div class="form-container compact-form">
                 <div class="activity-title">
                     <i class="fa fa-plus-circle"></i>
                     <span>New Purchase</span>
                 </div>
                 <form method="POST" action="process_purchase.php" class="form-grid">
-                    <div class="form-group">
-                        <label for="product">Product:</label>
-                        <select name="product_id" required>
-                            <?php
-                            $result = $conn->query("SELECT id, itemname as name, sell_price FROM items WHERE status='Y'");
-                            if (!$result) {
-                                die("Database query failed: " . $conn->error);
-                            }
-                            
-                            if ($result->num_rows > 0) {
-                                while ($row = $result->fetch_assoc()) {
-                                    echo "<option value='{$row['id']}'>{$row['name']} - Rs. {$row['sell_price']}</option>";
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="product">Product:</label>
+                            <select name="product_id" required>
+                                <?php
+                                $result = $conn->query("SELECT id, itemname as name, sell_price FROM items WHERE status='Y'");
+                                if (!$result) {
+                                    die("Database query failed: " . $conn->error);
                                 }
-                            } else {
-                                echo "<option value=''>No active items available</option>";
-                            }
-                            ?>
-                        </select>
+                                
+                                if ($result->num_rows > 0) {
+                                    while ($row = $result->fetch_assoc()) {
+                                        echo "<option value='{$row['id']}'>{$row['name']} - Rs. {$row['sell_price']}</option>";
+                                    }
+                                } else {
+                                    echo "<option value=''>No active items available</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="supplier">Supplier:</label>
+                            <select name="supplier" required>
+                                <?php
+                                $result = $conn->query("SELECT id, name FROM suppliers WHERE status='Y'");
+                                while ($row = $result->fetch_assoc()) {
+                                    echo "<option value='{$row['id']}'>{$row['name']}</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="supplier">Supplier:</label>
-                        <select name="supplier" required>
-                            <?php
-                            $result = $conn->query("SELECT id, name FROM suppliers WHERE status='Y'");
-                            while ($row = $result->fetch_assoc()) {
-                                echo "<option value='{$row['id']}'>{$row['name']}</option>";
-                            }
-                            ?>
-                        </select>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="supplier_bill_number">Supplier Bill No:</label>
+                            <input type="text" name="supplier_bill_number" placeholder="Bill Number" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="costprice">Purchase Price:</label>
+                            <input type="number" name="costprice" step="0.01" placeholder="Cost Price" required>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="costprice">Purchase Price:</label>
-                        <input type="number" name="costprice" step="0.01" required>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="quantity">Quantity:</label>
+                            <input type="number" name="quantity" placeholder="Quantity" required min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="sellprice">Selling Price:</label>
+                            <input type="number" name="sellprice" step="0.01" placeholder="Selling Price" required>
+                        </div>
                     </div>
-                    <div class="form-group">
-                        <label for="quantity">Quantity:</label>
-                        <input type="number" name="quantity" required min="1">
-                    </div>
-                    <div class="form-group">
-                        <label for="sellprice">Selling Price:</label>
-                        <input type="number" name="sellprice" step="0.01" required>
-                    </div>
-                    <div class="form-group">
+                    <div class="form-group form-submit">
                         <button type="submit" class="btn-primary">
                             <i class="fa fa-save"></i> Add Purchase
                         </button>

@@ -8,11 +8,10 @@ $is_admin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <nav>
-    <div class="logo-name">
-        <div class="logo-image">
-            <img src="images/logo.png" alt="">
-        </div>
-        <span class="logo_name">S I M S</span>
+    <div class="logo-details">
+        <span class="logo_name">Inventory 
+            <span class="highlight">Management</span>
+        </span>
     </div>
 
     <div class="menu-items">
