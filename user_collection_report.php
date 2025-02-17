@@ -40,6 +40,7 @@ while ($row = $result->fetch_assoc()) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Collection Report</title>
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="images/inv-logo.png" type="image/icon type">
     <style>
         .filter-form {
             margin-bottom: 20px;
@@ -69,7 +70,6 @@ while ($row = $result->fetch_assoc()) {
     
     <section class="dashboard">
         <div class="top">
-            <i class="uil uil-bars sidebar-toggle"></i>
             <div class="user-greeting">
                 <i class="uil uil-user-circle"></i>
                 <span>Welcome, <span class="username"><?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'Guest'; ?></span></span>

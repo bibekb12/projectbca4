@@ -16,6 +16,7 @@ $today = date('Y-m-d');
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sales Panel</title>
+    <link rel="icon" href="images/inv-logo.png" type="image/icon type">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -227,7 +228,6 @@ $today = date('Y-m-d');
 <body>
     <?php include('includes/sidebar.php'); ?>
     <div class="top">
-        <i class="uil uil-bars sidebar-toggle"></i>
         <div class="user-greeting">
             <i class="uil uil-user-circle"></i>
             <span>Welcome, <span class="username"><?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'Guest'; ?></span></span>
@@ -517,11 +517,6 @@ $today = date('Y-m-d');
             billItems.splice(index, 1);
             updateBillPreview();
         };
-
-        // Add handler for sidebar toggle
-        $('.sidebar-toggle').on('click', function() {
-            $('.main-content').toggleClass('full-width');
-        });
 
         // Function to update the current time
         function updateTime() {

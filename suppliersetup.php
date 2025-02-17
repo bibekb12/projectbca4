@@ -34,6 +34,7 @@ if (isset($_GET['id'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Supplier Setup</title>
+    <link rel="icon" href="images/inv-logo.png" type="image/icon type">
     <link rel="stylesheet" href="style.css" />
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
 </head>
@@ -42,7 +43,8 @@ if (isset($_GET['id'])) {
 
     <section class="dashboard">
     <div class="top">
-            <i class="uil uil-bars sidebar-toggle"></i>
+            <div class="search-box">
+            </div>
             <div class="user-greeting">
                 <i class="uil uil-user-circle"></i>
                 <span>Welcome, <span class="username"><?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'Guest'; ?></span></span>

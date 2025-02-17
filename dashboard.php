@@ -22,6 +22,7 @@ if ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'user') {
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="images/inv-logo.png" type="image/icon type">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -32,7 +33,6 @@ if ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'user') {
 
     <section class="dashboard">
         <div class="top">
-            <i class="uil uil-bars sidebar-toggle"></i>
             <div class="user-greeting">
                 <i class="uil uil-user-circle"></i>
                 <span>Welcome, <span class="username">
@@ -106,7 +106,6 @@ if ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'user') {
     <script>
         const body = document.querySelector("body"),
         sidebar = body.querySelector("nav"),
-        sidebarToggle = body.querySelector(".sidebar-toggle"),
         modeToggle = body.querySelector(".mode-toggle");
 
         let getMode = localStorage.getItem("mode");
@@ -118,16 +117,16 @@ if ($_SESSION['role'] !== 'admin' && $_SESSION['role'] !== 'user') {
         if(getStatus && getStatus === "close") {
             sidebar.classList.toggle("close");
             // Update tooltip text based on sidebar state
-            sidebarToggle.setAttribute('data-tooltip', 'Expand');
+            // Removed sidebarToggle.setAttribute('data-tooltip', 'Expand');
         }
 
-        sidebarToggle.addEventListener("click", () => {
-            sidebar.classList.toggle("close");
-            // Update tooltip text based on sidebar state
-            const isClose = sidebar.classList.contains("close");
-            sidebarToggle.setAttribute('data-tooltip', isClose ? 'Expand' : 'Minimize');
-            localStorage.setItem("status", isClose ? "close" : "open");
-        });
+        // Removed sidebarToggle.addEventListener("click", () => {
+        //     sidebar.classList.toggle("close");
+        //     // Update tooltip text based on sidebar state
+        //     const isClose = sidebar.classList.contains("close");
+        //     // Removed sidebarToggle.setAttribute('data-tooltip', isClose ? 'Expand' : 'Minimize');
+        //     localStorage.setItem("status", isClose ? "close" : "open");
+        // });
     </script>
 </body>
 </html>
