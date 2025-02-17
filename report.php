@@ -32,10 +32,15 @@ session_start();
                     <span class="number">
                         <?php
                             include('db.php');
-                            $result = $conn->query("SELECT SUM(totalamount) as total FROM vw_transaction WHERE type='Sale'");
-                            $row = $result->fetch_assoc();
-                            $total = isset($row['total']) ? $row['total'] : 0;
-                            echo 'Rs. ' . number_format($total, 2);
+                            $query = "SELECT SUM(totalamount) as total FROM transaction WHERE type='Sale'";
+                            $result = $conn->query($query);
+                            if ($result) {
+                                $row = $result->fetch_assoc();
+                                $total = isset($row['total']) ? $row['total'] : 0;
+                                echo 'Rs. ' . number_format($total, 2);
+                            } else {
+                                echo 'Rs. 0.00';
+                            }
                         ?>
                     </span>
                 </div>
@@ -44,10 +49,15 @@ session_start();
                     <span class="text">Total Purchases</span>
                     <span class="number">
                         <?php
-                            $result = $conn->query("SELECT SUM(totalamount) as total FROM vw_transaction WHERE type='Purchase'");
-                            $row = $result->fetch_assoc();
-                            $total = isset($row['total']) ? $row['total'] : 0;
-                            echo 'Rs. ' . number_format($total, 2);
+                            $query = "SELECT SUM(totalamount) as total FROM transaction WHERE type='Purchase'";
+                            $result = $conn->query($query);
+                            if ($result) {
+                                $row = $result->fetch_assoc();
+                                $total = isset($row['total']) ? $row['total'] : 0;
+                                echo 'Rs. ' . number_format($total, 2);
+                            } else {
+                                echo 'Rs. 0.00';
+                            }
                         ?>
                     </span>
                 </div>
@@ -56,12 +66,17 @@ session_start();
                     <span class="text">Net Profit</span>
                     <span class="number">
                         <?php
-                            $result = $conn->query("SELECT 
-                                (SELECT SUM(totalamount) FROM vw_transaction WHERE type='Sale') -
-                                (SELECT SUM(totalamount) FROM vw_transaction WHERE type='Purchase') as profit");
-                            $row = $result->fetch_assoc();
-                            $profit = isset($row['profit']) ? $row['profit'] : 0;
-                            echo 'Rs. ' . number_format($profit, 2);
+                            $query = "SELECT 
+                                (SELECT SUM(totalamount) FROM transaction WHERE type='Sale') -
+                                (SELECT SUM(totalamount) FROM transaction WHERE type='Purchase') as profit";
+                            $result = $conn->query($query);
+                            if ($result) {
+                                $row = $result->fetch_assoc();
+                                $profit = isset($row['profit']) ? $row['profit'] : 0;
+                                echo 'Rs. ' . number_format($profit, 2);
+                            } else {
+                                echo 'Rs. 0.00';
+                            }
                         ?>
                     </span>
                 </div>
@@ -87,7 +102,7 @@ session_start();
                     </thead>
                     <tbody>
                         <?php
-                        $result = $conn->query("
+                        $query = "
                             SELECT 
                                 id,
                                 itemname as name,
@@ -98,7 +113,9 @@ session_start();
                                 status
                             FROM items
                             ORDER BY itemname
-                        ");
+                        ";
+
+                        $result = $conn->query($query);
 
                         if (!$result) {
                             die("Database query failed: " . $conn->error);
@@ -145,16 +162,18 @@ session_start();
                     </thead>
                     <tbody>
                         <?php
-                        $result = $conn->query("SELECT 
+                        $query = "SELECT 
                             t.Date as transaction_date,
                             t.type,
                             t.name as product_name,
                             t.quantity,
                             t.totalamount,
                             t.username
-                            FROM vw_transaction t
+                            FROM transaction t
                             ORDER BY t.Date DESC
-                            LIMIT 10");
+                            LIMIT 10";
+                        
+                        $result = $conn->query($query);
                         
                         if ($result) {
                             $sn = 1; // Reset serial number for second table

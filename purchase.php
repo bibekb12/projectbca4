@@ -42,11 +42,16 @@ if (!isset($_SESSION['user_id'])) {
                     <span class="number">
                         <?php
                             $today = date('Y-m-d');
-                            $result = $conn->query("SELECT SUM(totalamount) as total FROM vw_transaction 
-                                WHERE type='Purchase' AND DATE(Date) = '$today'");
-                            $row = $result->fetch_assoc();
-                            $total = isset($row['total']) ? $row['total'] : 0; // Use ternary operator
-                            echo 'Rs. ' . number_format($total, 2);
+                            $query = "SELECT SUM(totalamount) as total FROM transaction 
+                                WHERE type='Purchase' AND DATE(Date) = '$today'";
+                            $result = $conn->query($query);
+                            if ($result) {
+                                $row = $result->fetch_assoc();
+                                $total = isset($row['total']) ? $row['total'] : 0;
+                                echo 'Rs. ' . number_format($total, 2);
+                            } else {
+                                echo 'Rs. 0.00';
+                            }
                         ?>
                     </span>
                 </div>
