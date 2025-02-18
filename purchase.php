@@ -34,6 +34,7 @@ if (!isset($_SESSION['user_id'])) {
             </div>
         </div>
         <div class="dash-content">
+            <?php if ($is_admin): ?>
             <!-- Summary Boxes -->
             <div class="boxes">
                 <div class="box box1">
@@ -83,6 +84,7 @@ if (!isset($_SESSION['user_id'])) {
                     </span>
                 </div>
             </div>
+            <?php endif ?>
 
             <!-- Purchase Form -->
             <div class="form-container compact-form">

@@ -501,7 +501,7 @@ try {
         new Chart(inventoryCtx, {
             type: 'pie',
             data: {
-                labels: ['Electronics', 'Clothing', 'Furniture', 'Books'],
+                labels: ['Keyboard', 'Mouse', 'Cooling Fan', 'Power Cable'],
                 datasets: [{
                     data: [30, 25, 20, 25],
                     backgroundColor: ['#3498db', '#2ecc71', '#e74c3c', '#f39c12']
