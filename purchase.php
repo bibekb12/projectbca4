@@ -43,13 +43,12 @@ if (!isset($_SESSION['user_id'])) {
                     <span class="number">
                         <?php
                             $today = date('Y-m-d');
-                            $query = "SELECT SUM(totalamount) as total FROM transaction 
-                                WHERE type='Purchase' AND DATE(Date) = '$today'";
+                            $query = "SELECT SUM(total_amount) as total FROM purchases 
+                                WHERE DATE(purchase_date) = '$today'";
                             $result = $conn->query($query);
                             if ($result) {
                                 $row = $result->fetch_assoc();
-                                $total = isset($row['total']) ? $row['total'] : 0;
-                                echo 'Rs. ' . number_format($total, 2);
+                                echo $row['total'] ? 'Rs. ' . number_format($row['total'], 2) : 'Rs. 0.00';
                             } else {
                                 echo 'Rs. 0.00';
                             }
