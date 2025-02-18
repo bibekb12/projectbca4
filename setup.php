@@ -34,15 +34,7 @@ if (!isset($_SESSION['user_id'])) {
         <div class="dash-content">
                 <div class="setup-container">
                     <div class="setup-grid">
-                        <!-- Database Setup Card -->
-                        <div class="setup-card">
-                            <i class="uil uil-database icon"></i>
-                            <h3>Database Setup</h3>
-                            <p>Configure and manage database tables</p>
-                            <button id="setupDatabase" class="setup-btn">Setup Database</button>
-                            <div id="dbStatus" class="setup-status"></div>
-                        </div>
-
+                        
                         <!-- User Setup Card -->
                         <div class="setup-card">
                             <i class="uil uil-users-alt icon"></i>
@@ -58,13 +50,21 @@ if (!isset($_SESSION['user_id'])) {
                             <p>Configure items, categories, and inventory</p>
                             <a href="itemsetup.php" class="setup-btn">Manage Items</a>
                         </div>
-
+                        
                         <!-- Supplier Setup Card -->
                         <div class="setup-card">
                             <i class="uil uil-store icon"></i>
                             <h3>Supplier Setup</h3>
                             <p>Manage supplier information and details</p>
                             <a href="suppliersetup.php" class="setup-btn">Manage Supplier</a>
+                        </div>
+                        <!-- Database Setup Card -->
+                        <div class="setup-card">
+                            <i class="uil uil-database icon"></i>
+                            <h3>Database Setup</h3>
+                            <p>Configure and manage database tables</p>
+                            <button id="setupDatabase" class="setup-btn">Setup Database</button>
+                            <div id="dbStatus" class="setup-status"></div>
                         </div>
                     </div>
                 </div>
