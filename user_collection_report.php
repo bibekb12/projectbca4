@@ -9,21 +9,25 @@ $to_date = isset($_POST['to_date']) ? $_POST['to_date'] : $default_date;
 $selected_user = isset($_POST['user']) ? $_POST['user'] : '';
 
 // Fetch users for the user filter dropdown
-$user_result = $conn->query("SELECT DISTINCT user_name FROM vw_transaction");
+$user_result = $conn->query("SELECT DISTINCT username FROM users u 
+    JOIN sales s ON u.id = s.user_id");
 if (!$user_result) {
     die("Query failed: " . $conn->error);
 }
 $users = [];
 while ($row = $user_result->fetch_assoc()) {
-    $users[] = $row['user_name'];
+    $users[] = $row['username'];
 }
 
 // Fetch total collection based on filters
-$query = "SELECT user_name, SUM(totalamount) as total FROM vw_transaction WHERE type='Sale' AND DATE(Date) BETWEEN '$from_date' AND '$to_date'";
+$query = "SELECT u.username AS user_name, SUM(s.total_amount) as total 
+    FROM sales s
+    JOIN users u ON s.user_id = u.id
+    WHERE DATE(s.sale_date) BETWEEN '$from_date' AND '$to_date'";
 if ($selected_user) {
-    $query .= " AND user_name = '$selected_user'";
+    $query .= " AND u.username = '$selected_user'";
 }
-$query .= " GROUP BY user_name";
+$query .= " GROUP BY u.username";
 $result = $conn->query($query);
 if (!$result) {
     die("Query failed: " . $conn->error);

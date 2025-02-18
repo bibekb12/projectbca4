@@ -9,8 +9,8 @@ $is_admin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <nav>
     <div class="logo-details">
-        <span class="logo_name">Inventory 
-            <span class="highlight">Management</span>
+        <span class="logo_name">Simple 
+            <span class="highlight">IMS</span>
         </span>
     </div>
 

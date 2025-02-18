@@ -75,7 +75,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Inventory Management System</title>
+    <title>S I M S</title>
     <link rel="icon" href="images/inv-logo.png" type="image/icon type">
     <link rel="stylesheet" href="style.css">
     <style>
@@ -317,13 +317,14 @@ try {
             <div class="user-greeting">
                 <i class="uil uil-user-circle"></i>
                 <span>Welcome, <span class="username"><?php echo htmlspecialchars($_SESSION['username']); ?></span></span>
+                <a href="logout.php" class="logout-btn">Logout</a>
             </div>
         </div>
 
         <div class="dash-content invextry-dashboard">
             <div class="dashboard-header">
                 <div class="header-content">
-                    <h1>Dashboard Overview</h1>
+                    <h1>Dashboard Monthly Overview</h1>
                     <nav aria-label="breadcrumb">
                         <ol class="breadcrumb">
                             <li class="breadcrumb-item"><a href="#">Home</a></li>
@@ -442,7 +443,7 @@ try {
                     </div>
                 </div>
             </div>
-
+        <?php if ($is_admin): ?>
             <div class="dashboard-quick-actions">
                 <div class="quick-actions-header">
                     <h3>Quick Actions</h3>
@@ -452,20 +453,21 @@ try {
                         <i class="uil uil-shopping-basket"></i>
                         <span>New Purchase</span>
                     </a>
-                    <a href="sales.php" class="quick-action-btn">
-                        <i class="uil uil-cart"></i>
+                    <a href="sale.php" class="quick-action-btn">
+                        <i class="uil uil-money-bill"></i>
                         <span>Create Sale</span>
                     </a>
-                    <a href="items.php" class="quick-action-btn">
+                    <a href="itemsetup.php" class="quick-action-btn">
                         <i class="uil uil-box"></i>
                         <span>Manage Items</span>
                     </a>
-                    <a href="suppliers.php" class="quick-action-btn">
+                    <a href="suppliersetup.php" class="quick-action-btn">
                         <i class="uil uil-truck"></i>
                         <span>Manage Suppliers</span>
                     </a>
                 </div>
             </div>
+        <?php endif; ?>
         </div>
     </section>
 
