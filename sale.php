@@ -124,7 +124,8 @@ $today = date('Y-m-d');
             text-align: center;
             border-bottom: 1px dashed #000;
             padding-bottom: 10px;
-            margin-bottom: 15px;
+            margin-bottom: 5px;
+            margin-top: -15px;
         }
 
         .bill-info {
@@ -132,6 +133,50 @@ $today = date('Y-m-d');
             justify-content: space-between;
             margin-bottom: 15px;
             font-size: 14px;
+        }
+        
+
+        .customer-details {
+            display: flex;
+            gap: 15px;
+        }
+
+        .item-entry {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .item-entry .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+
+        .item-entry .form-group input,
+        .item-entry .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .item-entry .add-item-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 15px;
+            background-color: #1e3c72;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .item-entry .add-item-btn:hover {
+            background-color: #2c5aa0;
         }
 
         .bill-items-table {
@@ -252,30 +297,28 @@ $today = date('Y-m-d');
                             <input type="text" id="customer_contact" placeholder="Contact">
                         </div>
                     </div>
-                    <div class="bill-number">
-                        <p>Bill No: <span id="billNumber">-</span></p>
-                    </div>
                 </div>
 
                 <div class="item-entry">
                     <div class="form-group">
-                        <select id="item_select">
+                        <select id="item_select" onchange="updateItemPrice()">
                             <option value="">Select Item</option>
                             <?php
-                            $items = $conn->query("SELECT id, itemname, sell_price, stock_quantity FROM items WHERE status = 'Y'");
-                            while ($item = $items->fetch_assoc()) {
-                                echo "<option value='{$item['id']}' 
-                                      data-price='{$item['sell_price']}'
-                                      data-stock='{$item['stock_quantity']}'>
-                                      {$item['itemname']}
-                                      </option>";
+                            $query = "SELECT * FROM items WHERE status = 'Active'";
+                            $result = mysqli_query($conn, $query);
+                            while ($row = mysqli_fetch_assoc($result)) {
+                                echo "<option value='{$row['item_id']}' data-price='{$row['selling_price']}'>{$row['item_name']}</option>";
                             }
                             ?>
                         </select>
-                        <input type="number" id="quantity" min="1" placeholder="Qty">
-                        <input type="number" id="price" readonly>
-                        <button type="button" id="addItem">Add</button>
                     </div>
+                    <div class="form-group">
+                        <input type="number" id="quantity" min="1" placeholder="Qty">
+                    </div>
+                    <div class="form-group">
+                        <input type="number" id="price" readonly placeholder="Total">
+                    </div>
+                    <button type="button" class="add-item-btn" id="addItem">Add</button>
                 </div>
 
                 <table class="bill-items-table">
