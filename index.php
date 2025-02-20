@@ -209,9 +209,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
                 Login
             </button>
         </form>
-        
+        <div class="change-password" align="right">
+            <a href="change_password.php">Change Password</a>
+        </div>
         <div class="login-footer">
-            Stock Inventory Management System
+            Simple Inventory Management System
         </div>
     </div>
 </body>
