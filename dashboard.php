@@ -81,7 +81,11 @@ try {
     <style>
         .invextry-dashboard {
             background-color: #f4f7fa;
-            padding: 30px;
+            display: flex;
+            padding: 10px;
+            margin-top: -160px;
+            margin-bottom: 0;
+            gap: 0;
         }
 
         .dashboard-header {
@@ -147,7 +151,7 @@ try {
         }
 
         .dashboard-stats {
-            margin-bottom: 30px;
+            margin-bottom: 0;
         }
 
         .stat-grid {
@@ -226,13 +230,13 @@ try {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 20px;
+            margin-top: -15px;
         }
 
         .report-card {
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            height: 600px;
         }
 
         .report-header {
@@ -259,6 +263,7 @@ try {
             border-radius: 10px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             padding: 20px;
+            margin-top: -40px;
         }
 
         .quick-actions-header h3 {
@@ -313,12 +318,12 @@ try {
     <?php include('includes/sidebar.php'); ?>
 
     <section class="dashboard">
-        <div class="top">
-            <div class="user-greeting">
-                <i class="uil uil-user-circle"></i>
-                <span>Welcome, <span class="username"><?php echo htmlspecialchars($_SESSION['username']); ?></span></span>
-                <a href="logout.php" class="logout-btn">Logout</a>
-            </div>
+        <div class="top">Dashboard
+        <div class="user-greeting">
+            <i class="uil uil-user-circle"></i>
+            <span>Welcome, <span class="username"><?php echo htmlspecialchars($_SESSION['username']); ?></span></span>
+            <a href="logout.php" class="logout-btn">Logout</a>
+        </div>
         </div>
 
         <div class="dash-content invextry-dashboard">
@@ -331,12 +336,6 @@ try {
                             <li class="breadcrumb-item active" aria-current="page">Dashboard</li>
                         </ol>
                     </nav>
-                </div>
-                <div class="header-actions">
-                    <div class="date-range-picker">
-                        <input type="text" id="daterange" placeholder="Select Date Range">
-                        <i class="uil uil-calendar-alt"></i>
-                    </div>
                 </div>
             </div>
 
@@ -418,13 +417,6 @@ try {
                     <div class="report-card sales-chart">
                         <div class="report-header">
                             <h3>Sales Overview</h3>
-                            <div class="report-actions">
-                                <select class="chart-filter">
-                                    <option>Monthly</option>
-                                    <option>Quarterly</option>
-                                    <option>Yearly</option>
-                                </select>
-                            </div>
                         </div>
                         <canvas id="salesOverviewChart"></canvas>
                     </div>
@@ -432,12 +424,6 @@ try {
                     <div class="report-card inventory-chart">
                         <div class="report-header">
                             <h3>Inventory Distribution</h3>
-                            <div class="report-actions">
-                                <select class="chart-filter">
-                                    <option>By Category</option>
-                                    <option>By Location</option>
-                                </select>
-                            </div>
                         </div>
                         <canvas id="inventoryDistributionChart"></canvas>
                     </div>

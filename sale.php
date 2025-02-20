@@ -7,7 +7,7 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['username'])) {
 }
 include('db.php');
 
-// Define the $today variable
+
 $today = date('Y-m-d');
 ?>
 <!DOCTYPE html>
@@ -185,7 +185,6 @@ $today = date('Y-m-d');
             }
         }
 
-        /* Add to your existing styles */
         .print-frame {
             display: none;
             position: absolute;
@@ -194,7 +193,6 @@ $today = date('Y-m-d');
             border: none;
         }
 
-        /* Update bill-form styles */
         .bill-form {
             width: 148mm;
             margin: 20px auto;
@@ -534,7 +532,6 @@ $today = date('Y-m-d');
     });
     </script>
 
-    <!-- Add this JavaScript for reprint functionality -->
     <script>
     function reprintBill(saleId) {
         // Create print iframe
