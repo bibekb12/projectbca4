@@ -266,6 +266,188 @@ $today = date('Y-m-d');
             background: #ccc;
             cursor: not-allowed;
         }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+            padding-bottom: 10px;
+        }
+
+        .section-header h2 {
+            margin: 0;
+            color: #1e3c72;
+        }
+
+        .section-header-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .date-filter {
+            background-color: #f4f4f4;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .recent-transactions {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .recent-transactions th {
+            background-color: #1e3c72;
+            color: white;
+            padding: 12px 15px;
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .recent-transactions td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e0e0e0;
+            vertical-align: middle;
+        }
+
+        .recent-transactions tr:hover {
+            background-color: #f9f9f9;
+            transition: background-color 0.3s ease;
+        }
+
+        .customer-cell {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .customer-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .customer-contact {
+            font-size: 0.8em;
+            color: #666;
+        }
+
+        .invoice-number {
+            font-family: monospace;
+            color: #1e3c72;
+            font-weight: bold;
+        }
+
+        .amount {
+            font-weight: 600;
+            color: #28a745;
+        }
+
+        .payment-method {
+            text-transform: capitalize;
+            font-style: italic;
+            color: #6c757d;
+        }
+
+        .time {
+            color: #6c757d;
+        }
+
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.8em;
+        }
+
+        .actions {
+            text-align: center;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+            padding-top: 50px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 5px;
+            width: 80%;
+            max-width: 800px;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .close-modal {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close-modal:hover,
+        .close-modal:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #billViewContainer iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            font-size: 0.75em;
+            font-weight: 600;
+            line-height: 1;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 0.25rem;
+            margin-left: 5px;
+        }
+
+        .badge-success {
+            color: #fff;
+            background-color: #28a745;
+        }
+
+        .badge-warning {
+            color: #212529;
+            background-color: #ffc107;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 5px;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.8em;
+        }
     </style>
 </head>
 <body>
@@ -304,10 +486,14 @@ $today = date('Y-m-d');
                         <select id="item_select" onchange="updateItemPrice()">
                             <option value="">Select Item</option>
                             <?php
-                            $query = "SELECT * FROM items WHERE status = 'Active'";
+                            $query = "SELECT * FROM items WHERE status = 'Y' AND stock_quantity > 0 ORDER BY itemname ASC";
                             $result = mysqli_query($conn, $query);
                             while ($row = mysqli_fetch_assoc($result)) {
-                                echo "<option value='{$row['item_id']}' data-price='{$row['selling_price']}'>{$row['item_name']}</option>";
+                                echo "<option value='{$row['id']}' 
+                                      data-price='{$row['sell_price']}' 
+                                      data-stock='{$row['stock_quantity']}'>
+                                      {$row['itemname']} (Stock: {$row['stock_quantity']})
+                                      </option>";
                             }
                             ?>
                         </select>
@@ -370,99 +556,236 @@ $today = date('Y-m-d');
 
         <!-- Recent Transactions -->
         <div class="sale-section">
-            <h2>Recent Transactions</h2>
-            <table class="bill-table">
+            <div class="section-header">
+                <h2>Recent Transactions</h2>
+                <div class="section-header-actions">
+                    <span class="date-filter">Today: <?php echo date('Y-m-d'); ?></span>
+                </div>
+            </div>
+            <table class="bill-table recent-transactions">
                 <thead>
                     <tr>
-                        <th>Bill No</th>
+                        <th>Invoice #</th>
                         <th>Customer</th>
-                        <th>Amount</th>
+                        <th>Total Amount</th>
+                        <th>Payment Method</th>
                         <th>Time</th>
-                        <th>Action</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php
-                    $recent_sales = $conn->query("SELECT * FROM sales 
-                        WHERE DATE(sale_date) = '$today' 
-                        ORDER BY sale_date DESC 
+                    // Fetch recent sales with more comprehensive data
+                    $recent_sales = $conn->query("SELECT s.*, 
+                        c.contact AS customer_contact, 
+                        u.username AS sale_user 
+                        FROM sales s 
+                        LEFT JOIN customers c ON s.customer_id = c.id 
+                        LEFT JOIN users u ON s.user_id = u.id
+                        WHERE DATE(s.sale_date) = '$today' 
+                        ORDER BY s.sale_date DESC 
                         LIMIT 10");
                     
-                    while ($sale = $recent_sales->fetch_assoc()) {
-                        echo "<tr>
-                            <td>" . str_pad($sale['id'], 6, '0', STR_PAD_LEFT) . "</td>
-                            <td>" . htmlspecialchars($sale['customer_name']) . "</td>
-                            <td>Rs. " . number_format($sale['net_total'], 2) . "</td>
-                            <td>" . date('h:i A', strtotime($sale['sale_date'])) . "</td>
-                            <td>
-                                <button onclick='reprintBill(" . $sale['id'] . ")' class='btn-primary'>
-                                    <i class='fa fa-print'></i> Reprint
-                                </button>
-                            </td>
-                        </tr>";
+                    // Check if query was successful
+                    if ($recent_sales === false) {
+                        echo "<tr><td colspan='6'>Error fetching transactions: " . $conn->error . "</td></tr>";
+                    } elseif ($recent_sales->num_rows === 0) {
+                        echo "<tr><td colspan='6'>No recent transactions found.</td></tr>";
+                    } else {
+                        while ($sale = $recent_sales->fetch_assoc()) {
+                            // Determine payment method display
+                            $payment_method = !empty($sale['payment_method']) ? 
+                                ucfirst(strtolower($sale['payment_method'])) : 
+                                'Cash';
+
+                            // Determine bill file status
+                            $bill_status = !empty($sale['bill_file']) ? 
+                                '<span class="badge badge-success">Generated</span>' : 
+                                '<span class="badge badge-warning">Pending</span>';
+
+                            echo "<tr data-sale-id='{$sale['id']}'>
+                                <td class='invoice-number'>" . str_pad($sale['id'], 6, '0', STR_PAD_LEFT) . "</td>
+                                <td>
+                                    <div class='customer-cell'>
+                                        <span class='customer-name'>" . htmlspecialchars($sale['customer_name']) . "</span>
+                                        <span class='customer-contact'>" . 
+                                            (!empty($sale['customer_contact']) ? 
+                                            htmlspecialchars($sale['customer_contact']) : 
+                                            'N/A') . 
+                                        "</span>
+                                    </div>
+                                </td>
+                                <td class='amount'>Rs. " . number_format($sale['net_total'], 2) . "</td>
+                                <td class='payment-method'>" . htmlspecialchars($payment_method) . "</td>
+                                <td class='time'>" . date('h:i A', strtotime($sale['sale_date'])) . "</td>
+                                <td class='actions'>
+                                    <div class='btn-group'>
+                                        <button onclick='reprintBill(" . $sale['id'] . ")' class='btn-primary btn-sm'>
+                                            <i class='fa fa-print'></i> Reprint
+                                        </button>
+                                        " . ($sale['bill_file'] ? 
+                                        "<button onclick='viewBill(\"" . htmlspecialchars($sale['bill_file']) . "\")' class='btn-secondary btn-sm'>
+                                            <i class='fa fa-file-text'></i> View Bill
+                                        </button>" : '') . "
+                                    </div>
+                                    $bill_status
+                                </td>
+                            </tr>";
+                        }
                     }
                     ?>
                 </tbody>
             </table>
+        </div>
+
+        <!-- Bill View Modal -->
+        <div id="billViewModal" class="modal">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <div id="billViewContainer">
+                    <!-- Saved bill will be loaded here -->
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
     $(document).ready(function() {
         let billItems = [];
+        const VAT_RATE = 0.13; // 13% VAT
 
         // Handle item selection
         $('#item_select').on('change', function() {
-            const selectedOption = $(this).find('option:selected');
-            const price = selectedOption.data('price');
-            const stock = selectedOption.data('stock');
-            
-            $('#price').val(price);
-            $('#quantity').attr('max', stock).val('');
-            $('#total').val('');
+            updateItemPrice();
         });
 
-        // Calculate total when quantity changes
+        // Quantity input validation
         $('#quantity').on('input', function() {
-            const quantity = parseInt($(this).val()) || 0;
-            const price = parseFloat($('#price').val()) || 0;
-            const total = quantity * price;
-            $('#total').val(total.toFixed(2));
+            updateItemPrice();
         });
+
+        // Discount percentage change
+        $('#discount_percent').on('input', function() {
+            updateBillPreview();
+        });
+
+        function updateItemPrice() {
+            const selectedOption = $('#item_select option:selected');
+            const price = parseFloat(selectedOption.data('price')) || 0;
+            const maxStock = parseInt(selectedOption.data('stock')) || 0;
+            const quantity = parseInt($('#quantity').val()) || 0;
+
+            // Update price input
+            const totalPrice = (price * quantity).toFixed(2);
+            $('#price').val(totalPrice);
+
+            // Validate stock
+            if (quantity > maxStock) {
+                alert(`Insufficient stock! Maximum available: ${maxStock}`);
+                $('#quantity').val(maxStock);
+                $('#price').val((price * maxStock).toFixed(2));
+            }
+        }
 
         // Add item to bill
         $('#addItem').on('click', function() {
             const itemSelect = $('#item_select');
-            const selectedOption = itemSelect.find('option:selected');
-            
-            if (!itemSelect.val()) {
+            const quantityInput = $('#quantity');
+            const priceInput = $('#price');
+
+            const itemId = itemSelect.val();
+            const itemName = itemSelect.find('option:selected').text();
+            const quantity = parseInt(quantityInput.val()) || 0;
+            const unitPrice = parseFloat(itemSelect.find('option:selected').data('price')) || 0;
+            const price = parseFloat(priceInput.val()) || 0;
+            const maxStock = parseInt(itemSelect.find('option:selected').data('stock')) || 0;
+
+            // Validation checks
+            if (!itemId) {
                 alert('Please select an item');
                 return;
             }
-            
-            const quantity = parseInt($('#quantity').val());
-            if (!quantity || quantity <= 0) {
+
+            if (quantity <= 0) {
                 alert('Please enter a valid quantity');
                 return;
             }
 
-            const item = {
-                id: parseInt(itemSelect.val()),
-                name: selectedOption.text(),
-                quantity: quantity,
-                price: parseFloat($('#price').val()),
-                total: parseFloat($('#total').val() || (quantity * parseFloat($('#price').val())))
-            };
+            if (quantity > maxStock) {
+                alert(`Insufficient stock! Maximum available: ${maxStock}`);
+                quantityInput.val(maxStock);
+                priceInput.val((unitPrice * maxStock).toFixed(2));
+                return;
+            }
 
-            billItems.push(item);
+            // Add item to bill
+            const existingItemIndex = billItems.findIndex(item => item.itemId === itemId);
+            if (existingItemIndex !== -1) {
+                // Update existing item
+                billItems[existingItemIndex].quantity += quantity;
+                billItems[existingItemIndex].total = (billItems[existingItemIndex].quantity * unitPrice).toFixed(2);
+            } else {
+                // Add new item
+                billItems.push({
+                    itemId: itemId,
+                    itemName: itemName,
+                    quantity: quantity,
+                    unitPrice: unitPrice,
+                    total: (unitPrice * quantity).toFixed(2)
+                });
+            }
+
+            // Update bill preview
             updateBillPreview();
-            
-            // Reset form fields
+
+            // Reset inputs
             itemSelect.val('');
-            $('#quantity').val('');
-            $('#price').val('');
-            $('#total').val('');
+            quantityInput.val('');
+            priceInput.val('');
         });
+
+        function updateBillPreview() {
+            const tbody = $('#billItems');
+            tbody.empty();
+            
+            let subtotal = 0;
+            billItems.forEach((item, index) => {
+                const row = `
+                    <tr>
+                        <td>${item.itemName}</td>
+                        <td>${item.quantity}</td>
+                        <td>${item.unitPrice.toFixed(2)}</td>
+                        <td>${item.total}</td>
+                        <td>
+                            <button onclick="removeItem(${index})" class="btn-remove">Remove</button>
+                        </td>
+                    </tr>
+                `;
+                tbody.append(row);
+                subtotal += parseFloat(item.total);
+            });
+
+            // Calculate discount
+            const discountPercent = parseFloat($('#discount_percent').val()) || 0;
+            const discountAmount = subtotal * (discountPercent / 100);
+            const subtotalAfterDiscount = subtotal - discountAmount;
+
+            // Calculate VAT
+            const vatAmount = subtotalAfterDiscount * VAT_RATE;
+            const netTotal = subtotalAfterDiscount + vatAmount;
+
+            // Update bill summary
+            $('#subtotal').text(subtotal.toFixed(2));
+            $('#discount').text(discountAmount.toFixed(2));
+            $('#vat').text(vatAmount.toFixed(2));
+            $('#netTotal').text(netTotal.toFixed(2));
+        }
+
+        // Remove item from bill
+        window.removeItem = function(index) {
+            billItems.splice(index, 1);
+            updateBillPreview();
+        };
 
         // Complete sale
         $('#completeSale').on('click', function() {
@@ -472,23 +795,23 @@ $today = date('Y-m-d');
             }
 
             const saleData = {
-                customer_name: $('#customer_name').val() || 'Cash',
+                customer_name: $('#customer_name').val() || 'Cash Customer',
                 customer_contact: $('#customer_contact').val() || '',
-                items: billItems,
-                sub_total: parseFloat($('#subtotal').text()),
+                items: billItems.map(item => ({
+                    itemId: item.itemId,
+                    quantity: item.quantity,
+                    price: item.unitPrice,
+                    total: parseFloat(item.total)
+                })),
+                subtotal: parseFloat($('#subtotal').text()),
                 discount_percent: parseFloat($('#discount_percent').val()) || 0,
+                discount_amount: parseFloat($('#discount').text()),
                 vat_amount: parseFloat($('#vat').text()),
                 net_total: parseFloat($('#netTotal').text()),
-                payment_method: $('#payment_method').val() || 'cash'
+                payment_method: $('#payment_method').val() || 'Cash'
             };
 
-            // Create print iframe
-            const printFrame = $('<iframe>', {
-                name: 'print_frame',
-                class: 'print-frame',
-                style: 'display: none;'
-            }).appendTo('body');
-
+            // AJAX call to save sale
             $.ajax({
                 url: 'process_sale.php',
                 type: 'POST',
@@ -496,16 +819,27 @@ $today = date('Y-m-d');
                 data: JSON.stringify(saleData),
                 success: function(response) {
                     if (response.success) {
+                        // Create print iframe
+                        const printFrame = $('<iframe>', {
+                            name: 'print_frame',
+                            class: 'print-frame',
+                            style: 'display: none;'
+                        }).appendTo('body');
+
                         // Write bill to iframe and print
                         printFrame.contents().find('body').html(response.bill_html);
                         setTimeout(function() {
                             printFrame[0].contentWindow.print();
+                            
                             // Reset form after printing
                             billItems = [];
                             updateBillPreview();
                             $('#saleForm')[0].reset();
-                            $('#customer_name').val('Cash');
+                            $('#customer_name').val('Cash Customer');
                             printFrame.remove();
+
+                            // Show success message
+                            alert('Sale completed successfully!');
                         }, 500);
                     } else {
                         alert('Error: ' + response.message);
@@ -517,61 +851,6 @@ $today = date('Y-m-d');
                 }
             });
         });
-
-        function updateBillPreview() {
-            const tbody = $('#billItems');
-            tbody.empty();
-            
-            let subtotal = 0;
-            
-            billItems.forEach((item, index) => {
-                tbody.append(`
-                    <tr>
-                        <td>${item.name}</td>
-                        <td>${item.quantity}</td>
-                        <td>Rs.${item.price.toFixed(2)}</td>
-                        <td>Rs.${item.total.toFixed(2)}</td>
-                        <td>
-                            <button type="button" class="btn btn-danger btn-sm" onclick="removeItem(${index})">
-                                <i class="fa fa-trash"></i>
-                            </button>
-                        </td>
-                    </tr>
-                `);
-                subtotal += item.total;
-            });
-
-            // Calculate totals
-            const discountPercent = parseFloat($('#discount_percent').val()) || 0;
-            const discount = (subtotal * discountPercent) / 100;
-            const vat = ((subtotal - discount) * 0.13); // 13% VAT
-            const netTotal = subtotal - discount + vat;
-
-            // Update totals display
-            $('#subtotal').text(subtotal.toFixed(2));
-            $('#discount').text(discount.toFixed(2));
-            $('#vat').text(vat.toFixed(2));
-            $('#netTotal').text(netTotal.toFixed(2));
-        }
-
-        window.removeItem = function(index) {
-            billItems.splice(index, 1);
-            updateBillPreview();
-        };
-
-        // Function to update the current time
-        function updateTime() {
-            const now = new Date();
-            const hours = now.getHours().toString().padStart(2, '0');
-            const minutes = now.getMinutes().toString().padStart(2, '0');
-            const seconds = now.getSeconds().toString().padStart(2, '0');
-            const currentTime = `${hours}:${minutes}:${seconds}`;
-            $('#currentTime').text(currentTime);
-        }
-
-        // Update the time every second
-        setInterval(updateTime, 1000);
-        updateTime(); // Initial call to display time immediately
     });
     </script>
 
@@ -603,8 +882,81 @@ $today = date('Y-m-d');
                 console.error('Error:', error);
                 alert('Error reprinting bill. Please try again.');
             }
+
+    }
+    </script>
+
+    <script>
+    function viewBill(billFile) {
+        const billViewContainer = document.getElementById('billViewContainer');
+        const billViewModal = document.getElementById('billViewModal');
+        
+        // Create an iframe to load the bill
+        const iframe = document.createElement('iframe');
+        iframe.src = billFile;
+        iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin');
+        
+        // Clear previous content and add new iframe
+        billViewContainer.innerHTML = '';
+        billViewContainer.appendChild(iframe);
+        
+        // Show modal
+        billViewModal.style.display = 'block';
+    }
+
+    // Close modal when clicking on close button
+    document.querySelector('.close-modal').addEventListener('click', function() {
+        document.getElementById('billViewModal').style.display = 'none';
+    });
+
+    // Close modal when clicking outside of it
+    window.addEventListener('click', function(event) {
+        const billViewModal = document.getElementById('billViewModal');
+        if (event.target == billViewModal) {
+            billViewModal.style.display = 'none';
+        }
+    });
+
+    // Update recent transactions table to include view bill button
+    function updateRecentTransactionsTable() {
+        const rows = document.querySelectorAll('.recent-transactions tbody tr');
+        rows.forEach(row => {
+            const saleId = row.getAttribute('data-sale-id');
+            const actionsCell = row.querySelector('.actions');
+            
+            if (actionsCell && saleId) {
+                // Add view bill button next to reprint button
+                const viewBillBtn = document.createElement('button');
+                viewBillBtn.innerHTML = '<i class="fa fa-file-text"></i> View Bill';
+                viewBillBtn.classList.add('btn-primary', 'btn-sm', 'ml-2');
+                viewBillBtn.onclick = function() {
+                    // AJAX call to get bill file
+                    $.ajax({
+                        url: 'get_bill_file.php',
+                        method: 'POST',
+                        data: { sale_id: saleId },
+                        success: function(response) {
+                            if (response.bill_file) {
+                                viewBill(response.bill_file);
+                            } else {
+                                alert('Bill file not found.');
+                            }
+                        },
+                        error: function() {
+                            alert('Error retrieving bill file.');
+                        }
+                    });
+                };
+                
+                actionsCell.appendChild(viewBillBtn);
+            }
         });
     }
+
+    // Call on page load
+    $(document).ready(function() {
+        updateRecentTransactionsTable();
+    });
     </script>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>

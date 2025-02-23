@@ -78,6 +78,10 @@ try {
         itemcode VARCHAR(5),
         itemname VARCHAR(50),
         status CHAR(1) DEFAULT 'Y',
+        last_sale_date DATETIME NULL,
+        last_purchase_date DATETIME NULL,
+        total_sales_quantity INT DEFAULT 0,
+        total_purchases_quantity INT DEFAULT 0,
         FOREIGN KEY (supplier_id) REFERENCES suppliers(id) ON DELETE SET NULL
     )";
     
@@ -86,6 +90,7 @@ try {
     }
 
     // Create sales table
+    // bill_file: Stores the path to the generated HTML bill for each sale
     $sales_table = "CREATE TABLE IF NOT EXISTS sales (
         id INT AUTO_INCREMENT PRIMARY KEY,
         customer_id INT NULL,
@@ -101,6 +106,11 @@ try {
         payment_method ENUM('cash', 'credit', 'bank') DEFAULT 'cash',
         sale_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         user_id INT,
+        bill_file VARCHAR(255) NULL COMMENT 'Stores path to generated HTML bill for each sale transaction',
+        device_info VARCHAR(255) NULL,
+        browser_info VARCHAR(255) NULL,
+        sale_location VARCHAR(100) NULL,
+        bill_generation_status ENUM('success', 'failed', 'partial') DEFAULT 'success',
         FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL,
         FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
     )";
@@ -185,6 +195,123 @@ try {
     
     if (!$conn->query($transactions_table)) {
         throw new Exception("Error creating transactions table: " . $conn->error);
+    }
+
+    // Create log table for tracking system events
+    $log_table = "CREATE TABLE IF NOT EXISTS system_logs (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        log_type ENUM('error', 'warning', 'info', 'sale', 'purchase', 'inventory') NOT NULL,
+        message TEXT NOT NULL,
+        user_id INT NULL,
+        ip_address VARCHAR(45),
+        log_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+    )";
+    
+    if (!$conn->query($log_table)) {
+        throw new Exception("Error creating system_logs table: " . $conn->error);
+    }
+
+    // Create bill storage configuration table
+    $bill_config_table = "CREATE TABLE IF NOT EXISTS bill_configurations (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        company_name VARCHAR(100) DEFAULT 'SIMPLE IMS',
+        company_address TEXT,
+        vat_number VARCHAR(50),
+        default_vat_rate DECIMAL(5,2) DEFAULT 13.00,
+        bill_header_text TEXT,
+        bill_footer_text TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    )";
+    
+    if (!$conn->query($bill_config_table)) {
+        throw new Exception("Error creating bill_configurations table: " . $conn->error);
+    }
+
+    // Insert default bill configuration
+    $default_bill_config = "INSERT INTO bill_configurations 
+        (company_name, company_address, vat_number, bill_header_text, bill_footer_text) 
+        VALUES (
+            'SIMPLE IMS', 
+            'Inventory Management System Headquarters', 
+            'VAT-123456', 
+            'Official Tax Invoice', 
+            'Thank you for your business. All sales are final.'
+        ) ON DUPLICATE KEY UPDATE id = id";
+    
+    if (!$conn->query($default_bill_config)) {
+        throw new Exception("Error inserting default bill configuration: " . $conn->error);
+    }
+
+    // Create bill template table for storing different bill styles
+    $bill_templates_table = "CREATE TABLE IF NOT EXISTS bill_templates (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        template_name VARCHAR(50) NOT NULL,
+        template_type ENUM('html', 'pdf') DEFAULT 'html',
+        template_content TEXT NOT NULL,
+        is_default BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+    )";
+    
+    if (!$conn->query($bill_templates_table)) {
+        throw new Exception("Error creating bill_templates table: " . $conn->error);
+    }
+
+    // Insert default bill template
+    $default_bill_template = "INSERT INTO bill_templates 
+        (template_name, template_type, template_content, is_default) 
+        VALUES (
+            'Default HTML Bill', 
+            'html', 
+            '<!DOCTYPE html>
+<html>
+<head>
+    <title>Sales Invoice</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .bill-header { text-align: center; }
+        .bill-details { margin: 20px 0; }
+        .bill-items { width: 100%; border-collapse: collapse; }
+        .bill-items th, .bill-items td { border: 1px solid #ddd; padding: 8px; }
+    </style>
+</head>
+<body>
+    <div class=\"bill-header\">
+        <h1>{{COMPANY_NAME}}</h1>
+        <p>Tax Invoice</p>
+    </div>
+    <div class=\"bill-details\">
+        <p>Invoice #: {{INVOICE_NUMBER}}</p>
+        <p>Date: {{SALE_DATE}}</p>
+    </div>
+    <table class=\"bill-items\">
+        <thead>
+            <tr>
+                <th>Item</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{ITEMS_LIST}}
+        </tbody>
+    </table>
+    <div class=\"bill-totals\">
+        <p>Subtotal: {{SUBTOTAL}}</p>
+        <p>Discount: {{DISCOUNT}}</p>
+        <p>VAT: {{VAT}}</p>
+        <p>Net Total: {{NET_TOTAL}}</p>
+    </div>
+</body>
+</html>', 
+            TRUE
+        ) ON DUPLICATE KEY UPDATE id = id";
+    
+    if (!$conn->query($default_bill_template)) {
+        throw new Exception("Error inserting default bill template: " . $conn->error);
     }
 
     // Commit transaction before creating view
