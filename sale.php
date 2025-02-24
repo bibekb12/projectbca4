@@ -186,6 +186,7 @@ $today = date('Y-m-d');
         }
 
         .bill-items-table th {
+            
             border-bottom: 1px solid #000;
             text-align: left;
             padding: 5px;

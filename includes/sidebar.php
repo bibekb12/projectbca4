@@ -5,6 +5,9 @@ $is_admin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 ?>
 <link rel="icon" href="images/t-logo.png" type="image/icon type">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="/include/required/allstyle.css">
+<link rel="stylesheet" href="/include/required/iconscout.css">
+<link rel="stylesheet" href="/include/required/fawaysome.css">
 <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <nav>
@@ -14,8 +17,8 @@ $is_admin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
         </span>
     </div>
 
-    <div class="menu-items">
-        <ul class="nav-links">
+    <div class="menu-items" text-color="white">
+        <ul class="nav-links" >
             <li>
                 <a href="dashboard.php" class="<?php echo ($current_page == 'dashboard.php') ? 'active' : ''; ?>">
                     <i class="uil uil-estate"></i>
