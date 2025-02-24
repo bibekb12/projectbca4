@@ -4,7 +4,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
 $is_admin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 ?>
 <link rel="icon" href="images/t-logo.png" type="image/icon type">
-<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="includes\css\style.css">
 <link rel="stylesheet" href="includes\css\sale.css">
 <link rel="stylesheet" href="include\required\all.css">
 <link rel="stylesheet" href="include\required\icon-scout.css">

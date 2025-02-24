@@ -222,6 +222,18 @@ try {
         <?php endif; ?>
         </div>
     </section>
+    <div class="dashboard-quick-actions">
+        <div class="table-container">
+            <tr>
+                Recent Items Sold
+                <td>Items</td>
+            </tr>
+            <tr>
+                Recent Items Purchased
+                <td>Items</td>
+            </tr>
+        </div>
+    </div>
 
     <!-- Chart.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
