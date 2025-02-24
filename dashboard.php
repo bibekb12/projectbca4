@@ -115,7 +115,7 @@ try {
                             <h4>Total Sales</h4>
                             <div class="stat-value">
                                 <?php
-                                $sales_query = "SELECT SUM(amount) as total_sales FROM transactions WHERE type='Sale'";
+                                $sales_query = "SELECT SUM(net_total) as total_sales FROM sales ";
                                 $sales_result = $conn->query($sales_query);
                                 $total_sales = $sales_result ? $sales_result->fetch_assoc()['total_sales'] : 0;
                                 echo 'Rs. ' . number_format($total_sales, 2);

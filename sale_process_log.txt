@@ -12,3 +12,10 @@
 [2025-02-24 05:59:22] Sale inserted with ID: 31
 [2025-02-24 05:59:22] Sale transaction completed successfully
 [2025-02-24 05:59:22] Bill saved successfully: bills/bill_000031_20250224_055922.html
+[2025-02-24 08:55:26] Received raw data: {"customer_name":"Cash","customer_contact":"","items":[{"itemId":"4","quantity":1,"price":4555,"total":4555}],"subtotal":4555,"discount_percent":0,"discount_amount":0,"vat_amount":592.15,"net_total":5147.15,"payment_method":"card"}
+[2025-02-24 08:55:26] Transaction started
+[2025-02-24 08:55:26] Subtotal calculated: 4555
+[2025-02-24 08:55:26] Financial calculations - Discount: 0, VAT: 592.15, Net Total: 5147.15
+[2025-02-24 08:55:26] Sale inserted with ID: 32
+[2025-02-24 08:55:26] Sale transaction completed successfully
+[2025-02-24 08:55:26] Bill saved successfully: bills/bill_000032_20250224_085526.html

@@ -5,9 +5,10 @@ $is_admin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 ?>
 <link rel="icon" href="images/t-logo.png" type="image/icon type">
 <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="/include/required/allstyle.css">
-<link rel="stylesheet" href="/include/required/iconscout.css">
-<link rel="stylesheet" href="/include/required/fawaysome.css">
+<link rel="stylesheet" href="includes\css\sale.css">
+<link rel="stylesheet" href="include\required\all.css">
+<link rel="stylesheet" href="include\required\icon-scout.css">
+<link rel="stylesheet" href="include\required\font-awesome.css">
 <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <nav>
