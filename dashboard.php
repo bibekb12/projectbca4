@@ -219,22 +219,75 @@ try {
                     </a>
                 </div>
             </div>
-        <?php endif; ?>
+            <?php endif; ?>
+        </div>
+        
+        <div class="dashboard-quick-actions">
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>All Items Sold</th>
+                            <th>Quantity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        // Fetch all distinct items sold
+                        $sold_items_query = $conn->query("SELECT i.itemname, SUM(si.quantity) as total_quantity 
+                            FROM sale_items si 
+                            JOIN items i ON si.item_id = i.id 
+                            GROUP BY i.itemname 
+                            ORDER BY total_quantity DESC");
+
+                        if ($sold_items_query === false) {
+                            echo "<tr><td colspan='2'>Error fetching sold items: " . $conn->error . "</td></tr>";
+                        } elseif ($sold_items_query->num_rows === 0) {
+                            echo "<tr><td colspan='2'>No items sold found.</td></tr>";
+                        } else {
+                            while ($item = $sold_items_query->fetch_assoc()) {
+                                echo "<tr>
+                                    <td>" . htmlspecialchars($item['itemname']) . "</td>
+                                    <td>" . htmlspecialchars($item['total_quantity']) . "</td>
+                                </tr>";
+                            }
+                        }
+                        ?>
+                    </tbody>
+                </table>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>All Suppliers</th>
+                            <th>Contact</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php
+                        // Fetch all active suppliers
+                        $suppliers_query = $conn->query("SELECT name, contact 
+                            FROM suppliers 
+                            WHERE status = 'Y' 
+                            ORDER BY name ASC");
+
+                        if ($suppliers_query === false) {
+                            echo "<tr><td colspan='2'>Error fetching suppliers: " . $conn->error . "</td></tr>";
+                        } elseif ($suppliers_query->num_rows === 0) {
+                            echo "<tr><td colspan='2'>No active suppliers found.</td></tr>";
+                        } else {
+                            while ($supplier = $suppliers_query->fetch_assoc()) {
+                                echo "<tr>
+                                    <td>" . htmlspecialchars($supplier['name']) . "</td>
+                                    <td>" . htmlspecialchars($supplier['contact']) . "</td>
+                                </tr>";
+                            }
+                        }
+                        ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </section>
-    <div class="dashboard-quick-actions">
-        <div class="table-container">
-            <tr>
-                Recent Items Sold
-                <td>Items</td>
-            </tr>
-            <tr>
-                Recent Items Purchased
-                <td>Items</td>
-            </tr>
-        </div>
-    </div>
-
     <!-- Chart.js Library -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>

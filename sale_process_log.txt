@@ -19,3 +19,112 @@
 [2025-02-24 08:55:26] Sale inserted with ID: 32
 [2025-02-24 08:55:26] Sale transaction completed successfully
 [2025-02-24 08:55:26] Bill saved successfully: bills/bill_000032_20250224_085526.html
+[2025-02-24 17:40:35] Received raw data: {"customer_name":"bibek","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 333)\n                                  ","quantity":12,"price":4555,"total":54660}],"sub_total":54660,"discount_percent":0,"vat_amount":7105.8,"net_total":61765.8,"payment_method":"card"}
+[2025-02-24 17:40:35] Transaction started
+[2025-02-24 17:40:35] Malformed item data: {"id":4,"name":"\n                                  keyboard (Stock: 333)\n                                  ","quantity":12,"price":4555,"total":54660}
+[2025-02-24 17:40:35] Sale processing error: Invalid item data. Missing required fields.
+[2025-02-24 17:40:41] Received raw data: {"customer_name":"bibek","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 333)\n                                  ","quantity":12,"price":4555,"total":54660}],"sub_total":54660,"discount_percent":0,"vat_amount":7105.8,"net_total":61765.8,"payment_method":"cash"}
+[2025-02-24 17:40:41] Transaction started
+[2025-02-24 17:40:41] Malformed item data: {"id":4,"name":"\n                                  keyboard (Stock: 333)\n                                  ","quantity":12,"price":4555,"total":54660}
+[2025-02-24 17:40:41] Sale processing error: Invalid item data. Missing required fields.
+[2025-02-24 17:40:49] Received raw data: {"customer_name":"bibek","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 333)\n                                  ","quantity":12,"price":4555,"total":54660}],"sub_total":54660,"discount_percent":0,"vat_amount":7105.8,"net_total":61765.8,"payment_method":"cash"}
+[2025-02-24 17:40:49] Transaction started
+[2025-02-24 17:40:49] Malformed item data: {"id":4,"name":"\n                                  keyboard (Stock: 333)\n                                  ","quantity":12,"price":4555,"total":54660}
+[2025-02-24 17:40:49] Sale processing error: Invalid item data. Missing required fields.
+[2025-02-24 17:43:55] Received raw data: {"customer_name":"bibek","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 333)\n                                  ","quantity":12,"price":4555,"total":54660}],"sub_total":54660,"discount_percent":0,"vat_amount":7105.8,"net_total":61765.8,"payment_method":"cash"}
+[2025-02-24 17:43:55] Transaction started
+[2025-02-24 17:43:55] Malformed item data: {"id":4,"name":"\n                                  keyboard (Stock: 333)\n                                  ","quantity":12,"price":4555,"total":54660}
+[2025-02-24 17:43:55] Sale processing error: Invalid item data. Missing required fields.
+[2025-02-24 17:43:58] Received raw data: {"customer_name":"bibek","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 333)\n                                  ","quantity":12,"price":4555,"total":54660}],"sub_total":54660,"discount_percent":0,"vat_amount":7105.8,"net_total":61765.8,"payment_method":"cash"}
+[2025-02-24 17:43:58] Transaction started
+[2025-02-24 17:43:58] Malformed item data: {"id":4,"name":"\n                                  keyboard (Stock: 333)\n                                  ","quantity":12,"price":4555,"total":54660}
+[2025-02-24 17:43:58] Sale processing error: Invalid item data. Missing required fields.
+[2025-02-24 17:44:26] Received raw data: {"customer_name":"bibek bhandari","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 333)\n                                  ","quantity":100,"price":4555,"total":455500}],"sub_total":455500,"discount_percent":0,"vat_amount":59215,"net_total":514715,"payment_method":"card"}
+[2025-02-24 17:44:26] Transaction started
+[2025-02-24 17:44:26] Malformed item data: {"id":4,"name":"\n                                  keyboard (Stock: 333)\n                                  ","quantity":100,"price":4555,"total":455500}
+[2025-02-24 17:44:26] Sale processing error: Invalid item data. Missing required fields.
+[2025-02-24 17:44:44] Received raw data: {"customer_name":"bibek bhandari","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 333)\n                                  ","quantity":100,"price":4555,"total":455500}],"sub_total":455500,"discount_percent":0,"vat_amount":59215,"net_total":514715,"payment_method":"card"}
+[2025-02-24 17:44:44] Transaction started
+[2025-02-24 17:44:44] Malformed item data: {"id":4,"name":"\n                                  keyboard (Stock: 333)\n                                  ","quantity":100,"price":4555,"total":455500}
+[2025-02-24 17:44:44] Sale processing error: Invalid item data. Missing required fields.
+[2025-02-24 17:47:24] Received raw data: {"customer_name":"bibek bhandari","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 333)\n                                  ","quantity":100,"price":4555,"total":455500}],"sub_total":455500,"discount_percent":0,"vat_amount":59215,"net_total":514715,"payment_method":"card"}
+[2025-02-24 17:47:24] Transaction started
+[2025-02-24 17:47:24] Subtotal calculated: 455500
+[2025-02-24 17:47:24] Financial calculations - Discount: 0, VAT: 59215, Net Total: 514715
+[2025-02-24 17:47:24] Sale inserted with ID: 33
+[2025-02-24 17:47:24] Sale transaction completed successfully
+[2025-02-24 17:47:24] Bill saved successfully: bills/bill_000033_20250224_174724.html
+[2025-02-24 17:47:34] Received raw data: {"customer_name":"bibek bhandari","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 333)\n                                  ","quantity":100,"price":4555,"total":455500}],"sub_total":455500,"discount_percent":0,"vat_amount":59215,"net_total":514715,"payment_method":"card"}
+[2025-02-24 17:47:34] Transaction started
+[2025-02-24 17:47:34] Subtotal calculated: 455500
+[2025-02-24 17:47:34] Financial calculations - Discount: 0, VAT: 59215, Net Total: 514715
+[2025-02-24 17:47:34] Sale inserted with ID: 34
+[2025-02-24 17:47:34] Sale transaction completed successfully
+[2025-02-24 17:47:34] Bill saved successfully: bills/bill_000034_20250224_174734.html
+[2025-02-24 17:47:46] Received raw data: {"customer_name":"bibek bhandari","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 333)\n                                  ","quantity":100,"price":4555,"total":455500}],"sub_total":455500,"discount_percent":0,"vat_amount":59215,"net_total":514715,"payment_method":"card"}
+[2025-02-24 17:47:46] Transaction started
+[2025-02-24 17:47:46] Subtotal calculated: 455500
+[2025-02-24 17:47:46] Financial calculations - Discount: 0, VAT: 59215, Net Total: 514715
+[2025-02-24 17:47:46] Sale inserted with ID: 35
+[2025-02-24 17:47:46] Sale transaction completed successfully
+[2025-02-24 17:47:46] Bill saved successfully: bills/bill_000035_20250224_174746.html
+[2025-02-24 17:48:14] Received raw data: {"customer_name":"Cash","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 33)\n                                  ","quantity":10,"price":4555,"total":45550}],"sub_total":45550,"discount_percent":0,"vat_amount":5921.5,"net_total":51471.5,"payment_method":"cash"}
+[2025-02-24 17:48:14] Transaction started
+[2025-02-24 17:48:14] Subtotal calculated: 45550
+[2025-02-24 17:48:14] Financial calculations - Discount: 0, VAT: 5921.5, Net Total: 51471.5
+[2025-02-24 17:48:14] Sale inserted with ID: 36
+[2025-02-24 17:48:14] Sale transaction completed successfully
+[2025-02-24 17:48:14] Bill saved successfully: bills/bill_000036_20250224_174814.html
+[2025-02-24 17:52:06] Received raw data: {"customer_name":"Cash","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 23)\n                                  ","quantity":10,"price":4555,"total":45550},{"id":3,"name":"\n                                  mouse (Stock: 105)\n                                  ","quantity":50,"price":200,"total":10000}],"sub_total":55550,"discount_percent":0,"vat_amount":7221.5,"net_total":62771.5,"payment_method":"qrpay"}
+[2025-02-24 17:52:06] Transaction started
+[2025-02-24 17:52:06] Subtotal calculated: 55550
+[2025-02-24 17:52:06] Financial calculations - Discount: 0, VAT: 7221.5, Net Total: 62771.5
+[2025-02-24 17:52:06] Sale inserted with ID: 37
+[2025-02-24 17:52:06] Sale transaction completed successfully
+[2025-02-24 17:52:06] Bill saved successfully: bills/bill_000037_20250224_175206.html
+[2025-02-24 17:58:43] Received raw data: {"customer_name":"Cash","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 13)\n                                  ","quantity":12,"price":4555,"total":54660}],"sub_total":54660,"discount_percent":0,"vat_amount":7105.8,"net_total":61765.8,"payment_method":"qr"}
+[2025-02-24 17:58:43] Transaction started
+[2025-02-24 17:58:43] Subtotal calculated: 54660
+[2025-02-24 17:58:43] Financial calculations - Discount: 0, VAT: 7105.8, Net Total: 61765.8
+[2025-02-24 17:58:43] Sale inserted with ID: 38
+[2025-02-24 17:58:43] Sale transaction completed successfully
+[2025-02-24 17:58:43] Bill saved successfully: bills/bill_000038_20250224_175843.html
+[2025-02-24 17:59:58] Received raw data: {"customer_name":"Cash","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 1)\n                                  ","quantity":1,"price":4555,"total":4555}],"sub_total":4555,"discount_percent":0,"vat_amount":592.15,"net_total":5147.15,"payment_method":"qr"}
+[2025-02-24 17:59:58] Transaction started
+[2025-02-24 17:59:58] Subtotal calculated: 4555
+[2025-02-24 17:59:58] Financial calculations - Discount: 0, VAT: 592.15, Net Total: 5147.15
+[2025-02-24 17:59:58] Sale inserted with ID: 39
+[2025-02-24 17:59:58] Sale transaction completed successfully
+[2025-02-24 17:59:58] Bill saved successfully: bills/bill_000039_20250224_175958.html
+[2025-02-24 18:00:29] Received raw data: {"customer_name":"bibek","customer_contact":"9819033012","items":[{"id":3,"name":"\n                                  mouse (Stock: 55)\n                                  ","quantity":10,"price":200,"total":2000}],"sub_total":2000,"discount_percent":0,"vat_amount":260,"net_total":2260,"payment_method":"qr"}
+[2025-02-24 18:00:29] Transaction started
+[2025-02-24 18:00:29] Subtotal calculated: 2000
+[2025-02-24 18:00:29] Financial calculations - Discount: 0, VAT: 260, Net Total: 2260
+[2025-02-24 18:00:29] Sale inserted with ID: 40
+[2025-02-24 18:00:29] Sale transaction completed successfully
+[2025-02-24 18:00:29] Bill saved successfully: bills/bill_000040_20250224_180029.html
+[2025-02-24 18:03:20] Received raw data: {"customer_name":"Cash","customer_contact":"9819033012","items":[{"id":3,"name":"\n                                  mouse (Stock: 45)\n                                  ","quantity":10,"price":200,"total":2000}],"sub_total":2000,"discount_percent":0,"vat_amount":260,"net_total":2260,"payment_method":"cash"}
+[2025-02-24 18:03:20] Transaction started
+[2025-02-24 18:03:20] Subtotal calculated: 2000
+[2025-02-24 18:03:20] Financial calculations - Discount: 0, VAT: 260, Net Total: 2260
+[2025-02-24 18:03:20] Sale inserted with ID: 41
+[2025-02-24 18:03:20] Sale transaction completed successfully
+[2025-02-24 18:03:20] Bill saved successfully: bills/bill_000041_20250224_180320.html
+[2025-02-24 18:04:47] Received raw data: {"customer_name":"Cash","customer_contact":"9819033012","items":[{"id":3,"name":"\n                                  mouse (Stock: 45)\n                                  ","quantity":10,"price":200,"total":2000}],"sub_total":4000,"discount_percent":0,"vat_amount":520,"net_total":4520,"payment_method":"cash"}
+[2025-02-24 18:04:47] Transaction started
+[2025-02-24 18:04:47] Subtotal calculated: 2000
+[2025-02-24 18:04:47] Financial calculations - Discount: 0, VAT: 260, Net Total: 2260
+[2025-02-24 18:04:47] Sale inserted with ID: 42
+[2025-02-24 18:04:47] Sale transaction completed successfully
+[2025-02-24 18:04:47] Bill saved successfully: bills/bill_000042_20250224_180447.html
+[2025-02-24 18:07:02] Received raw data: {"customer_name":"Cash","customer_contact":"9819033012","items":[{"id":3,"name":"\n                                  mouse (Stock: 25)\n                                  ","quantity":10,"price":200,"total":2000}],"sub_total":2000,"discount_percent":0,"vat_amount":260,"net_total":2260,"payment_method":"cash"}
+[2025-02-24 18:07:02] Transaction started
+[2025-02-24 18:07:02] Subtotal calculated: 2000
+[2025-02-24 18:07:02] Financial calculations - Discount: 0, VAT: 260, Net Total: 2260
+[2025-02-24 18:07:02] Sale inserted with ID: 43
+[2025-02-24 18:07:02] Sale transaction completed successfully
+[2025-02-24 18:07:02] Bill saved successfully: bills/bill_000043_20250224_180702.html
+[2025-02-25 07:56:49] Received raw data: {"customer_name":"Cash","customer_contact":"","items":[{"id":6,"name":"\n                                  mouse (Stock: 114)\n                                  ","quantity":222,"price":300,"total":66600}],"sub_total":66600,"discount_percent":0,"vat_amount":8658,"net_total":75258,"payment_method":"card"}
+[2025-02-25 07:56:49] Transaction started
+[2025-02-25 07:56:49] Insufficient stock for item: mouse. Available: 114, Requested: 222
+[2025-02-25 07:56:49] Sale processing error: Insufficient stock for item: mouse

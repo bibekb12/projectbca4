@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Sale Invoice #000040</title>
+    <style>
+        @page {
+            size: A5;
+            margin: 10mm;
+        }
+        body {
+            width: 148mm;
+            margin: 0 auto;
+            padding: 0;
+            font-family: "Courier New", monospace;
+            font-size: 12px;
+        }
+        .bill-print {
+            padding: 10mm;
+            position: relative;
+        }
+        .bill-header {
+            text-align: center;
+            border-bottom: 1px dashed #000;
+            padding-bottom: 5mm;
+            margin-bottom: 5mm;
+        }
+        .bill-header h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+        .sale-details {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5mm;
+            border-bottom: 1px dotted #ccc;
+            padding-bottom: 3mm;
+        }
+        .customer-info {
+            margin-bottom: 5mm;
+        }
+        .bill-items {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 5mm 0;
+        }
+        .bill-items th {
+            border-bottom: 1px solid #000;
+            text-align: left;
+            padding: 2mm;
+        }
+        .bill-items td {
+            padding: 2mm;
+            border-bottom: 1px dotted #ccc;
+        }
+        .bill-totals {
+            margin-top: 5mm;
+            border-top: 1px dashed #000;
+            padding-top: 5mm;
+            text-align: right;
+        }
+        .bill-footer {
+            text-align: center;
+            margin-top: 10mm;
+            font-size: 11px;
+        }
+        .reprint-btn {
+            position: absolute;
+            top: 10mm;
+            right: 10mm;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 10px;
+        }
+        @media print {
+            body {
+                width: 148mm;
+                height: 210mm;
+            }
+            .reprint-btn {
+                display: none;
+            }
+        }
+    </style>
+    <script>
+        function printBill() {
+            window.print();
+        }
+    </script>
+</head>
+<body>
+    <div class="bill-print">
+        <a href="#" class="reprint-btn" onclick="printBill()">🖨️ Reprint Bill</a>
+        
+        <div class="bill-header">
+            <h2>SIMPLE IMS</h2>
+            <p>Sale Invoice</p>
+        </div>
+        
+        <div class="sale-details">
+            <div>
+                <p><strong>Invoice #:</strong> 000040</p>
+                <p><strong>Date & Time:</strong> 2025-02-24 18:00:29</p>
+            </div>
+            <div style="text-align: right;">
+                <p><strong>Payment Method:</strong> qr</p>
+            </div>
+        </div>
+
+        <div class="customer-info">
+            <p><strong>Customer:</strong> bibek</p>
+            <p><strong>Contact:</strong> 9819033012</p>
+        </div>
+        
+        <table class="bill-items">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>mouse</td>
+                    <td>10</td>
+                    <td>200.00</td>
+                    <td>2,000.00</td>
+                </tr>
+            </tbody>
+        </table>
+        <div class="bill-totals">
+            <p><strong>Subtotal:</strong> 2,000.00</p>
+            <p><strong>Discount (0%):</strong> 0.00</p>
+            <p><strong>VAT (13%):</strong> 260.00</p>
+            <p><strong>Net Total:</strong> 2,260.00</p>
+        </div>
+        <div class="bill-footer">
+            <p>Thank you for your purchase!</p>
+        </div>
+    </div>
+</body>
+</html>

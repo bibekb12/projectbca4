@@ -55,13 +55,13 @@ try {
 
     foreach ($data['items'] as $item) {
         // Validate each item
-        if (!isset($item['itemId'], $item['quantity'], $item['price'], $item['total'])) {
+        if (!isset($item['id'], $item['quantity'], $item['price'], $item['total'])) {
             custom_log('Malformed item data: ' . json_encode($item));
             throw new Exception('Invalid item data. Missing required fields.');
         }
 
         // Type cast and validate
-        $item_id = intval($item['itemId']);
+        $item_id = intval($item['id']);
         $quantity = intval($item['quantity']);
         $price = floatval($item['price']);
         $total = floatval($item['total']);
@@ -450,7 +450,7 @@ try {
 
 } catch (Exception $e) {
     // Rollback transaction on error
-    if (isset($conn) && $conn->in_transaction) {
+    if (isset($conn) && $conn->errno) {
         $conn->rollback();
     }
 

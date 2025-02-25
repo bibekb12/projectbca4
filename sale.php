@@ -7,7 +7,6 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['username'])) {
 }
 include('db.php');
 
-
 $today = date('Y-m-d');
 ?>
 <!DOCTYPE html>
@@ -38,7 +37,7 @@ $today = date('Y-m-d');
             <div class="bill-header">
                 <h2>S M I S</h2>
                 <p>Sale Invoice</p>
-                <p>Date: <?php echo date('Y-m-d'); ?> <span id="currentTime"></span></p>
+                <p>Date: <?php echo $today; ?> <span id="currentTime"></span></p>
             </div>
 
             <div class="bill-info">
@@ -135,7 +134,7 @@ $today = date('Y-m-d');
         <div class="section-header">
             <h2>Recent Transactions</h2>
             <div class="section-header-actions">
-                <span class="date-filter">Today: <?php echo date('Y-m-d'); ?></span>
+                <span class="date-filter">Today: <?php echo $today; ?></span>
             </div>
         </div>
         <table class="bill-table recent-transactions">
@@ -209,73 +208,6 @@ $today = date('Y-m-d');
         </table>
     </div>
 
-    <div class="dashboard-quick-actions">
-        <div class="table-container">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Recent Items Sold</th>
-                        <th>Items</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    // Fetch recent items sold
-                    $recent_sold_items = $conn->query("SELECT i.itemname, si.quantity 
-                        FROM sale_items si 
-                        JOIN items i ON si.item_id = i.id 
-                        ORDER BY si.sale_date DESC 
-                        LIMIT 5");
-
-                    if ($recent_sold_items === false) {
-                        echo "<tr><td colspan='2'>Error fetching sold items: " . $conn->error . "</td></tr>";
-                    } elseif ($recent_sold_items->num_rows === 0) {
-                        echo "<tr><td colspan='2'>No recent items sold found.</td></tr>";
-                    } else {
-                        while ($item = $recent_sold_items->fetch_assoc()) {
-                            echo "<tr>
-                                <td>" . htmlspecialchars($item['itemname']) . "</td>
-                                <td>" . htmlspecialchars($item['quantity']) . "</td>
-                            </tr>";
-                        }
-                    }
-                    ?>
-                </tbody>
-            </table>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Recent Items Purchased</th>
-                        <th>Items</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php
-                    // Fetch recent items purchased
-                    $recent_purchased_items = $conn->query("SELECT i.itemname, pi.quantity 
-                        FROM purchase_items pi 
-                        JOIN items i ON pi.item_id = i.id 
-                        ORDER BY pi.purchase_date DESC 
-                        LIMIT 5");
-
-                    if ($recent_purchased_items === false) {
-                        echo "<tr><td colspan='2'>Error fetching purchased items: " . $conn->error . "</td></tr>";
-                    } elseif ($recent_purchased_items->num_rows === 0) {
-                        echo "<tr><td colspan='2'>No recent items purchased found.</td></tr>";
-                    } else {
-                        while ($item = $recent_purchased_items->fetch_assoc()) {
-                            echo "<tr>
-                                <td>" . htmlspecialchars($item['itemname']) . "</td>
-                                <td>" . htmlspecialchars($item['quantity']) . "</td>
-                            </tr>";
-                        }
-                    }
-                    ?>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
     <!-- Bill View Modal -->
     <div id="billViewModal" class="modal">
         <div class="modal-content">
@@ -301,6 +233,8 @@ $today = date('Y-m-d');
 
     <script>
     $(document).ready(function() {
+        let billItems = [];
+
         // Close modal when clicking outside of it
         window.addEventListener('click', function(event) {
             const billViewModal = document.getElementById('billViewModal');
@@ -374,6 +308,9 @@ $today = date('Y-m-d');
                 </tr>
             `);
 
+            // Add item to billItems array
+            billItems.push(item);
+
             // Reset form fields
             itemSelect.val('');
             $('#quantity').val('');
@@ -386,6 +323,8 @@ $today = date('Y-m-d');
 
         // Remove item from bill
         $(document).on('click', '.remove-item-btn', function() {
+            const rowIndex = $(this).closest('tr').index();
+            billItems.splice(rowIndex, 1);
             $(this).closest('tr').remove();
             updateBillTotals();
         });
@@ -416,6 +355,7 @@ $today = date('Y-m-d');
                 return;
             }
 
+            const paymentMethod = $('#payment_method').val();
             const saleData = {
                 customer_name: $('#customer_name').val() || 'Cash',
                 customer_contact: $('#customer_contact').val() || '',
@@ -424,7 +364,7 @@ $today = date('Y-m-d');
                 discount_percent: parseFloat($('#discount_percent').val()) || 0,
                 vat_amount: parseFloat($('#vat').text()),
                 net_total: parseFloat($('#netTotal').text()),
-                payment_method: $('#payment_method').val() || 'cash'
+                payment_method: paymentMethod // Save the selected payment method
             };
 
             $.ajax({
@@ -435,15 +375,25 @@ $today = date('Y-m-d');
                 success: function(response) {
                     if (response.success) {
                         // Write bill to iframe and print
+                        const printFrame = $('<iframe>', {
+                            name: 'print_frame',
+                            class: 'print-frame',
+                            style: 'display: none;'
+                        }).appendTo('body');
+
                         printFrame.contents().find('body').html(response.bill_html);
                         setTimeout(function() {
                             printFrame[0].contentWindow.print();
                             // Reset form after printing
                             billItems = [];
-                            updateBillPreview();
+                            updateBillTotals();
                             $('#saleForm')[0].reset();
                             $('#customer_name').val('Cash');
+                            $('#payment_method').val('cash'); // Reset payment method to default
                             printFrame.remove();
+
+                            // Refresh recent transactions
+                            refreshRecentTransactions();
                         }, 500);
                     } else {
                         alert('Error: ' + response.message);
@@ -479,6 +429,56 @@ $today = date('Y-m-d');
                 $('#customer_name').val('Cash');
             }
         });
+
+        function refreshRecentTransactions() {
+            $.ajax({
+                url: 'get_recent_transactions.php',
+                method: 'GET',
+                success: function(response) {
+                    if (response.success) {
+                        const recentTransactionsTable = $('.recent-transactions tbody');
+                        recentTransactionsTable.empty();
+                        response.transactions.forEach(function(transaction) {
+                            const paymentMethod = transaction.payment_method ? 
+                                transaction.payment_method.charAt(0).toUpperCase() + transaction.payment_method.slice(1) : 
+                                'Cash';
+                            const billStatus = transaction.bill_file ? 
+                                '<span class="badge badge-success">Generated</span>' : 
+                                '<span class="badge badge-warning">Pending</span>';
+
+                            recentTransactionsTable.append(`
+                                <tr data-sale-id="${transaction.id}">
+                                    <td class="invoice-number">${String(transaction.id).padStart(6, '0')}</td>
+                                    <td>
+                                        <div class="customer-cell">
+                                            <span class="customer-name">${transaction.customer_name}</span>
+                                            <span class="customer-contact">${transaction.customer_contact || 'N/A'}</span>
+                                        </div>
+                                    </td>
+                                    <td class="amount">Rs. ${transaction.net_total.toFixed(2)}</td>
+                                    <td class="payment-method">${paymentMethod}</td>
+                                    <td class="time">${new Date(transaction.sale_date).toLocaleTimeString()}</td>
+                                    <td class="actions">
+                                        <div class="btn-group">
+                                            <button type="button" class="btn-primary btn-sm" onclick="showBillOptions(${transaction.id})">
+                                                <i class="fa fa-file-text"></i> View/Reprint Bill
+                                            </button>
+                                        </div>
+                                        ${billStatus}
+                                    </td>
+                                </tr>
+                            `);
+                        });
+                    } else {
+                        alert('Error fetching recent transactions: ' + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error('Ajax error:', {xhr, status, error});
+                    alert('Error fetching recent transactions. Please try again.');
+                }
+            });
+        }
     });
 
     function showBillOptions(saleId) {

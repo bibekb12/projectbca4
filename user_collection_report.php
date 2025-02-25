@@ -8,7 +8,7 @@ $from_date = isset($_POST['from_date']) ? $_POST['from_date'] : $default_date;
 $to_date = isset($_POST['to_date']) ? $_POST['to_date'] : $default_date;
 $selected_user = isset($_POST['user']) ? $_POST['user'] : '';
 
-// Fetch users for the user filter dropdown
+// Fetch distinct users
 $user_result = $conn->query("SELECT DISTINCT username FROM users u 
     JOIN sales s ON u.id = s.user_id");
 if (!$user_result) {
@@ -19,15 +19,14 @@ while ($row = $user_result->fetch_assoc()) {
     $users[] = $row['username'];
 }
 
-// Fetch total collection based on filters
-$query = "SELECT u.username AS user_name, SUM(s.total_amount) as total 
+// Fetch collections based on filters
+$query = "SELECT u.username AS user_name, DATE(s.sale_date) AS sale_date, SUM(s.net_total) as total 
     FROM sales s
     JOIN users u ON s.user_id = u.id
-    WHERE DATE(s.sale_date) BETWEEN '$from_date' AND '$to_date'";
-if ($selected_user) {
-    $query .= " AND u.username = '$selected_user'";
-}
-$query .= " GROUP BY u.username";
+    WHERE DATE(s.sale_date) ";
+
+$query .= " GROUP BY u.username, DATE(s.sale_date)
+            ORDER BY DATE(s.sale_date) DESC";
 $result = $conn->query($query);
 if (!$result) {
     die("Query failed: " . $conn->error);
@@ -65,7 +64,7 @@ while ($row = $result->fetch_assoc()) {
             text-align: left;
         }
         .report-table th {
-            background-color: #f2f2f2;
+            background-color:rgb(39, 85, 185);
         }
     </style>
 </head>
@@ -81,33 +80,14 @@ while ($row = $result->fetch_assoc()) {
             </div>
         </div>
         <div class="dash-content">
-            <div class="filter-form">
-                <form method="POST" action="">
-                    <label for="from_date">From Date:</label>
-                    <input type="date" id="from_date" name="from_date" value="<?php echo htmlspecialchars($from_date); ?>">
-                    
-                    <label for="to_date">To Date:</label>
-                    <input type="date" id="to_date" name="to_date" value="<?php echo htmlspecialchars($to_date); ?>">
-                    
-                    <label for="user">User:</label>
-                    <select id="user" name="user">
-                        <option value="">All Users</option>
-                        <?php foreach ($users as $user): ?>
-                            <option value="<?php echo htmlspecialchars($user); ?>" <?php echo $selected_user == $user ? 'selected' : ''; ?>>
-                                <?php echo htmlspecialchars($user); ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                    
-                    <button type="submit">Filter</button>
-                </form>
-            </div>
+            
             <div class="report-result">
                 <h3>Total Collection from Sales</h3>
                 <table class="report-table">
                     <thead>
                         <tr>
                             <th>User</th>
+                            <th>Date</th>
                             <th>Total Collection (Rs.)</th>
                         </tr>
                     </thead>
@@ -115,6 +95,7 @@ while ($row = $result->fetch_assoc()) {
                         <?php foreach ($collections as $collection): ?>
                             <tr>
                                 <td><?php echo htmlspecialchars($collection['user_name']); ?></td>
+                                <td><?php echo htmlspecialchars($collection['sale_date']); ?></td>
                                 <td><?php echo number_format($collection['total'], 2); ?></td>
                             </tr>
                         <?php endforeach; ?>

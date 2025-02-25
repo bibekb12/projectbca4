@@ -1352,11 +1352,11 @@ select {
 .tab {
   padding: 10px 20px;
   margin-right: 10px;
-  background-color: #f1f1f1;
+  background-color: #3c4ae1;
   border: 1px solid #ccc;
   border-radius: 5px;
   text-decoration: none;
-  color: var(--text-color);
+  color: white;
 }
 
 .tab.active {

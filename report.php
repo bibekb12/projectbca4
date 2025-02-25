@@ -34,8 +34,8 @@ session_start();
                     <span class="text">Total Sales</span>
                     <span class="number">
                         <?php
-                            include('db.php');
-                            $query = "SELECT SUM(totalamount) as total FROM transaction WHERE type='Sale'";
+                            require('db.php');
+                            $query = "SELECT SUM(net_total) as total FROM sales ";
                             $result = $conn->query($query);
                             if ($result) {
                                 $row = $result->fetch_assoc();
@@ -52,33 +52,32 @@ session_start();
                     <span class="text">Total Purchases</span>
                     <span class="number">
                         <?php
-                            $query = "SELECT SUM(totalamount) as total FROM transaction WHERE type='Purchase'";
+                            require('db.php');
+                            $query = "SELECT SUM(total_amount) as total from purchases ";
                             $result = $conn->query($query);
                             if ($result) {
                                 $row = $result->fetch_assoc();
                                 $total = isset($row['total']) ? $row['total'] : 0;
                                 echo 'Rs. ' . number_format($total, 2);
-                            } else {
-                                echo 'Rs. 0.00';
+                            
                             }
                         ?>
                     </span>
                 </div>
                 <div class="box box3">
                     <i class="fa fa-line-chart"></i>
-                    <span class="text">Net Profit</span>
+                    <span class="text">Net Inventory</span>
                     <span class="number">
                         <?php
+                        require('db.php');
                             $query = "SELECT 
-                                (SELECT SUM(totalamount) FROM transaction WHERE type='Sale') -
-                                (SELECT SUM(totalamount) FROM transaction WHERE type='Purchase') as profit";
+                                (SELECT SUM(total_amount) from purchases )-
+                                (SELECT SUM(net_total) as total FROM sales ) as profit";
                             $result = $conn->query($query);
                             if ($result) {
                                 $row = $result->fetch_assoc();
                                 $profit = isset($row['profit']) ? $row['profit'] : 0;
                                 echo 'Rs. ' . number_format($profit, 2);
-                            } else {
-                                echo 'Rs. 0.00';
                             }
                         ?>
                     </span>
@@ -105,6 +104,7 @@ session_start();
                     </thead>
                     <tbody>
                         <?php
+                        include('db.php');
                         $query = "
                             SELECT 
                                 id,
@@ -166,15 +166,33 @@ session_start();
                     <tbody>
                         <?php
                         $query = "SELECT 
-                            t.Date as transaction_date,
-                            t.type,
-                            t.name as product_name,
-                            t.quantity,
-                            t.totalamount,
-                            t.username
-                            FROM transaction t
-                            ORDER BY t.Date DESC
-                            LIMIT 10";
+        s.id,
+        s.sale_date AS transaction_date,
+        'Sale' AS type,
+        i.itemname AS product_name,
+        si.quantity,
+        (si.quantity * si.price) AS totalamount,
+        u.username
+    FROM sales s
+    JOIN sale_items si ON s.id = si.sale_id
+    JOIN items i ON si.item_id = i.id
+    JOIN users u ON s.user_id = u.id
+    UNION
+    SELECT 
+        p.id,
+        p.purchase_date AS transaction_date,
+        'Purchase' AS type,
+        i.itemname AS product_name,
+        pi.quantity,
+        (pi.quantity * pi.price) AS totalamount,
+        u.username
+    FROM purchases p
+    JOIN purchase_items pi ON p.id = pi.purchase_id
+    JOIN items i ON pi.item_id = i.id
+    JOIN users u ON p.user_id = u.id
+    ORDER BY transaction_date DESC
+    LIMIT 10
+";
                         
                         $result = $conn->query($query);
                         
@@ -204,8 +222,7 @@ session_start();
             <!-- Add link to User Collection Report if admin -->
             <?php if (isset($_SESSION['role']) && $_SESSION['role'] === 'admin'): ?>
             <div class="tabs">
-                <a href="user_collection_report.php" class="tab">User Collection</a>
-                <!-- Add other tabs here -->
+                <a href="user_collection_report.php" class="tab" >User Collection</a>
             </div>
             <?php endif; ?>
         </div>
