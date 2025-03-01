@@ -13,8 +13,8 @@ $is_admin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <nav>
     <div class="logo-details">
-        <span class="logo_name">Simple 
-            <span class="highlight">IMS</span>
+        <span class="logo_name">  
+            <span class="highlight">Inventory Management System</span>
         </span>
     </div>
 
@@ -36,6 +36,12 @@ $is_admin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
                 <a href="purchase.php" class="<?php echo ($current_page == 'purchase.php') ? 'active' : ''; ?>">
                     <i class="fa fa-shopping-cart"></i>
                     <span class="link-name">Purchase</span>
+                </a>
+            </li>
+            <li>
+                <a href="stock.php" class="<?php echo ($current_page == 'stock.php') ? 'active' : ''; ?>">
+                    <i class="uil uil-chart"></i>
+                    <span class="link-name">Stock</span>
                 </a>
             </li>
             <?php if ($is_admin): ?>

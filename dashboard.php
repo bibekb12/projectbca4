@@ -2,7 +2,6 @@
 session_start();
 include('db.php');
 
-// Check if user is logged in
 if (!isset($_SESSION['user_id'])) {
     header('Location: index.php');
     exit();
@@ -29,7 +28,6 @@ try {
         $debug_info[] = "Database connection successful";
     }
 
-    // Check if transactions table exists
     $check_transactions = $conn->query("SHOW TABLES LIKE 'transactions'");
     if ($check_transactions && $check_transactions->num_rows > 0) {
         $debug_info[] = "Transactions table exists";

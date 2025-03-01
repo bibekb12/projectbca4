@@ -128,3 +128,60 @@
 [2025-02-25 07:56:49] Transaction started
 [2025-02-25 07:56:49] Insufficient stock for item: mouse. Available: 114, Requested: 222
 [2025-02-25 07:56:49] Sale processing error: Insufficient stock for item: mouse
+[2025-03-01 08:00:56] Received raw data: {"customer_name":"Cash","customer_contact":"9819033012","items":[{"id":6,"name":"\n                                  mouse (Stock: 114)\n                                  ","quantity":10,"price":300,"total":3000}],"sub_total":3000,"discount_percent":0,"vat_amount":390,"net_total":3390,"payment_method":"cash"}
+[2025-03-01 08:00:56] Transaction started
+[2025-03-01 08:00:56] Subtotal calculated: 3000
+[2025-03-01 08:00:56] Financial calculations - Discount: 0, VAT: 390, Net Total: 3390
+[2025-03-01 08:00:56] Sale inserted with ID: 41
+[2025-03-01 08:00:56] Sale transaction completed successfully
+[2025-03-01 08:00:56] Bill saved successfully: bills/bill_000041_20250301_080056.html
+[2025-03-01 08:28:08] Received raw data: {"customer_name":"Cash","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 120)\n                                  ","quantity":10,"price":200,"total":2000}],"sub_total":2000,"discount_percent":0,"vat_amount":260,"net_total":2260,"payment_method":"cash"}
+[2025-03-01 08:28:08] Transaction started
+[2025-03-01 08:28:08] Subtotal calculated: 2000
+[2025-03-01 08:28:08] Financial calculations - Discount: 0, VAT: 260, Net Total: 2260
+[2025-03-01 08:28:08] Sale inserted with ID: 42
+[2025-03-01 08:28:08] Sale transaction completed successfully
+[2025-03-01 08:28:08] Bill saved successfully: bills/bill_000042_20250301_082808.html
+[2025-03-01 08:29:11] Received raw data: {"customer_name":"Cash","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 110)\n                                  ","quantity":40,"price":200,"total":8000}],"sub_total":8000,"discount_percent":0,"vat_amount":1040,"net_total":9040,"payment_method":"cash"}
+[2025-03-01 08:29:11] Transaction started
+[2025-03-01 08:29:11] Subtotal calculated: 8000
+[2025-03-01 08:29:11] Financial calculations - Discount: 0, VAT: 1040, Net Total: 9040
+[2025-03-01 08:29:11] Sale inserted with ID: 43
+[2025-03-01 08:29:11] Sale transaction completed successfully
+[2025-03-01 08:29:11] Bill saved successfully: bills/bill_000043_20250301_082911.html
+[2025-03-01 08:30:21] Received raw data: {"customer_name":"Cash","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 110)\n                                  ","quantity":200,"price":200,"total":40000}],"sub_total":40000,"discount_percent":0,"vat_amount":5200,"net_total":45200,"payment_method":"cash"}
+[2025-03-01 08:30:21] Transaction started
+[2025-03-01 08:30:21] Insufficient stock for item: keyboard. Available: 70, Requested: 200
+[2025-03-01 08:30:21] Sale processing error: Insufficient stock for item: keyboard
+[2025-03-01 08:33:45] Received raw data: {"customer_name":"Cash","customer_contact":"9819033012","items":[{"id":8,"name":"\n                                  pendrive (Stock: 10)\n                                  ","quantity":10,"price":200,"total":2000}],"sub_total":2000,"discount_percent":0,"vat_amount":260,"net_total":2260,"payment_method":"cash"}
+[2025-03-01 08:33:45] Transaction started
+[2025-03-01 08:33:45] Subtotal calculated: 2000
+[2025-03-01 08:33:45] Financial calculations - Discount: 0, VAT: 260, Net Total: 2260
+[2025-03-01 08:33:45] Sale inserted with ID: 44
+[2025-03-01 08:33:45] Sale transaction completed successfully
+[2025-03-01 08:33:45] Bill saved successfully: bills/bill_000044_20250301_083345.html
+[2025-03-01 10:35:57] Received raw data: {"customer_name":"Cash","customer_contact":"9819033012","items":[{"id":3,"name":"\n                                  mouse (Stock: 15)\n                                  ","quantity":15,"price":200,"total":3000}],"sub_total":3000,"discount_percent":0,"vat_amount":390,"net_total":3390,"payment_method":"cash"}
+[2025-03-01 10:35:57] Transaction started
+[2025-03-01 10:35:57] Subtotal calculated: 3000
+[2025-03-01 10:35:57] Financial calculations - Discount: 0, VAT: 390, Net Total: 3390
+[2025-03-01 10:35:57] Sale inserted with ID: 45
+[2025-03-01 10:35:57] Sale transaction completed successfully
+[2025-03-01 10:35:57] Bill saved successfully: bills/bill_000045_20250301_103557.html
+[2025-03-01 10:38:05] Received raw data: {"customer_name":"Cash","customer_contact":"9819033012`","items":[{"id":3,"name":"\n                                  mouse (Stock: 15)\n                                  ","quantity":15,"price":200,"total":3000}],"sub_total":3000,"discount_percent":0,"vat_amount":390,"net_total":3390,"payment_method":"cash"}
+[2025-03-01 10:38:05] Transaction started
+[2025-03-01 10:38:05] Insufficient stock for item: mouse. Available: 0, Requested: 15
+[2025-03-01 10:38:05] Sale processing error: Insufficient stock for item: mouse
+[2025-03-01 10:38:25] Received raw data: {"customer_name":"Cash","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 70)\n                                  ","quantity":30,"price":200,"total":6000}],"sub_total":6000,"discount_percent":0,"vat_amount":780,"net_total":6780,"payment_method":"cash"}
+[2025-03-01 10:38:25] Transaction started
+[2025-03-01 10:38:25] Subtotal calculated: 6000
+[2025-03-01 10:38:25] Financial calculations - Discount: 0, VAT: 780, Net Total: 6780
+[2025-03-01 10:38:25] Sale inserted with ID: 46
+[2025-03-01 10:38:25] Sale transaction completed successfully
+[2025-03-01 10:38:25] Bill saved successfully: bills/bill_000046_20250301_103825.html
+[2025-03-01 10:39:10] Received raw data: {"customer_name":"Cash","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 40)\n                                  ","quantity":20,"price":200,"total":4000}],"sub_total":4000,"discount_percent":0,"vat_amount":520,"net_total":4520,"payment_method":"cash"}
+[2025-03-01 10:39:10] Transaction started
+[2025-03-01 10:39:10] Subtotal calculated: 4000
+[2025-03-01 10:39:10] Financial calculations - Discount: 0, VAT: 520, Net Total: 4520
+[2025-03-01 10:39:10] Sale inserted with ID: 47
+[2025-03-01 10:39:10] Sale transaction completed successfully
+[2025-03-01 10:39:10] Bill saved successfully: bills/bill_000047_20250301_103910.html

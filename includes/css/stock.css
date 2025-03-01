@@ -1,0 +1,100 @@
+/* Stock Report Styles */
+.sale-section {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin: 20px;
+    margin-left: 270px;
+    width: calc(100% - 290px);
+}
+
+.section-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 10px;
+}
+
+.section-header i {
+    margin-right: 10px;
+    color: #007bff;
+    font-size: 1.2rem;
+}
+
+.section-header h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+}
+
+.bill-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.bill-table thead {
+    background-color: #f8f9fa;
+}
+
+.bill-table th,
+.bill-table td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.bill-table th {
+    font-weight: 600;
+    color: #495057;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+.bill-table tbody tr:hover {
+    background-color: rgba(0, 0, 0, 0.05);
+}
+
+.status-low {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.status-out {
+    color: #dc3545;
+    font-weight: bold;
+}
+
+.status-in {
+    color: #28a745;
+    font-weight: bold;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+    .sale-section {
+        margin: 10px;
+        margin-left: 10px;
+        width: calc(100% - 20px);
+        padding: 15px;
+    }
+
+    .section-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .section-header-actions {
+        margin-top: 10px;
+    }
+
+    .bill-table th,
+    .bill-table td {
+        padding: 8px;
+        font-size: 0.8rem;
+    }
+}

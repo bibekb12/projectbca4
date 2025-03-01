@@ -429,56 +429,6 @@ $today = date('Y-m-d');
                 $('#customer_name').val('Cash');
             }
         });
-
-        function refreshRecentTransactions() {
-            $.ajax({
-                url: 'get_recent_transactions.php',
-                method: 'GET',
-                success: function(response) {
-                    if (response.success) {
-                        const recentTransactionsTable = $('.recent-transactions tbody');
-                        recentTransactionsTable.empty();
-                        response.transactions.forEach(function(transaction) {
-                            const paymentMethod = transaction.payment_method ? 
-                                transaction.payment_method.charAt(0).toUpperCase() + transaction.payment_method.slice(1) : 
-                                'Cash';
-                            const billStatus = transaction.bill_file ? 
-                                '<span class="badge badge-success">Generated</span>' : 
-                                '<span class="badge badge-warning">Pending</span>';
-
-                            recentTransactionsTable.append(`
-                                <tr data-sale-id="${transaction.id}">
-                                    <td class="invoice-number">${String(transaction.id).padStart(6, '0')}</td>
-                                    <td>
-                                        <div class="customer-cell">
-                                            <span class="customer-name">${transaction.customer_name}</span>
-                                            <span class="customer-contact">${transaction.customer_contact || 'N/A'}</span>
-                                        </div>
-                                    </td>
-                                    <td class="amount">Rs. ${transaction.net_total.toFixed(2)}</td>
-                                    <td class="payment-method">${paymentMethod}</td>
-                                    <td class="time">${new Date(transaction.sale_date).toLocaleTimeString()}</td>
-                                    <td class="actions">
-                                        <div class="btn-group">
-                                            <button type="button" class="btn-primary btn-sm" onclick="showBillOptions(${transaction.id})">
-                                                <i class="fa fa-file-text"></i> View/Reprint Bill
-                                            </button>
-                                        </div>
-                                        ${billStatus}
-                                    </td>
-                                </tr>
-                            `);
-                        });
-                    } else {
-                        alert('Error fetching recent transactions: ' + response.message);
-                    }
-                },
-                error: function(xhr, status, error) {
-                    console.error('Ajax error:', {xhr, status, error});
-                    alert('Error fetching recent transactions. Please try again.');
-                }
-            });
-        }
     });
 
     function showBillOptions(saleId) {

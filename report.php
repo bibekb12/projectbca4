@@ -127,7 +127,13 @@ session_start();
                         $sn = 1;
                         while ($row = $result->fetch_assoc()) {
                             $status_class = $row['stock_quantity'] < 10 ? 'text-danger' : 'text-success';
-                            $status_text = $row['stock_quantity'] < 10 ? 'Low Stock' : 'In Stock';
+                            if ($row['stock_quantity'] == 0) {
+                                $status_text = 'Out of Stock';
+                            } elseif ($row['stock_quantity'] < 10) {
+                                $status_text = 'Low Stock';
+                            } else {
+                                $status_text = 'In Stock';
+                            }
                             
                             echo "<tr>
                                     <td>{$sn}</td>
