@@ -67,8 +67,8 @@ nav {
 
 .logo-details .logo_name {
   color: white;
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 500;
   letter-spacing: -0.5px;
   text-transform: uppercase;
   white-space: nowrap;
@@ -94,8 +94,7 @@ nav {
 
 .logo-details .logo_name .highlight {
   color: rgba(255, 255, 255, 0.7);
-  font-weight: 400;
-  margin-left: 5px;
+  font-weight: 100;
 }
 
 /* Responsive Logo Adjustments */

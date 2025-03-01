@@ -38,15 +38,14 @@ include('db.php');
             <div class="table-container">
                 <div class="activity-title">
                     <i class="fa fa-cubes"></i>
-                    <span>Inventory Status</span>
+                    <span>Inventory Current Stock</span>
                 </div>
                 <table>
                     <thead>
                         <tr>
                             <th>SN</th>
                             <th>Product</th>
-                            <th>Description</th>
-                            <th>Price</th>
+                            <th>Selling Price</th>
                             <th>Stock Quantity</th>
                             <th>Stock Value</th>
                             <th>Status</th>
@@ -87,7 +86,6 @@ include('db.php');
                             echo "<tr>
                                     <td>{$sn}</td>
                                     <td>{$row['name']}</td>
-                                    <td>{$row['description']}</td>
                                     <td>Rs. {$row['price']}</td>
                                     <td class='{$status_class}'>{$row['stock_quantity']}</td>
                                     <td>Rs. " . number_format($row['stock_value'], 2) . "</td>
