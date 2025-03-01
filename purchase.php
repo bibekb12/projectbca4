@@ -18,9 +18,92 @@ if (!isset($_SESSION['user_id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Purchase Panel</title>
     <link rel="icon" href="images/inv-logo.png" type="image/icon type">
-    <link rel="stylesheet" href="includes\css\purchase.css">
+    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        .form-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 20px;
+            margin-left: 270px;
+            width: calc(100% - 290px);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group label {
+            margin-bottom: 5px;
+            color: #495057;
+            font-weight: 600;
+        }
+
+        .form-group input, 
+        .form-group select {
+            padding: 10px;
+            border: 1px solid #ced4da;
+            border-radius: 4px;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+
+        .form-group input:focus, 
+        .form-group select:focus {
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+
+        .form-submit {
+            grid-column: span 2;
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 15px;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: background-color 0.2s;
+        }
+
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid,
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .form-submit {
+                grid-column: span 1;
+            }
+        }
+    </style>
 </head>
 <body>
     <?php include('includes/sidebar.php'); ?>
@@ -86,7 +169,7 @@ if (!isset($_SESSION['user_id'])) {
             <?php endif ?>
 
             <!-- Purchase Form -->
-            <div class="form-container compact-form">
+            <div class="form-container">
                 <div class="activity-title">
                     <i class="fa fa-plus-circle"></i>
                     <span>New Purchase</span>
@@ -104,7 +187,7 @@ if (!isset($_SESSION['user_id'])) {
                                 
                                 if ($result->num_rows > 0) {
                                     while ($row = $result->fetch_assoc()) {
-                                        echo "<option value='{$row['id']}'>{$row['name']} - Rs. {$row['sell_price']}</option>";
+                                        echo "<option value='{$row['id']}'>{$row['name']} </option>";
                                     }
                                 } else {
                                     echo "<option value=''>No active items available</option>";
@@ -145,7 +228,7 @@ if (!isset($_SESSION['user_id'])) {
                         </div>
                     </div>
                     <div class="form-group form-submit">
-                        <button type="submit" class="btn-primary">
+                        <button type="submit" class="btn-primary" style="margin: 0 auto;">
                             <i class="fa fa-save"></i> Add Purchase
                         </button>
                     </div>

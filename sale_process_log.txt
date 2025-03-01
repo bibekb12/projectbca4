@@ -185,3 +185,10 @@
 [2025-03-01 10:39:10] Sale inserted with ID: 47
 [2025-03-01 10:39:10] Sale transaction completed successfully
 [2025-03-01 10:39:10] Bill saved successfully: bills/bill_000047_20250301_103910.html
+[2025-03-01 13:01:07] Received raw data: {"customer_name":"Cash","customer_contact":"9819033012","items":[{"id":6,"name":"\n                                  mouse (Stock: 104)\n                                  ","quantity":12,"price":300,"total":3600}],"sub_total":3600,"discount_percent":0,"vat_amount":468,"net_total":4068,"payment_method":"cash"}
+[2025-03-01 13:01:07] Transaction started
+[2025-03-01 13:01:07] Subtotal calculated: 3600
+[2025-03-01 13:01:07] Financial calculations - Discount: 0, VAT: 468, Net Total: 4068
+[2025-03-01 13:01:07] Sale inserted with ID: 48
+[2025-03-01 13:01:07] Sale transaction completed successfully
+[2025-03-01 13:01:07] Bill saved successfully: bills/bill_000048_20250301_130107.html
