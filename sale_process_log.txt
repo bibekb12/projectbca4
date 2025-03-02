@@ -192,3 +192,59 @@
 [2025-03-01 13:01:07] Sale inserted with ID: 48
 [2025-03-01 13:01:07] Sale transaction completed successfully
 [2025-03-01 13:01:07] Bill saved successfully: bills/bill_000048_20250301_130107.html
+[2025-03-02 05:47:19] Received raw data: {"customer_name":"Cash","customer_contact":"","items":[{"id":8,"name":"\n                                  pendrive (Stock: 8)\n                                  ","quantity":1,"price":100,"total":100}],"sub_total":100,"discount_percent":0,"vat_amount":13,"net_total":113,"payment_method":"cash"}
+[2025-03-02 05:47:19] Transaction started
+[2025-03-02 05:47:19] Subtotal calculated: 100
+[2025-03-02 05:47:19] Financial calculations - Discount: 0, VAT: 13, Net Total: 113
+[2025-03-02 05:47:19] Sale inserted with ID: 49
+[2025-03-02 05:47:19] Sale transaction completed successfully
+[2025-03-02 05:47:19] Bill saved successfully: bills/bill_000049_20250302_054719.html
+[2025-03-02 06:03:05] Received raw data: {"customer_name":"Cash","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 20)\n                                  ","quantity":2,"price":200,"total":400}],"sub_total":400,"discount_percent":0,"vat_amount":52,"net_total":452,"payment_method":"cash"}
+[2025-03-02 06:03:05] Transaction started
+[2025-03-02 06:03:05] Subtotal calculated: 400
+[2025-03-02 06:03:05] Financial calculations - Discount: 0, VAT: 52, Net Total: 452
+[2025-03-02 06:03:05] Sale inserted with ID: 50
+[2025-03-02 06:03:05] Sale transaction completed successfully
+[2025-03-02 06:03:05] Bill saved successfully: bills/bill_000050_20250302_060305.html
+[2025-03-02 06:08:23] Received raw data: {"customer_name":"Cash","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 18)\n                                  ","quantity":12,"price":200,"total":2400}],"sub_total":2400,"discount_percent":0,"vat_amount":312,"net_total":2712,"payment_method":"cash"}
+[2025-03-02 06:08:23] Transaction started
+[2025-03-02 06:08:23] Subtotal calculated: 2400
+[2025-03-02 06:08:23] Financial calculations - Discount: 0, VAT: 312, Net Total: 2712
+[2025-03-02 06:08:23] Sale inserted with ID: 51
+[2025-03-02 06:08:23] Sale transaction completed successfully
+[2025-03-02 06:08:23] Bill saved successfully: bills/bill_000051_20250302_060823.html
+[2025-03-02 06:09:38] Received raw data: {"customer_name":"Cash","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 6)\n                                  ","quantity":1,"price":200,"total":200}],"sub_total":200,"discount_percent":0,"vat_amount":26,"net_total":226,"payment_method":"cash"}
+[2025-03-02 06:09:38] Transaction started
+[2025-03-02 06:09:38] Subtotal calculated: 200
+[2025-03-02 06:09:38] Financial calculations - Discount: 0, VAT: 26, Net Total: 226
+[2025-03-02 06:09:38] Sale inserted with ID: 52
+[2025-03-02 06:09:38] Sale transaction completed successfully
+[2025-03-02 06:09:38] Bill saved successfully: bills/bill_000052_20250302_060938.html
+[2025-03-02 06:13:10] Received raw data: {"customer_name":"Cash","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 5)\n                                  ","quantity":1,"price":200,"total":200}],"sub_total":200,"discount_percent":0,"vat_amount":26,"net_total":226,"payment_method":"cash"}
+[2025-03-02 06:13:10] Transaction started
+[2025-03-02 06:13:10] Subtotal calculated: 200
+[2025-03-02 06:13:10] Financial calculations - Discount: 0, VAT: 26, Net Total: 226
+[2025-03-02 06:13:10] Sale inserted with ID: 53
+[2025-03-02 06:13:10] Sale transaction completed successfully
+[2025-03-02 06:13:10] Bill saved successfully: bills/bill_000053_20250302_061310.html
+[2025-03-02 06:14:54] Received raw data: {"customer_name":"Cash","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 4)\n                                  ","quantity":1,"price":200,"total":200}],"sub_total":200,"discount_percent":0,"vat_amount":26,"net_total":226,"payment_method":"cash"}
+[2025-03-02 06:14:54] Transaction started
+[2025-03-02 06:14:54] Subtotal calculated: 200
+[2025-03-02 06:14:54] Financial calculations - Discount: 0, VAT: 26, Net Total: 226
+[2025-03-02 06:14:54] Sale inserted with ID: 54
+[2025-03-02 06:14:54] Sale transaction completed successfully
+[2025-03-02 06:14:54] Bill saved successfully: bills/bill_000054_20250302_061454.html
+[2025-03-02 06:17:35] Received raw data: {"customer_name":"Cash","customer_contact":"9819033012","items":[{"id":4,"name":"\n                                  keyboard (Stock: 3)\n                                  ","quantity":1,"price":200,"total":200}],"sub_total":200,"discount_percent":0,"vat_amount":26,"net_total":226,"payment_method":"cash"}
+[2025-03-02 06:17:35] Transaction started
+[2025-03-02 06:17:35] Subtotal calculated: 200
+[2025-03-02 06:17:35] Financial calculations - Discount: 0, VAT: 26, Net Total: 226
+[2025-03-02 06:17:35] Sale inserted with ID: 55
+[2025-03-02 06:17:35] Sale transaction completed successfully
+[2025-03-02 06:17:35] Bill saved successfully: bills/bill_000055_20250302_061735.html
+[2025-03-02 06:18:02] Received raw data: {"customer_name":"Cash","customer_contact":"9819033012","items":[{"id":8,"name":"\n                                  pendrive (Stock: 7)\n                                  ","quantity":5,"price":100,"total":500}],"sub_total":500,"discount_percent":0,"vat_amount":65,"net_total":565,"payment_method":"cash"}
+[2025-03-02 06:18:02] Transaction started
+[2025-03-02 06:18:02] Subtotal calculated: 500
+[2025-03-02 06:18:02] Financial calculations - Discount: 0, VAT: 65, Net Total: 565
+[2025-03-02 06:18:02] Sale inserted with ID: 56
+[2025-03-02 06:18:02] Sale transaction completed successfully
+[2025-03-02 06:18:02] Bill saved successfully: bills/bill_000056_20250302_061802.html

@@ -37,7 +37,7 @@ $is_admin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
             </li>
             <li>
                 <a href="stock.php" class="<?php echo ($current_page == 'stock.php') ? 'active' : ''; ?>">
-                    <i class="uil uil-stock"></i>
+                    <i class="uil uil-chart-pie"></i>
                     <span class="link-name">Stock</span>
                 </a>
             </li>

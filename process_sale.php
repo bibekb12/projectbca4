@@ -6,7 +6,7 @@ include 'db.php';
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-// Log function
+//Log function
 function custom_log($message) {
     $log_file = '/xamppbca/xampp/htdocs/bca4/sale_process_log.txt';
     $timestamp = date('Y-m-d H:i:s');
