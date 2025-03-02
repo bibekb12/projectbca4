@@ -6,48 +6,36 @@ include 'db.php';
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-//Log function
-function custom_log($message) {
-    $log_file = '/xamppbca/xampp/htdocs/bca4/sale_process_log.txt';
-    $timestamp = date('Y-m-d H:i:s');
-    file_put_contents($log_file, "[$timestamp] $message\n", FILE_APPEND);
-}
 
 header('Content-Type: application/json');
 
 try {
     // Validate session
     if (!isset($_SESSION['user_id'])) {
-        custom_log('Sale attempt without login');
         throw new Exception('Not logged in');
     }
 
     // Get raw POST data
     $raw_data = file_get_contents('php://input');
-    custom_log('Received raw data: ' . $raw_data);
 
     // Parse JSON data
     $data = json_decode($raw_data, true);
     if (json_last_error() !== JSON_ERROR_NONE) {
-        custom_log('JSON decode error: ' . json_last_error_msg());
-        throw new Exception('Failed to parse JSON: ' . json_last_error_msg());
+            throw new Exception('Failed to parse JSON: ' . json_last_error_msg());
     }
 
     // Validate input data
     if (!isset($data['items']) || !is_array($data['items']) || empty($data['items'])) {
-        custom_log('No items in sale data');
-        throw new Exception('No items provided in the sale');
+            throw new Exception('No items provided in the sale');
     }
 
     // Validate database connection
     if (!$conn) {
-        custom_log('Database connection failed: ' . mysqli_connect_error());
-        throw new Exception('Database connection failed: ' . mysqli_connect_error());
+            throw new Exception('Database connection failed: ' . mysqli_connect_error());
     }
 
     // Start transaction
     $conn->begin_transaction();
-    custom_log('Transaction started');
 
     // Calculate subtotal from items
     $sub_total = 0;
@@ -91,7 +79,6 @@ try {
             'total' => $total
         );
     }
-    custom_log('Subtotal calculated: ' . $sub_total);
 
     // Calculate totals
     $discount_percent = isset($data['discount_percent']) ? floatval($data['discount_percent']) : 0;
@@ -101,7 +88,6 @@ try {
     $vat_amount = $subtotal_after_discount * ($vat_percent / 100);
     $net_total = $subtotal_after_discount + $vat_amount;
 
-    custom_log('Financial calculations - Discount: ' . $discount_amount . ', VAT: ' . $vat_amount . ', Net Total: ' . $net_total);
 
     // Prepare customer data
     $customer_id = isset($data['customer_id']) ? intval($data['customer_id']) : null;
@@ -157,7 +143,6 @@ try {
         custom_log('Invalid sale ID generated');
         throw new Exception('Failed to get valid sale ID');
     }
-    custom_log('Sale inserted with ID: ' . $sale_id);
 
     // Prepare sale items insertion
     $item_query = "INSERT INTO sale_items (sale_id, item_id, quantity, price, total) VALUES (?, ?, ?, ?, ?)";
@@ -424,8 +409,7 @@ try {
     // Save bill HTML to file
     try {
         file_put_contents($bill_filename, $bill_html);
-        custom_log('Bill saved successfully: ' . $bill_filename);
-    } catch (Exception $e) {
+        } catch (Exception $e) {
         custom_log('Error saving bill: ' . $e->getMessage());
     }
 
@@ -434,8 +418,7 @@ try {
     $update_bill_query->bind_param('si', $bill_filename, $sale_id);
     $update_bill_query->execute();
     if ($update_bill_query->error) {
-        custom_log('Error updating bill filename in sales table: ' . $update_bill_query->error);
-    }
+        }
 
     // Prepare response
     $response = array(
@@ -455,7 +438,6 @@ try {
     }
 
     // Log the full error
-    custom_log('Sale processing error: ' . $e->getMessage());
 
     // Send error response
     $response = array(
