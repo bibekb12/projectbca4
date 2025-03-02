@@ -18,24 +18,30 @@ if (!isset($_SESSION['user_id'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Purchase Panel</title>
     <link rel="icon" href="images/inv-logo.png" type="image/icon type">
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <style>
+        .dashboard{
+            margin-top: -40px;
+        }
+
+
         .form-container {
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            margin: 20px;
+            padding: 60px;
+            margin: inherit;
             margin-left: 270px;
-            width: calc(100% - 290px);
+            width: 100%;
+            height: 43%;
         }
 
         .form-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
+            gap: 10px;
+            margin-top: 40px;
         }
 
         .form-row {
@@ -71,10 +77,11 @@ if (!isset($_SESSION['user_id'])) {
         }
 
         .form-submit {
-            grid-column: span 2;
+            grid-column:2;
             display: flex;
             justify-content: flex-end;
             margin-top: 15px;
+            align-items: center;
         }
 
         .btn-primary {
@@ -84,9 +91,9 @@ if (!isset($_SESSION['user_id'])) {
             padding: 10px 20px;
             border-radius: 4px;
             display: flex;
-            align-items: center;
             gap: 10px;
             transition: background-color 0.2s;
+            font: 20px;
         }
 
         .btn-primary:hover {
@@ -100,9 +107,11 @@ if (!isset($_SESSION['user_id'])) {
             }
 
             .form-submit {
-                grid-column: span 1;
+                grid-column: 1;
             }
         }
+
+       
     </style>
 </head>
 <body>
@@ -228,7 +237,7 @@ if (!isset($_SESSION['user_id'])) {
                         </div>
                     </div>
                     <div class="form-group form-submit">
-                        <button type="submit" class="btn-primary" style="margin: 0 auto;">
+                        <button type="submit" class="btn-primary">
                             <i class="fa fa-save"></i> Add Purchase
                         </button>
                     </div>

@@ -1,18 +1,23 @@
 <?php
 session_start();
-include 'db.php';
-
-// Enable error reporting
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
-
 header('Content-Type: application/json');
 
+// Disable error display to prevent HTML output
+ini_set('display_errors', 0);
+error_reporting(0);
+
 try {
+    // Include database connection
+    require_once 'db.php';
+
     // Validate session
     if (!isset($_SESSION['user_id'])) {
-        throw new Exception('Not logged in');
+        http_response_code(401);
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Not logged in'
+        ]);
+        exit;
     }
 
     // Get raw POST data
@@ -21,17 +26,32 @@ try {
     // Parse JSON data
     $data = json_decode($raw_data, true);
     if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new Exception('Failed to parse JSON: ' . json_last_error_msg());
+        http_response_code(400);
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Invalid JSON: ' . json_last_error_msg()
+        ]);
+        exit;
     }
 
     // Validate input data
     if (!isset($data['items']) || !is_array($data['items']) || empty($data['items'])) {
-            throw new Exception('No items provided in the sale');
+        http_response_code(400);
+        echo json_encode([
+            'success' => false, 
+            'message' => 'No items provided in the sale'
+        ]);
+        exit;
     }
 
     // Validate database connection
     if (!$conn) {
-            throw new Exception('Database connection failed: ' . mysqli_connect_error());
+        http_response_code(500);
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Database connection failed: ' . mysqli_connect_error()
+        ]);
+        exit;
     }
 
     // Start transaction
@@ -44,8 +64,12 @@ try {
     foreach ($data['items'] as $item) {
         // Validate each item
         if (!isset($item['id'], $item['quantity'], $item['price'], $item['total'])) {
-            custom_log('Malformed item data: ' . json_encode($item));
-            throw new Exception('Invalid item data. Missing required fields.');
+            http_response_code(400);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Invalid item data. Missing required fields.'
+            ]);
+            exit;
         }
 
         // Type cast and validate
@@ -57,8 +81,12 @@ try {
         // Validate stock
         $stock_check = $conn->prepare("SELECT stock_quantity, itemname FROM items WHERE id = ?");
         if ($stock_check === false) {
-            custom_log('Stock check prepare failed: ' . $conn->error);
-            throw new Exception('Failed to prepare stock check: ' . $conn->error);
+            http_response_code(500);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Failed to prepare stock check: ' . $conn->error
+            ]);
+            exit;
         }
 
         $stock_check->bind_param('i', $item_id);
@@ -67,8 +95,12 @@ try {
         $stock_data = $stock_result->fetch_assoc();
 
         if (!$stock_data || $stock_data['stock_quantity'] < $quantity) {
-            custom_log('Insufficient stock for item: ' . $stock_data['itemname'] . '. Available: ' . $stock_data['stock_quantity'] . ', Requested: ' . $quantity);
-            throw new Exception('Insufficient stock for item: ' . $stock_data['itemname']);
+            http_response_code(400);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Insufficient stock for item: ' . $stock_data['itemname']
+            ]);
+            exit;
         }
 
         $sub_total += $total;
@@ -88,7 +120,6 @@ try {
     $vat_amount = $subtotal_after_discount * ($vat_percent / 100);
     $net_total = $subtotal_after_discount + $vat_amount;
 
-
     // Prepare customer data
     $customer_id = isset($data['customer_id']) ? intval($data['customer_id']) : null;
     $customer_name = isset($data['customer_name']) ? $data['customer_name'] : 'Cash';
@@ -107,8 +138,12 @@ try {
     // Prepare sale statement
     $stmt = $conn->prepare($sale_query);
     if ($stmt === false) {
-        custom_log('Sale query prepare failed: ' . $conn->error);
-        throw new Exception('Failed to prepare sale query: ' . $conn->error);
+        http_response_code(500);
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Failed to prepare sale query: ' . $conn->error
+        ]);
+        exit;
     }
 
     // Bind sale parameters
@@ -127,29 +162,45 @@ try {
     );
 
     if ($bind_result === false) {
-        custom_log('Sale query bind failed: ' . $stmt->error);
-        throw new Exception('Failed to bind sale query parameters: ' . $stmt->error);
+        http_response_code(500);
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Failed to bind sale query parameters: ' . $stmt->error
+        ]);
+        exit;
     }
 
     // Execute sale insertion
     $execute_result = $stmt->execute();
     if ($execute_result === false) {
-        custom_log('Sale insertion failed: ' . $stmt->error);
-        throw new Exception('Failed to insert sale: ' . $stmt->error);
+        http_response_code(500);
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Failed to insert sale: ' . $stmt->error
+        ]);
+        exit;
     }
 
     $sale_id = $conn->insert_id;
     if ($sale_id <= 0) {
-        custom_log('Invalid sale ID generated');
-        throw new Exception('Failed to get valid sale ID');
+        http_response_code(500);
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Failed to get valid sale ID'
+        ]);
+        exit;
     }
 
     // Prepare sale items insertion
     $item_query = "INSERT INTO sale_items (sale_id, item_id, quantity, price, total) VALUES (?, ?, ?, ?, ?)";
     $item_stmt = $conn->prepare($item_query);
     if ($item_stmt === false) {
-        custom_log('Sale items query prepare failed: ' . $conn->error);
-        throw new Exception('Failed to prepare sale items query: ' . $conn->error);
+        http_response_code(500);
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Failed to prepare sale items query: ' . $conn->error
+        ]);
+        exit;
     }
 
     // Process each validated item
@@ -163,34 +214,49 @@ try {
             $item['total']
         );
         if ($item_bind_result === false) {
-            custom_log('Sale item bind failed: ' . $item_stmt->error);
-            throw new Exception('Failed to bind sale item parameters: ' . $item_stmt->error);
+            http_response_code(500);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Failed to bind sale item parameters: ' . $item_stmt->error
+            ]);
+            exit;
         }
 
         $item_execute_result = $item_stmt->execute();
         if ($item_execute_result === false) {
-            custom_log('Sale item insertion failed: ' . $item_stmt->error);
-            throw new Exception('Failed to insert sale item: ' . $item_stmt->error);
+            http_response_code(500);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Failed to insert sale item: ' . $item_stmt->error
+            ]);
+            exit;
         }
 
         // Update stock
         $update_stock = $conn->prepare("UPDATE items SET stock_quantity = stock_quantity - ? WHERE id = ?");
         if ($update_stock === false) {
-            custom_log('Stock update prepare failed: ' . $conn->error);
-            throw new Exception('Failed to prepare stock update: ' . $conn->error);
+            http_response_code(500);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Failed to prepare stock update: ' . $conn->error
+            ]);
+            exit;
         }
 
         $update_stock->bind_param('ii', $item['quantity'], $item['item_id']);
         $update_stock_result = $update_stock->execute();
         if ($update_stock_result === false) {
-            custom_log('Stock update failed: ' . $update_stock->error);
-            throw new Exception('Failed to update stock: ' . $update_stock->error);
+            http_response_code(500);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Failed to update stock: ' . $update_stock->error
+            ]);
+            exit;
         }
     }
 
     // Commit transaction
     $conn->commit();
-    custom_log('Sale transaction completed successfully');
 
     // Generate bill HTML
     $bill_html = '';
@@ -203,29 +269,45 @@ try {
         
         // Check if prepare was successful
         if ($items_query === false) {
-            custom_log('Bill items query prepare failed: ' . $conn->error);
-            throw new Exception('Failed to prepare bill items query: ' . $conn->error);
+            http_response_code(500);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Failed to prepare bill items query: ' . $conn->error
+            ]);
+            exit;
         }
 
         // Bind parameters
         $bind_result = $items_query->bind_param('i', $sale_id);
         if ($bind_result === false) {
-            custom_log('Bill items query bind failed: ' . $items_query->error);
-            throw new Exception('Failed to bind bill items query parameters: ' . $items_query->error);
+            http_response_code(500);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Failed to bind bill items query parameters: ' . $items_query->error
+            ]);
+            exit;
         }
 
         // Execute query
         $execute_result = $items_query->execute();
         if ($execute_result === false) {
-            custom_log('Bill items query execution failed: ' . $items_query->error);
-            throw new Exception('Failed to execute bill items query: ' . $items_query->error);
+            http_response_code(500);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Failed to execute bill items query: ' . $items_query->error
+            ]);
+            exit;
         }
 
         // Get results
         $items_result = $items_query->get_result();
         if ($items_result === false) {
-            custom_log('Failed to get bill items result: ' . $items_query->error);
-            throw new Exception('Failed to get bill items result: ' . $items_query->error);
+            http_response_code(500);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Failed to get bill items result: ' . $items_query->error
+            ]);
+            exit;
         }
 
         // Start bill HTML
@@ -360,8 +442,12 @@ try {
 
         // Check if any items were found
         if ($items_result->num_rows === 0) {
-            custom_log('No items found for sale ID: ' . $sale_id);
-            throw new Exception('No items found for this sale');
+            http_response_code(500);
+            echo json_encode([
+                'success' => false, 
+                'message' => 'No items found for sale ID: ' . $sale_id
+            ]);
+            exit;
         }
 
         // Add items to bill
@@ -392,9 +478,12 @@ try {
 </html>';
 
     } catch (Exception $e) {
-        // Log bill generation error
-        custom_log('Bill generation error: ' . $e->getMessage());
-        $bill_html = 'Error generating bill: ' . $e->getMessage();
+        http_response_code(500);
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Error generating bill: ' . $e->getMessage()
+        ]);
+        exit;
     }
 
     // Create bills directory if not exists
@@ -410,7 +499,12 @@ try {
     try {
         file_put_contents($bill_filename, $bill_html);
         } catch (Exception $e) {
-        custom_log('Error saving bill: ' . $e->getMessage());
+        http_response_code(500);
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Error saving bill: ' . $e->getMessage()
+        ]);
+        exit;
     }
 
     // Update sales table to include bill filename
@@ -418,7 +512,13 @@ try {
     $update_bill_query->bind_param('si', $bill_filename, $sale_id);
     $update_bill_query->execute();
     if ($update_bill_query->error) {
-        }
+        http_response_code(500);
+        echo json_encode([
+            'success' => false, 
+            'message' => 'Error updating sales table: ' . $update_bill_query->error
+        ]);
+        exit;
+    }
 
     // Prepare response
     $response = array(
@@ -440,12 +540,11 @@ try {
     // Log the full error
 
     // Send error response
-    $response = array(
-        'success' => false,
-        'message' => $e->getMessage()
-    );
-
-    echo json_encode($response);
+    http_response_code(500);
+    echo json_encode([
+        'success' => false, 
+        'message' => 'An unexpected error occurred'
+    ]);
     exit;
 }
 ?>

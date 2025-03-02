@@ -14,10 +14,9 @@ include('db.php');
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stock Report</title>
     <link rel="icon" href="images/inv-logo.png" type="image/icon type">
-    <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="/includes/css/stock.css">
+    <link rel="stylesheet" href="includes/css/stock.css">
 </head>
 <body>
     <?php include('includes/sidebar.php'); ?>
@@ -101,7 +100,5 @@ include('db.php');
     </section>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pM8ODewa9r" crossorigin="anonymous"></script>
 </body>
 </html>
