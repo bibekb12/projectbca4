@@ -26,7 +26,7 @@ try {
     }
 
     // Insert admin user
-    $admin_user = "INSERT INTO users (username, password, role) VALUES ('admin', '" . password_hash('admin_password', PASSWORD_BCRYPT) . "', 'admin')";
+    $admin_user = "INSERT INTO users (username, password, role) VALUES ('admin', '" . password_hash('admin', PASSWORD_BCRYPT) . "', 'admin')";
     
     if (!$conn->query($admin_user)) {
         throw new Exception("Error inserting admin user: " . $conn->error);
@@ -322,41 +322,6 @@ try {
         throw new Exception("Failed to create items table");
     }
 
-    // Create vw_transaction view in a new transaction
-    $conn->begin_transaction();
-    try {
-        $vw_transaction = "CREATE OR REPLACE VIEW vw_transaction AS
-            SELECT 
-                s.id,
-                s.sale_date AS Date,
-                'Sale' AS type,
-                i.itemname AS name,
-                si.quantity,
-                s.total_amount AS totalamount,
-                u.username
-            FROM sales s
-            JOIN sale_items si ON s.id = si.sale_id
-            JOIN items i ON si.item_id = i.id
-            JOIN users u ON s.user_id = u.id
-            UNION ALL
-            SELECT 
-                p.id,
-                p.purchase_date AS Date,
-                'Purchase' AS type,
-                i.itemname AS name,
-                pi.quantity,
-                p.total_amount AS totalamount,
-                u.username
-            FROM purchases p
-            JOIN purchase_items pi ON p.id = pi.purchase_id
-            JOIN items i ON pi.item_id = i.id
-            JOIN users u ON p.user_id = u.id";
-        
-        if (!$conn->query($vw_transaction)) {
-            throw new Exception("Error creating vw_transaction view: " . $conn->error);
-        }
-        
-        $conn->commit();
         echo json_encode(['success' => true, 'message' => 'Database setup completed successfully']);
     } catch (Exception $e) {
         $conn->rollback();
