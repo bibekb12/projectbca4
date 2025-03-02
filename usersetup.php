@@ -45,15 +45,13 @@ $all_users = $conn->query("SELECT id, username, status, created_at, updated_at, 
     <?php include 'includes/sidebar.php'; ?>
 
     <section class="dashboard">
-    <div class="top">
-            <div class="search-box">
-                <i class="uil uil-search"></i>
-                <input type="text" placeholder="Search here...">
-            </div>
+        <div class="top">
             <div class="user-greeting">
                 <i class="uil uil-user-circle"></i>
                 <span>Welcome, <span class="username"><?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'Guest'; ?></span></span>
+                <a href="logout.php" class="logout-btn">Logout</a>
             </div>
+        </div>
         </div>
         <div class="dash-content">
             <div class="overview">

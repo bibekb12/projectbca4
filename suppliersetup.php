@@ -41,13 +41,13 @@ if (isset($_GET['id'])) {
 <body>
     <?php include 'includes/sidebar.php'; ?>
 
+
     <section class="dashboard">
-    <div class="top">
-            <div class="search-box">
-            </div>
+        <div class="top">
             <div class="user-greeting">
                 <i class="uil uil-user-circle"></i>
                 <span>Welcome, <span class="username"><?php echo isset($_SESSION['username']) ? htmlspecialchars($_SESSION['username']) : 'Guest'; ?></span></span>
+                <a href="logout.php" class="logout-btn">Logout</a>
             </div>
         </div>
         <div class="dash-content">

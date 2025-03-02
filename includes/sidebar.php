@@ -6,9 +6,6 @@ $is_admin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
 <link rel="icon" href="images/t-logo.png" type="image/icon type">
 <link rel="stylesheet" href="includes\css\style.css">
 <link rel="stylesheet" href="includes\css\sale.css">
-<link rel="stylesheet" href="include\required\all.css">
-<link rel="stylesheet" href="include\required\icon-scout.css">
-<link rel="stylesheet" href="include\required\font-awesome.css">
 <link rel="stylesheet" href="https://unicons.iconscout.com/release/v4.0.0/css/line.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <nav>
@@ -40,14 +37,14 @@ $is_admin = isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
             </li>
             <li>
                 <a href="stock.php" class="<?php echo ($current_page == 'stock.php') ? 'active' : ''; ?>">
-                    <i class="uil uil-chart"></i>
+                    <i class="uil uil-stock"></i>
                     <span class="link-name">Stock</span>
                 </a>
             </li>
             <?php if ($is_admin): ?>
             <li>
                 <a href="report.php" class="<?php echo ($current_page == 'report.php') ? 'active' : ''; ?>">
-                    <i class="uil uil-chart"></i>
+                    <i class="uil uil-store"></i>
                     <span class="link-name">Report</span>
                 </a>
             </li>
