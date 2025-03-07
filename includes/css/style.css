@@ -96,6 +96,35 @@ nav {
   color: rgba(255, 255, 255, 0.7);
   font-weight: 100;
 }
+.login-btn {
+  width: 100%;
+  height: 45px;
+  background: var(--primary-color);
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.login-btn:hover {
+  background: #2b1ae3;
+}
+
+.login-footer {
+  margin-top: 20px;
+  text-align: center;
+  color: var(--text-color);
+  font-size: 0.9rem;
+}
+
+@media screen and (max-width: 400px) {
+  .login-container {
+    padding: 30px 20px;
+  }
+}
 
 /* Responsive Logo Adjustments */
 @media screen and (max-width: 768px) {
@@ -195,34 +224,7 @@ nav {
 .nav-links li.dropdown.open > a::after {
   transform: translateY(-50%) rotate(180deg);
 }
-/* 
-.nav-links li .sub-menu {
-    background: rgba(0, 0, 0, 0.1);
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.3s ease, padding 0.3s ease;
-    padding: 0 20px;
-}
 
-.nav-links li.dropdown.open .sub-menu {
-    max-height: 500px;
-    padding: 10px 20px;
-}
-
-.nav-links li .sub-menu a {
-    padding: 8px 0;
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.7);
-    margin: 0;
-}
-
-.nav-links li .sub-menu a:hover {
-    color: white;
-    background: none;
-    transform: translateX(5px);
-} */
-
-/* Navigation Footer */
 .nav-footer {
   padding: 15px;
   background: rgba(0, 0, 0, 0.1);

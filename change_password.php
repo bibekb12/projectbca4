@@ -62,41 +62,58 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Change Password</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            background-color: #f4f4f4;
+            background: #3498db;
+            margin: 0;
         }
         .container {
             background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 300px;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        h3 {
+            margin-bottom: 20px;
+            color: #333;
         }
         input {
             width: 100%;
-            padding: 8px;
-            margin: 5px 0;
+            padding: 12px;
+            margin: 10px 0;
             border: 1px solid #ccc;
-            border-radius: 4px;
+            border-radius: 5px;
+            font-size: 16px;
         }
         button {
             width: 100%;
-            padding: 10px;
+            padding: 12px;
             background: #28a745;
             color: white;
             border: none;
+            border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
-            margin-bottom: 1px;
+            transition: background 0.3s ease;
+        }
+        button:hover {
+            background: #218838;
         }
         .btn-cancel {
-            background: #dc3545;
+            background:#3498db;
             margin-top: 10px;
+        }
+        .btn-cancel:hover {
+            background:rgb(68, 90, 228);
         }
         .form-buttons {
             display: flex;
@@ -105,7 +122,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username'])) {
         }
         .error {
             color: red;
-            font-size: 12px;
+            font-size: 14px;
+            margin-top: 10px;
+        }
+        .success {
+            color: green;
+            font-size: 14px;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -121,7 +144,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['username'])) {
             <p class="error" id="errorMessage"></p>
             <div class="form-buttons">
                 <button type="submit">Change Password</button>
-                <button type="button" class="btn btn-cancel btn-danger" onclick="window.location.href='index.php'">Home</button>
+                <button type="button" class="btn btn-cancel" onclick="window.location.href='index.php'">Home</button>
             </div>
         </form>
     </div>

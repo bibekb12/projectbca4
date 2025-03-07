@@ -36,7 +36,7 @@ $today = date('Y-m-d');
     <div class="sale-section">
         <form id="saleForm" class="bill-form">
             <div class="bill-header">
-                <h2>S M I S</h2>
+                <h2>Inventory management system</h2>
                 <p>Sale Invoice</p>
                 <p>Date: <?php echo $today; ?> <span id="currentTime"></span></p>
             </div>
