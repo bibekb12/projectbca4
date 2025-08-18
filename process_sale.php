@@ -410,7 +410,7 @@ try {
         <a href="#" class="reprint-btn" onclick="printBill()">🖨️ Reprint Bill</a>
         
         <div class="bill-header">
-            <h2>SIMPLE IMS</h2>
+            <h2>Inventory Management System</h2>
             <p>Sale Invoice</p>
         </div>
         

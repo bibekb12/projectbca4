@@ -89,7 +89,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['login'])) {
                 <a href="change_password.php">Change Password</a>
             </div>
             <div class="login-footer">
-                Design and develop by © <a href="http://www.bibekbhandari.com.np">Bibek Bhandari</a>
+                Design and develop by © <a href="https://www.bibekbhandari.com.np">Bibek Bhandari</a>
             </div>
         </form>
     </div>

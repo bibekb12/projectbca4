@@ -155,7 +155,7 @@ $(document).ready(function () {
       discount_percent: parseFloat($("#discount_percent").val()) || 0,
       vat_amount: parseFloat($("#vat").text()),
       net_total: parseFloat($("#netTotal").text()),
-      payment_method: paymentMethod, // Save the selected payment method
+      payment_method: paymentMethod,
     };
 
     $.ajax({
@@ -165,7 +165,6 @@ $(document).ready(function () {
       data: JSON.stringify(saleData),
       success: function (response) {
         if (response.success) {
-          // Write bill to iframe and print
           const printFrame = $("<iframe>", {
             name: "print_frame",
             class: "print-frame",
@@ -256,10 +255,10 @@ let currentSaleId = null;
 function showBillOptions(saleId) {
   currentSaleId = saleId;
   const billOptionsModal = document.getElementById("billOptionsModal");
-  
+
   if (billOptionsModal) {
     billOptionsModal.style.display = "block";
-    
+
     // Attempt to load bill preview in iframe
     const billPreviewIframe = document.getElementById("billPreviewIframe");
     if (billPreviewIframe) {
@@ -276,10 +275,10 @@ function viewBill() {
 
   // AJAX to fetch bill details
   $.ajax({
-    url: 'get_bill_details.php',
-    method: 'GET',
+    url: "get_bill_details.php",
+    method: "GET",
     data: { sale_id: currentSaleId },
-    success: function(response) {
+    success: function (response) {
       if (response.success) {
         // Display bill details in modal
         $("#billViewContainer").html(response.bill_html);
@@ -289,9 +288,9 @@ function viewBill() {
         alert(response.message || "Failed to retrieve bill details");
       }
     },
-    error: function() {
+    error: function () {
       alert("Error fetching bill details");
-    }
+    },
   });
 }
 
@@ -303,10 +302,10 @@ function reprintBill() {
 
   // AJAX to reprint bill
   $.ajax({
-    url: 'reprint_bill.php',
-    method: 'GET',
+    url: "reprint_bill.php",
+    method: "GET",
     data: { id: currentSaleId },
-    success: function(response) {
+    success: function (response) {
       if (response.success) {
         // Trigger print
         const printFrame = $("<iframe>", {
@@ -324,14 +323,25 @@ function reprintBill() {
             }
           </script>
         `);
-        
+
         $("#billOptionsModal").hide();
       } else {
         alert(response.message || "Failed to reprint bill");
       }
     },
-    error: function() {
+    error: function () {
       alert("Error reprinting bill");
-    }
+    },
   });
 }
+
+const paymentMethodSelect = document.getElementById("payment_method");
+const qrButton = document.getElementById("dynamic-qr");
+
+paymentMethodSelect.addEventListener("change", function () {
+  if (this.value === "qrpay") {
+    qrButton.style.display = "inline-block";
+  } else {
+    qrButton.style.display = "none";
+  }
+});

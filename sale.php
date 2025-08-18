@@ -120,8 +120,14 @@ $today = date('Y-m-d');
                         <option value="cash">Cash</option>
                         <option value="card">Card</option>
                         <option value="qrpay">QR Payment</option>
+                        <option value="credit">Credit</option>
                     </select>
                 </div>
+                <div>
+                   <button id="dynamic-qr" style="display:none;"> Show QR Code </button>
+                </div>
+                <div id="qr-container" style="margin-top: 20px;"></div>
+
             </div>
 
             <div class="bill-footer">
@@ -233,6 +239,7 @@ $today = date('Y-m-d');
     </div>
 
     <script src="includes/js/sale.js"></script>
+    <script src="includes/js/digitalpayment.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script> -->
 </body>
 </html>
