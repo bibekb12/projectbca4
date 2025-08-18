@@ -103,7 +103,7 @@ try {
         vat_percent DECIMAL(5,2) DEFAULT 13,
         vat_amount DECIMAL(10,2) DEFAULT 0,
         net_total DECIMAL(10,2) NOT NULL,
-        payment_method ENUM('cash', 'credit', 'bank') DEFAULT 'cash',
+        payment_method ENUM('cash','credit','bank','card','qrpay') DEFAULT 'cash',
         sale_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
         user_id INT,
         bill_file VARCHAR(255) NULL COMMENT 'Stores path to generated HTML bill for each sale transaction',
@@ -332,7 +332,7 @@ try {
         }
     }
 
-} catch (Exception $e) {
+ catch (Exception $e) {
     // Rollback on error
     $conn->rollback();
     echo json_encode(['success' => false, 'message' => $e->getMessage()]);

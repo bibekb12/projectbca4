@@ -70,9 +70,9 @@ session_start();
                     <span class="number">
                         <?php
                         require('db.php');
-                            $query = "SELECT 
+                            $query = "SELECT ABS(
                                 (SELECT SUM(total_amount) from purchases )-
-                                (SELECT SUM(net_total) as total FROM sales ) as profit";
+                                (SELECT SUM(net_total) as total FROM sales )) as profit";
                             $result = $conn->query($query);
                             if ($result) {
                                 $row = $result->fetch_assoc();
