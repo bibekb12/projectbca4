@@ -334,14 +334,3 @@ function reprintBill() {
     },
   });
 }
-
-const paymentMethodSelect = document.getElementById("payment_method");
-const qrButton = document.getElementById("dynamic-qr");
-
-paymentMethodSelect.addEventListener("change", function () {
-  if (this.value === "qrpay") {
-    qrButton.style.display = "inline-block";
-  } else {
-    qrButton.style.display = "none";
-  }
-});

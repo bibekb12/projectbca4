@@ -124,7 +124,7 @@ $today = date('Y-m-d');
                     </select>
                 </div>
                 <div>
-                   <button id="dynamic-qr" style="display:none;"> Show QR Code </button>
+                   <button type="button" id="dynamic-qr" style="display:none;"> Show QR Code </button>
                 </div>
                 <div id="qr-container" style="margin-top: 20px;"></div>
 
@@ -238,8 +238,27 @@ $today = date('Y-m-d');
         </div>
     </div>
 
+    <!-- QR Payment Modal -->
+    <div id="qrPaymentModal" class="modal" style="display:none;">
+        <div class="modal-content">
+            <span class="close-modal" id="closeQrModal">&times;</span>
+            <h2>eSewa QR Payment</h2>
+            <div id="qrModalContainer" style="margin: 10px 0;"></div>
+            <div id="qrPaymentInfo" style="margin: 10px 0; font-size: 14px;"></div>
+            <div style="margin: 10px 0;">
+                <label for="refIdInput" style="display:block; margin-bottom:6px;">Reference ID (optional if callback works)</label>
+                <input type="text" id="refIdInput" placeholder="Enter eSewa Ref ID if callback not received" style="width:100%; padding:8px;" />
+            </div>
+            <div class="qr-actions" style="display:flex; gap: 10px;">
+                <button type="button" id="checkPaymentBtn">Check Payment</button>
+                <button type="button" id="saveAfterPaymentBtn" disabled>Save</button>
+            </div>
+        </div>
+    </div>
+
     <script src="includes/js/sale.js"></script>
-    <script src="includes/js/digitalpayment.js"></script>
+    <!-- FIX: path/filename typo. File is 'digialpayment.js' in 'includes/js', not 'digitalpayment.js' -->
+    <script src="includes/js/digialpayment.js"></script>
     <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script> -->
 </body>
 </html>
