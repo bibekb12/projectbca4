@@ -1,7 +1,7 @@
 <?php
 $dbservername="db";
 $dbusername="root";
-$dbpassword="";
+$dbpassword="root";
 $database="inventory";
 
 $conn=new mysqli($dbservername,$dbusername,$dbpassword,$database);
