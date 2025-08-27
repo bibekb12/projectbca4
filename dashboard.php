@@ -116,7 +116,8 @@ try {
                                 $sales_query = "SELECT SUM(net_total) as total_sales FROM sales ";
                                 $sales_result = $conn->query($sales_query);
                                 $total_sales = $sales_result ? $sales_result->fetch_assoc()['total_sales'] : 0;
-                                echo 'Rs. ' . number_format($total_sales, 2);
+                                $total_sales = $total_sales ?? 0;
+                                echo 'Rs. ' . number_format((float)$total_sales, 2);
                                 ?>
                             </div>
                             <div class="stat-trend">
